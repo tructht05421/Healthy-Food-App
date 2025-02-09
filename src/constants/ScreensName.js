@@ -1,6 +1,9 @@
 export const ScreensName = {
   signup: "signup",
   signin: "signin",
+  changePassword: "changePassword",
+  verifyEmail: "verifyEmail",
+  welcome: "welcome",
 };
 // ↑ Object chứa các hằng số định danh cho các màn hình trong ứng dụng
 

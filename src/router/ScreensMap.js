@@ -4,11 +4,22 @@ import Signup from "../screens/Signup";
 // ↑ Import các component màn hình sẽ được sử dụng trong navigation
 
 import { ScreensName } from "../constants/ScreensName";
+import ChangePassword from "../screens/ChangePassword";
+import VerifyEmail from "../screens/VerifyEmail";
+import Welcome from "../screens/Welcome";
 // ↑ Import enum chứa tên các màn hình
 // Giúp tránh lỗi typo và dễ dàng quản lý tên màn hình
 
 // PHẦN 2: KHAI BÁO CẤU HÌNH SCREENS
 export const ScreensMap = [
+  {
+    name: ScreensName.welcome,
+    component: Welcome,
+    options: {
+      tabBarButton: () => null,
+    },
+    hiddenBottomTab: true,
+  },
   {
     // Cấu hình cho màn hình Signup
     name: ScreensName.signup,
@@ -45,5 +56,21 @@ export const ScreensMap = [
     //     />
     //   ),
     // },
+  },
+  {
+    name: ScreensName.verifyEmail,
+    component: VerifyEmail,
+    options: {
+      tabBarButton: () => null,
+    },
+    hiddenBottomTab: true,
+  },
+  {
+    name: ScreensName.changePassword,
+    component: ChangePassword,
+    options: {
+      tabBarButton: () => null,
+    },
+    hiddenBottomTab: true,
   },
 ];

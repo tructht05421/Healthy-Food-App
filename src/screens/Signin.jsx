@@ -24,6 +24,7 @@ import googleIcon from "../../assets/image/google_icon.png"; // Logo Google
 import fbIcon from "../../assets/image/fb_round.png"; // Logo Facebook
 import appleIcon from "../../assets/image/apple_logo.png"; // Logo Apple
 import loginHeaderIcon from "../../assets/image/login_bg.png"; // Ảnh header
+import { ScreensName } from "../constants/ScreensName";
 
 // Lấy chiều rộng màn hình
 const WIDTH = Dimensions.get("window").width;
@@ -53,9 +54,9 @@ function Signin({ navigation }) {
     },
   ];
 
-  // Xử lý chuyển màn hình sang signup
+  // Xử lý chuyển màn hình sang welcome
   const handlePress = () => {
-    navigation.navigate("signup");
+    navigation.navigate(ScreensName.welcome);
   };
 
   // Render các nút đăng nhập bên thứ 3
@@ -112,7 +113,11 @@ function Signin({ navigation }) {
             secureTextEntry
           />
           {/* Link quên mật khẩu */}
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate(ScreensName.verifyEmail);
+            }}
+          >
             <Text style={styles.forgotPassword}>Forgot Password?</Text>
           </TouchableOpacity>
           {/* Nút đăng nhập */}
