@@ -1,7 +1,8 @@
 {
   "expo": {
     "name": "Healthy-Food-App",
-    "slug": "Healthy-Food-App",
+    "slug": "healthy-food-app",
+    "scheme": "com.andmn.HealthyFoodApp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -25,6 +26,14 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": ["expo-font"]
+    "plugins": [
+      "expo-font"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "e70dbaf9-5f92-407e-b5c5-116e9c9be260"
+      }
+    },
+    "owner": "andnm_1508"
   }
 }

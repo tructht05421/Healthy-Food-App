@@ -9,6 +9,7 @@ import {
   PixelRatio,
   TextInput,
   KeyboardAvoidingView,
+  Alert,
 } from "react-native";
 
 import { LinearGradient } from "expo-linear-gradient";
@@ -19,6 +20,7 @@ import SplitLine from "../components/common/SplitLine";
 import backgroundImage from "../../assets/image/welcome_bg.png";
 import googleIcon from "../../assets/image/google_icon.png";
 import { ScreensName } from "../constants/ScreensName";
+import { useGoogleAuth } from "../hooks/useGoogleAuth";
 
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
@@ -31,6 +33,27 @@ function Signup({ navigation }) {
     phoneNumber: "",
     password: "",
   });
+  const { signIn, userInfo, error } = useGoogleAuth();
+
+  useEffect(() => {
+    if (userInfo) {
+      // Prefill form with Google account details
+      setFormData((prev) => ({
+        ...prev,
+        fullName: userInfo.name || "",
+        email: userInfo.email || "",
+      }));
+
+      // Optional: Navigate to next screen or show success message
+      Alert.alert("Login Successful", `Welcome, ${userInfo.name}`);
+    }
+  }, [userInfo]);
+
+  useEffect(() => {
+    if (error) {
+      Alert.alert("Login Error", error);
+    }
+  }, [error]);
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({
@@ -39,8 +62,9 @@ function Signup({ navigation }) {
     }));
   };
 
-  const onPressGoogleButton = () => {
+  const onPressGoogleButton = async () => {
     // Handle Google signup
+    await signIn();
   };
 
   const onPressRegisterButton = () => {
