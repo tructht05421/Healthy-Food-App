@@ -21,6 +21,7 @@ import backgroundImage from "../../assets/image/welcome_bg.png";
 import googleIcon from "../../assets/image/google_icon.png";
 import { ScreensName } from "../constants/ScreensName";
 import { useGoogleAuth } from "../hooks/useGoogleAuth";
+import { signup } from "../services/authService";
 
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
@@ -67,9 +68,19 @@ function Signup({ navigation }) {
     await signIn();
   };
 
-  const onPressRegisterButton = () => {
+  const onPressRegisterButton = async () => {
     // Handle registration
-    console.log("Registration data:", formData);
+    const response = await signup({
+      username: formData.fullName,
+      email: formData.email,
+      phoneNumber: formData.phoneNumber,
+      password: formData.password,
+    });
+    if (response.status === 200) {
+      console.log(response.data);
+    } else {
+      console.log(response.data?.message);
+    }
   };
 
   const getTextWidth = (text, fontSize, fontFamily) => {

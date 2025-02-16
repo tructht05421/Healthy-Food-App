@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { use, useCallback, useState } from "react";
 import {
   Text,
   View,
@@ -6,6 +6,7 @@ import {
   Image,
   TextInput,
   Dimensions,
+  Platform,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 
@@ -16,19 +17,17 @@ import { ScreensName } from "../constants/ScreensName";
 // You'll need to add these images to your assets
 import sadCactusIcon from "../../assets/image/sad_cactus.png";
 import happyCactusIcon from "../../assets/image/happy_cactus.png";
+import { resendOTP, verifyAccount } from "../services/authService";
+// import { CodeField } from "react-native-confirmation-code-field";
+import OTPInput from "../components/common/OtpInput";
 
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
 
 function VerifyEmail({ navigation }) {
   const [email, setEmail] = useState("");
-  const [verificationCode, setVerificationCode] = useState([
-    "",
-    "",
-    "",
-    "",
-    "",
-  ]);
+  const [verificationCode, setVerificationCode] = useState("");
+  const [otpAmount] = useState(5);
   const [isCodeSent, setIsCodeSent] = useState(false);
 
   useFocusEffect(
@@ -37,17 +36,26 @@ function VerifyEmail({ navigation }) {
     }, [])
   );
 
-  const handleSubmitEmail = () => {
-    setIsCodeSent(true);
+  const handleSubmitEmail = async () => {
+    const response = await resendOTP();
+    if (response.status === 200) {
+      setIsCodeSent(true);
+    } else {
+      console.log(response.data?.message);
+    }
   };
 
-  const handleVerifyCode = () => {
-    console.log("Verifying code:", verificationCode.join(""));
-    navigation.navigate(ScreensName.changePassword);
+  const handleVerifyCode = async () => {
+    const response = await verifyAccount(verificationCode);
+    if (response.status === 200) {
+      navigation.navigate(ScreensName.changePassword);
+    } else {
+      console.log(response.data?.message);
+    }
   };
 
-  const handleResendCode = () => {
-    // Handle resend code logic
+  const handleResendCode = async () => {
+    await handleSubmitEmail();
   };
 
   const handleBackToEmail = () => {
@@ -55,10 +63,12 @@ function VerifyEmail({ navigation }) {
     setVerificationCode(["", "", "", "", ""]);
   };
 
-  const handleCodeChange = (index, value) => {
-    const newCode = [...verificationCode];
-    newCode[index] = value;
-    setVerificationCode(newCode);
+  const handleCodeChange = (value) => {
+    setVerificationCode(value);
+    if (value.length === otpAmount) {
+      console.log("Complete OTP:", value);
+      handleVerifyCode();
+    }
   };
 
   return (
@@ -113,24 +123,21 @@ function VerifyEmail({ navigation }) {
           ) : (
             <>
               <View style={styles.codeContainer}>
-                {verificationCode.map((digit, index) => (
-                  <TextInput
-                    key={index}
-                    style={styles.codeInput}
-                    value={digit}
-                    onChangeText={(value) => handleCodeChange(index, value)}
-                    keyboardType="number-pad"
-                    maxLength={1}
-                  />
-                ))}
+                {/* <CodeField
+                  <CodeField
+                value={verificationCode || ""} // Fallback to empty string if undefined or null
+                onChangeText={setVerificationCode}
+                cellCount={5}
+                keyboardType="number-pad"
+                testID="my-code-input"
+              /> 
+                /> */}
+                <OTPInput
+                  length={otpAmount}
+                  value={verificationCode}
+                  onChange={handleCodeChange}
+                />
               </View>
-
-              <RippleButton
-                buttonStyle={styles.submitButton}
-                buttonText="Verify Code"
-                textStyle={styles.buttonText}
-                onPress={handleVerifyCode}
-              />
 
               <Text style={styles.bottomText}>
                 Can't get email?{" "}

@@ -6,7 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 // Import AsyncStorage để lưu trữ và đọc dữ liệu locally trong React Native
 
 // === PHẦN 2: KHỞI TẠO BIẾN ===
-const apiUrl = process.env.REACT_APP_API_KEY;
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 // Lấy API URL từ biến môi trường (environment variables)
 
 // === PHẦN 3: TẠO AXIOS INSTANCE ===
@@ -16,6 +16,8 @@ const axiosInstance = axios.create({
     "Content-Type": "application/json", // Set header mặc định
   },
   responseType: "json", // Kiểu response mặc định
+  timeout: 10000,
+  validateStatus: (status) => status >= 200 && status < 300,
 });
 
 // === PHẦN 4: CẤU HÌNH INTERCEPTORS ===

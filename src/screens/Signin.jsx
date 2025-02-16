@@ -25,6 +25,7 @@ import fbIcon from "../../assets/image/fb_round.png"; // Logo Facebook
 import appleIcon from "../../assets/image/apple_logo.png"; // Logo Apple
 import loginHeaderIcon from "../../assets/image/login_bg.png"; // Ảnh header
 import { ScreensName } from "../constants/ScreensName";
+import { login } from "../services/authService";
 
 // Lấy chiều rộng màn hình
 const WIDTH = Dimensions.get("window").width;
@@ -55,8 +56,14 @@ function Signin({ navigation }) {
   ];
 
   // Xử lý chuyển màn hình sang welcome
-  const handlePress = () => {
-    navigation.navigate(ScreensName.welcome);
+  const handlePress = async () => {
+    // navigation.navigate(ScreensName.welcome);
+    const response = await login({ email, password });
+    if (response.status === 200) {
+      console.log(response.data);
+    } else {
+      console.log(response.data?.message);
+    }
   };
 
   // Render các nút đăng nhập bên thứ 3
