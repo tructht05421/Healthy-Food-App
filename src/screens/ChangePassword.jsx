@@ -13,21 +13,42 @@ import RippleButton from "../components/common/RippleButton";
 
 // Use the same happy cactus icon from assets
 import proundCactusIcon from "../../assets/image/pround_cactus.png";
+import ShowToast from "../components/common/CustomToast";
+import { changePassword } from "../services/authService";
+import { ScreensName } from "../constants/ScreensName";
 
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
 
-function ChangePassword({ navigation }) {
+function ChangePassword({ navigation, route }) {
+  const email = route.params?.email;
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleResetPassword = () => {
+  const handleResetPassword = async () => {
     if (newPassword !== confirmPassword) {
-      // Handle password mismatch
+      ShowToast("error", "Passwords do not match");
       return;
     }
     // Handle password reset logic
-    console.log("Password reset:", newPassword);
+    console.log({
+      email: email?.trim(),
+      password: newPassword,
+      passwordConfirm: confirmPassword,
+    });
+
+    const response = await changePassword({
+      email: email.trim(),
+      password: newPassword,
+      passwordConfirm: confirmPassword,
+    });
+    console.log(response.status);
+
+    if (response.status === 200) {
+      ShowToast("success", "Password reset successfully");
+      console.log("Password reset:", newPassword);
+      navigation.navigate(ScreensName.signin);
+    }
   };
 
   return (

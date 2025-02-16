@@ -17,7 +17,7 @@ import { ScreensName } from "../constants/ScreensName";
 // You'll need to add these images to your assets
 import sadCactusIcon from "../../assets/image/sad_cactus.png";
 import happyCactusIcon from "../../assets/image/happy_cactus.png";
-import { resendOTP, verifyAccount } from "../services/authService";
+import { forgetPassword, verifyOtp } from "../services/authService";
 // import { CodeField } from "react-native-confirmation-code-field";
 import OTPInput from "../components/common/OtpInput";
 
@@ -27,7 +27,7 @@ const HEIGHT = Dimensions.get("window").height;
 function VerifyEmail({ navigation }) {
   const [email, setEmail] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
-  const [otpAmount] = useState(5);
+  const [otpAmount] = useState(4);
   const [isCodeSent, setIsCodeSent] = useState(false);
 
   useFocusEffect(
@@ -37,20 +37,23 @@ function VerifyEmail({ navigation }) {
   );
 
   const handleSubmitEmail = async () => {
-    const response = await resendOTP();
+    const response = await forgetPassword({ email: email.trim() });
     if (response.status === 200) {
       setIsCodeSent(true);
     } else {
-      console.log(response.data?.message);
+      console.log(response);
     }
   };
 
-  const handleVerifyCode = async () => {
-    const response = await verifyAccount(verificationCode);
+  const handleVerifyCode = async (value) => {
+    const response = await verifyOtp({
+      email: email.trim(),
+      otp: value ?? verificationCode,
+    });
     if (response.status === 200) {
-      navigation.navigate(ScreensName.changePassword);
+      navigation.navigate(ScreensName.changePassword, { email: email });
     } else {
-      console.log(response.data?.message);
+      console.log(response);
     }
   };
 
@@ -67,7 +70,7 @@ function VerifyEmail({ navigation }) {
     setVerificationCode(value);
     if (value.length === otpAmount) {
       console.log("Complete OTP:", value);
-      handleVerifyCode();
+      handleVerifyCode(value);
     }
   };
 

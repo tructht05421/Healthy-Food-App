@@ -99,3 +99,29 @@ export const resetPassword = async ({
     return error;
   }
 };
+
+export const verifyOtp = async ({ email, otp }) => {
+  try {
+    const data = { email, otp };
+    const response = await axiosInstance.post("api/v1/users/verify-otp", data);
+    return response;
+  } catch (error) {
+    console.log("resetPassword error: ", error);
+    return error;
+  }
+};
+
+export const changePassword = async ({ email, password, passwordConfirm }) => {
+  try {
+    const data = { email, password, passwordConfirm };
+
+    const response = await axiosInstance.post(
+      "api/v1/users/change-password",
+      data
+    );
+    return response;
+  } catch (error) {
+    console.log("changePassword error: ", error);
+    return error;
+  }
+};

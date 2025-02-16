@@ -1,5 +1,7 @@
 // PHẦN 1: IMPORT
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import { login } from "../../services/authService";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 // ↑ Import createAsyncThunk từ Redux Toolkit
 // createAsyncThunk là một utility function giúp tạo action creators
 // cho các tác vụ bất đồng bộ (async operations)
@@ -22,8 +24,15 @@ export const loginThunk = createAsyncThunk(
     // rejectWithValue: utility để xử lý lỗi một cách graceful
 
     try {
-      // const response = await login(credentials);
-      // return response;
+      const response = await login(credentials);
+      if (response?.data?.token) {
+        await AsyncStorage.setItem("accessToken", response.data.token);
+      }
+      return {
+        data: response.data,
+        status: response.status,
+        // Exclude headers or only include necessary serializable header values
+      };
       // ↑ Gọi API đăng nhập và trả về response (đang bị comment)
       // Response sẽ tự động trở thành payload của action fulfilled
     } catch (error) {

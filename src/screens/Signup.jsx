@@ -21,7 +21,11 @@ import backgroundImage from "../../assets/image/welcome_bg.png";
 import googleIcon from "../../assets/image/google_icon.png";
 import { ScreensName } from "../constants/ScreensName";
 import { useGoogleAuth } from "../hooks/useGoogleAuth";
-import { signup } from "../services/authService";
+import { signup, verifyAccount } from "../services/authService";
+import InputOtpModal from "../components/modal/InputOtpModal";
+import { useDispatch } from "react-redux";
+import { loginThunk } from "../redux/actions/userThunk";
+import ShowToast from "../components/common/CustomToast";
 
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
@@ -34,7 +38,9 @@ function Signup({ navigation }) {
     phoneNumber: "",
     password: "",
   });
+  const [isOpen, setIsOpen] = useState({ otpModal: false });
   const { signIn, userInfo, error } = useGoogleAuth();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (userInfo) {
@@ -70,16 +76,34 @@ function Signup({ navigation }) {
 
   const onPressRegisterButton = async () => {
     // Handle registration
-    const response = await signup({
-      username: formData.fullName,
-      email: formData.email,
-      phoneNumber: formData.phoneNumber,
-      password: formData.password,
-    });
+
+    // ShowToast("success", "Account verified successfully");
+    const response = {
+      status: 200,
+    };
+    // const response = await signup({
+    //   username: formData.fullName.trim(),
+    //   email: formData.email.trim(),
+    //   phoneNumber: formData.phoneNumber.trim(),
+    //   password: formData.password.trim(),
+    //   passwordConfirm: formData.password.trim(),
+    // });
     if (response.status === 200) {
-      console.log(response.data);
+      const credentials = {
+        email: formData.email,
+        password: formData.password,
+      };
+      try {
+        const responseLogin = await dispatch(loginThunk(credentials));
+
+        if (responseLogin.type.endsWith("fulfilled")) {
+          setIsOpen({ ...isOpen, otpModal: true });
+        }
+      } catch (error) {
+        console.log(error);
+      }
     } else {
-      console.log(response.data?.message);
+      console.log(response.data);
     }
   };
 
@@ -103,6 +127,16 @@ function Signup({ navigation }) {
   useEffect(() => {
     calculateMaxButtonWidth();
   }, []);
+
+  const handleVerifyAccount = async (code) => {
+    const response = await verifyAccount({ otp: code });
+    if (response.status === 200) {
+      ShowToast("success", "Account verified successfully");
+      navigation.navigate(ScreensName.home);
+    } else {
+      console.log("error");
+    }
+  };
 
   return (
     <SafeAreaWrapper
@@ -187,7 +221,7 @@ function Signup({ navigation }) {
               }}
               buttonText="Register"
               textStyle={{ ...styles.textStyle, color: "#ffffff" }}
-              onPress={onPressRegisterButton}
+              onPress={async () => await onPressRegisterButton()}
             />
 
             <SplitLine
@@ -229,6 +263,14 @@ function Signup({ navigation }) {
             </Text>
           </View>
         </KeyboardAvoidingView>
+        <InputOtpModal
+          isOpen={isOpen.otpModal}
+          otpAmount={4}
+          onClose={() => setIsOpen({ ...isOpen, otpModal: false })}
+          onVerify={(code) => {
+            handleVerifyAccount(code);
+          }}
+        />
       </LinearGradient>
     </SafeAreaWrapper>
   );
