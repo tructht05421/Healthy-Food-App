@@ -28,6 +28,7 @@ import { ScreensName } from "../constants/ScreensName"; // Constants chứa tên
 import ShowToast from "../components/common/CustomToast"; // Component hiển thị thông báo
 import { loginThunk } from "../redux/actions/userThunk"; // Action redux để xử lý đăng nhập
 import { useDispatch } from "react-redux"; // Hook để dispatch actions
+import { useGoogleAuth } from "../hooks/useGoogleAuth";
 
 // Lấy kích thước màn hình
 const WIDTH = Dimensions.get("window").width;
@@ -38,6 +39,7 @@ function Signin({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch(); // Khởi tạo dispatch để gửi actions
+  const { signIn, userInfo, error } = useGoogleAuth();
 
   // Cấu hình các phương thức đăng nhập bên thứ 3
   const loginMethod = [
@@ -50,6 +52,9 @@ function Signin({ navigation }) {
       name: "Google",
       icon: googleIcon,
       color: "#4285F4",
+      onPress: async () => {
+        await loginGoogle();
+      },
     },
     {
       name: "IOS",
@@ -57,6 +62,10 @@ function Signin({ navigation }) {
       color: "#000000",
     },
   ];
+
+  const loginGoogle = async () => {
+    await signIn();
+  };
 
   // Xử lý sự kiện đăng nhập
   const handlePress = async () => {
@@ -90,6 +99,9 @@ function Signin({ navigation }) {
         key={index}
         buttonStyle={styles.loginMethod}
         backgroundColor={"rgab(0, 0, 0, 0.5)"}
+        onPress={() => {
+          item?.onPress ? item.onPress() : null;
+        }}
       >
         <Image
           source={item.icon}
