@@ -78,16 +78,13 @@ function Signup({ navigation }) {
     // Handle registration
 
     // ShowToast("success", "Account verified successfully");
-    const response = {
-      status: 200,
-    };
-    // const response = await signup({
-    //   username: formData.fullName.trim(),
-    //   email: formData.email.trim(),
-    //   phoneNumber: formData.phoneNumber.trim(),
-    //   password: formData.password.trim(),
-    //   passwordConfirm: formData.password.trim(),
-    // });
+    const response = await signup({
+      username: formData.fullName.trim(),
+      email: formData.email.trim(),
+      phoneNumber: formData.phoneNumber.trim(),
+      password: formData.password.trim(),
+      passwordConfirm: formData.password.trim(),
+    });
     if (response.status === 200) {
       const credentials = {
         email: formData.email,
