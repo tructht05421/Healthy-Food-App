@@ -18,7 +18,7 @@ export const loginThunk = createAsyncThunk(
   // - user/login/fulfilled: khi thành công
   // - user/login/rejected: khi thất bại
 
-  // Payload Creator Function
+  // Payload Creator Functions
   async (credentials, { rejectWithValue }) => {
     // ↑ credentials: tham số truyền vào khi gọi thunk (email, password)
     // rejectWithValue: utility để xử lý lỗi một cách graceful
@@ -26,12 +26,13 @@ export const loginThunk = createAsyncThunk(
     try {
       const response = await login(credentials);
       if (response?.data?.token) {
+        // nếu có token trong response sẽ lưu vào AsyncStorage
         await AsyncStorage.setItem("accessToken", response.data.token);
       }
       return {
         data: response.data,
         status: response.status,
-        // Exclude headers or only include necessary serializable header values
+        // Set up trả ra các thông tin cần thiết
       };
       // ↑ Gọi API đăng nhập và trả về response (đang bị comment)
       // Response sẽ tự động trở thành payload của action fulfilled

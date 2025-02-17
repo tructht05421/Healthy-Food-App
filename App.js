@@ -6,6 +6,7 @@ import { ActivityIndicator, Text, View } from "react-native";
 import store from "./src/redux/store";
 import Navigator from "./src/router/Navigator";
 import React from "react";
+import Toast from "react-native-toast-message";
 
 import {
   useFonts,
@@ -42,12 +43,26 @@ export default function App() {
     return <ActivityIndicator />;
   }
 
+  // Register the custom toast configuration
+  const toastConfig = {
+    success: ({ text1, text2, props }) => (
+      <CustomToast text1={text1} text2={text2} type="success" />
+    ),
+    error: ({ text1, text2, props }) => (
+      <CustomToast text1={text1} text2={text2} type="error" />
+    ),
+    info: ({ text1, text2, props }) => (
+      <CustomToast text1={text1} text2={text2} type="info" />
+    ),
+  };
+
   // Add a test text to verify font loading
   return (
     <View style={{ flex: 1 }}>
       <Provider store={store}>
         <NavigationContainer>
           <Navigator />
+          <Toast />
         </NavigationContainer>
       </Provider>
     </View>

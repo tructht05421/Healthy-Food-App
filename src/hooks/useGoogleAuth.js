@@ -1,35 +1,44 @@
-import * as WebBrowser from "expo-web-browser";
-import * as Google from "expo-auth-session/providers/google";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+// Import các thư viện cần thiết
+import * as WebBrowser from "expo-web-browser"; // Thư viện xử lý web browser trong Expo
+import * as Google from "expo-auth-session/providers/google"; // Provider xác thực Google
+import AsyncStorage from "@react-native-async-storage/async-storage"; // Lưu trữ local
 import { useState, useEffect } from "react";
 import { Platform, Modal, View, StyleSheet } from "react-native";
-import { WebView } from "react-native-webview";
+import { WebView } from "react-native-webview"; // Component hiển thị web
 
+// Khởi tạo phiên xác thực web
 WebBrowser.maybeCompleteAuthSession();
 
+// Cấu hình Google Auth
 const googleConfig = {
+  // Client ID cho Android
   androidClientId:
     "155145337295-8k2hph51rqh94qmi1lpp93ro72vg1kva.apps.googleusercontent.com",
+  // Client ID cho iOS
   iosClientId:
     "155145337295-voo79g6h7n379738rce0ipoo4qoj1dom.apps.googleusercontent.com",
-  scopes: ["openid", "profile", "email"],
+  scopes: ["openid", "profile", "email"], // Các quyền yêu cầu
 };
 
+// Custom hook xử lý xác thực Google
 export const useGoogleAuth = () => {
-  const [userInfo, setUserInfo] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const [authUrl, setAuthUrl] = useState("");
+  // Khởi tạo các state
+  const [userInfo, setUserInfo] = useState(null); // Thông tin người dùng
+  const [loading, setLoading] = useState(false); // Trạng thái loading
+  const [error, setError] = useState(null); // Thông tin lỗi
+  const [showModal, setShowModal] = useState(false); // Trạng thái hiển thị modal
+  const [authUrl, setAuthUrl] = useState(""); // URL xác thực
 
+  // Hook xử lý yêu cầu xác thực
   const [request, response, promptAsync] = Google.useAuthRequest({
     ...googleConfig,
-    selectAccount: true,
-    usePKCE: true,
-    responseType: "code",
-    redirectUri: "com.andmn.healthyfoodapp://", // Your app's custom scheme
+    selectAccount: true, // Cho phép chọn tài khoản
+    usePKCE: true, // Sử dụng PKCE để bảo mật
+    responseType: "code", // Loại response
+    redirectUri: "com.andmn.healthyfoodapp://", // URI callback
   });
 
+  // Xử lý kết quả xác thực
   useEffect(() => {
     if (response?.type === "success") {
       const { authentication } = response;
@@ -41,8 +50,10 @@ export const useGoogleAuth = () => {
     }
   }, [response]);
 
+  // Xử lý đăng nhập thành công
   const handleSuccessfulLogin = async (accessToken) => {
     try {
+      // Lấy thông tin người dùng từ Google
       const userInfoResponse = await fetch(
         "https://www.googleapis.com/userinfo/v2/me",
         {
@@ -51,6 +62,7 @@ export const useGoogleAuth = () => {
       );
       const userData = await userInfoResponse.json();
 
+      // Lưu thông tin vào AsyncStorage
       await AsyncStorage.setItem("userData", JSON.stringify(userData));
       await AsyncStorage.setItem("googleToken", accessToken);
 
@@ -61,25 +73,27 @@ export const useGoogleAuth = () => {
     }
   };
 
+  // Xử lý thay đổi trạng thái navigation trong WebView
   const handleNavigationStateChange = (navState) => {
-    // Check if the URL contains the success parameters
+    // Kiểm tra URL có chứa access token
     if (navState.url.includes("access_token=")) {
       const accessToken = navState.url.split("access_token=")[1].split("&")[0];
       handleSuccessfulLogin(accessToken);
       setShowModal(false);
     }
-    // Handle cancellation
+    // Xử lý khi hủy xác thực
     if (navState.url.includes("error=")) {
       setShowModal(false);
       setError("Authentication cancelled");
     }
   };
 
+  // Hàm xử lý đăng nhập
   const signIn = async () => {
     setLoading(true);
     setError(null);
     try {
-      // Get the auth URL but don't redirect yet
+      // Lấy URL xác thực nhưng chưa chuyển hướng
       const authUrlResult = await promptAsync({
         useProxy: false,
         showInRecents: false,
@@ -98,8 +112,10 @@ export const useGoogleAuth = () => {
     }
   };
 
+  // Hàm xử lý đăng xuất
   const signOut = async () => {
     try {
+      // Xóa dữ liệu khỏi AsyncStorage
       await AsyncStorage.removeItem("userData");
       await AsyncStorage.removeItem("googleToken");
       setUserInfo(null);
@@ -108,7 +124,7 @@ export const useGoogleAuth = () => {
     }
   };
 
-  // Component to render the WebView modal
+  // Component Modal chứa WebView
   const AuthModal = () => (
     <Modal
       visible={showModal}
@@ -122,14 +138,15 @@ export const useGoogleAuth = () => {
             source={{ uri: authUrl }}
             onNavigationStateChange={handleNavigationStateChange}
             style={styles.webview}
-            incognito={true}
-            sharedCookiesEnabled={false}
+            incognito={true} // Chế độ ẩn danh
+            sharedCookiesEnabled={false} // Không chia sẻ cookies
           />
         </View>
       </View>
     </Modal>
   );
 
+  // Kiểm tra phiên đăng nhập đã tồn tại
   useEffect(() => {
     const checkExistingSession = async () => {
       try {
@@ -144,31 +161,33 @@ export const useGoogleAuth = () => {
     checkExistingSession();
   }, []);
 
+  // Trả về các hàm và state cần thiết
   return {
     signIn,
     signOut,
     userInfo,
     loading,
     error,
-    AuthModal, // Export the modal component
+    AuthModal, // Export component modal
   };
 };
 
+// Định nghĩa styles
 const styles = StyleSheet.create({
   modalContainer: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    flex: 1, // Chiếm toàn màn hình
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Nền mờ
     justifyContent: "center",
     alignItems: "center",
   },
   modalContent: {
-    width: "90%",
-    height: "80%",
+    width: "90%", // Chiều rộng modal
+    height: "80%", // Chiều cao modal
     backgroundColor: "white",
     borderRadius: 10,
     overflow: "hidden",
   },
   webview: {
-    flex: 1,
+    flex: 1, // WebView chiếm hết không gian
   },
 });

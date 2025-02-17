@@ -16,9 +16,10 @@ const axiosInstance = axios.create({
     "Content-Type": "application/json", // Set header mặc định
   },
   responseType: "json", // Kiểu response mặc định
-  timeout: 10000,
+  timeout: 30000, // setup timeout để trả về lỗi nếu call 1 api quá lâu
   validateStatus: (status) => status >= 200 && status < 300,
 });
+console.log(process.env.EXPO_PUBLIC_API_URL);
 
 // === PHẦN 4: CẤU HÌNH INTERCEPTORS ===
 
@@ -42,6 +43,10 @@ axiosInstance.interceptors.request.use(
 );
 
 // Response Interceptor (đang bị comment)
+// axiosInstance.interceptors.response để config tất các response từ server trả về
+// ví dụ :
+//    chỉ muốn lấy data trên response, sử dụng response.data
+// nói chung mỗi khi có response trả về đều đi qua đây
 // axiosInstance.interceptors.response.use(
 //   // Hàm xử lý response thành công
 //   (response) => {

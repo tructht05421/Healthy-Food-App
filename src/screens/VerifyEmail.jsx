@@ -1,41 +1,48 @@
+// Import các thư viện cần thiết từ React và React Native
 import React, { use, useCallback, useState } from "react";
 import {
-  Text,
-  View,
-  StyleSheet,
-  Image,
-  TextInput,
-  Dimensions,
-  Platform,
+  Text, // Component hiển thị text
+  View, // Component container
+  StyleSheet, // API để tạo styles
+  Image, // Component hiển thị hình ảnh
+  TextInput, // Component nhập liệu
+  Dimensions, // API lấy kích thước màn hình
+  Platform, // API kiểm tra nền tảng
 } from "react-native";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect } from "@react-navigation/native"; // Hook xử lý focus màn hình
 
-import SafeAreaWrapper from "../components/layout/SafeAreaWrapper";
-import RippleButton from "../components/common/RippleButton";
-import { ScreensName } from "../constants/ScreensName";
+// Import các components tùy chỉnh
+import SafeAreaWrapper from "../components/layout/SafeAreaWrapper"; // Component wrapper an toàn
+import RippleButton from "../components/common/RippleButton"; // Button có hiệu ứng gợn sóng
+import { ScreensName } from "../constants/ScreensName"; // Constants chứa tên màn hình
 
-// You'll need to add these images to your assets
-import sadCactusIcon from "../../assets/image/sad_cactus.png";
-import happyCactusIcon from "../../assets/image/happy_cactus.png";
-import { forgetPassword, verifyOtp } from "../services/authService";
-// import { CodeField } from "react-native-confirmation-code-field";
-import OTPInput from "../components/common/OtpInput";
+// Import hình ảnh
+import sadCactusIcon from "../../assets/image/sad_cactus.png"; // Icon xương rồng buồn
+import happyCactusIcon from "../../assets/image/happy_cactus.png"; // Icon xương rồng vui
+import { forgetPassword, verifyOtp } from "../services/authService"; // Services xử lý quên mật khẩu
+import OTPInput from "../components/common/OtpInput"; // Component nhập OTP
 
+// Lấy kích thước màn hình
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
 
 function VerifyEmail({ navigation }) {
-  const [email, setEmail] = useState("");
-  const [verificationCode, setVerificationCode] = useState("");
-  const [otpAmount] = useState(4);
-  const [isCodeSent, setIsCodeSent] = useState(false);
+  // Khởi tạo các state
+  const [email, setEmail] = useState(""); // State lưu email
+  const [verificationCode, setVerificationCode] = useState(""); // State lưu mã OTP
+  const [otpAmount] = useState(4); // Số lượng ký tự OTP
+  const [isCodeSent, setIsCodeSent] = useState(false); // Trạng thái đã gửi mã
 
+  // Reset trạng thái khi focus màn hình
+  // useFocusEffect sẽ chạy mỗi khi focus vào màn hình,
+  // useCallback sẽ lưu lại các phương thức bên trong hạn chế việc tải lại mỗi khi gọi hàm
   useFocusEffect(
     React.useCallback(() => {
       setIsCodeSent(false);
     }, [])
   );
 
+  // Xử lý gửi email
   const handleSubmitEmail = async () => {
     const response = await forgetPassword({ email: email.trim() });
     if (response.status === 200) {
@@ -45,6 +52,7 @@ function VerifyEmail({ navigation }) {
     }
   };
 
+  // Xử lý xác thực mã OTP
   const handleVerifyCode = async (value) => {
     const response = await verifyOtp({
       email: email.trim(),
@@ -57,15 +65,18 @@ function VerifyEmail({ navigation }) {
     }
   };
 
+  // Xử lý gửi lại mã
   const handleResendCode = async () => {
     await handleSubmitEmail();
   };
 
+  // Xử lý quay lại nhập email
   const handleBackToEmail = () => {
     setIsCodeSent(false);
-    setVerificationCode(["", "", "", "", ""]);
+    setVerificationCode("");
   };
 
+  // Xử lý khi nhập mã OTP
   const handleCodeChange = (value) => {
     setVerificationCode(value);
     if (value.length === otpAmount) {
@@ -78,23 +89,28 @@ function VerifyEmail({ navigation }) {
     <SafeAreaWrapper>
       <View style={styles.container}>
         <View style={styles.card}>
+          {/* Hiển thị icon tương ứng với trạng thái */}
           <Image
             source={isCodeSent ? happyCactusIcon : sadCactusIcon}
             style={styles.cactusIcon}
           />
 
+          {/* Tiêu đề */}
           <Text style={styles.title}>
             {isCodeSent ? "Success" : "Forget Password"}
           </Text>
 
+          {/* Phụ đề */}
           <Text style={styles.subtitle}>
             {isCodeSent
               ? "Please check your email for create\na new password"
               : "Enter your registered email below"}
           </Text>
 
+          {/* Hiển thị form tương ứng với trạng thái */}
           {!isCodeSent ? (
             <>
+              {/* Form nhập email */}
               <Text style={styles.label}>Email address</Text>
               <TextInput
                 style={styles.emailInput}
@@ -106,6 +122,7 @@ function VerifyEmail({ navigation }) {
                 autoCapitalize="none"
               />
 
+              {/* Nút gửi email */}
               <RippleButton
                 buttonStyle={styles.submitButton}
                 buttonText="Submit"
@@ -113,6 +130,7 @@ function VerifyEmail({ navigation }) {
                 onPress={handleSubmitEmail}
               />
 
+              {/* Link đăng nhập */}
               <Text style={styles.bottomText}>
                 Remember the password?{" "}
                 <Text
@@ -125,16 +143,8 @@ function VerifyEmail({ navigation }) {
             </>
           ) : (
             <>
+              {/* Form nhập mã OTP */}
               <View style={styles.codeContainer}>
-                {/* <CodeField
-                  <CodeField
-                value={verificationCode || ""} // Fallback to empty string if undefined or null
-                onChangeText={setVerificationCode}
-                cellCount={5}
-                keyboardType="number-pad"
-                testID="my-code-input"
-              /> 
-                /> */}
                 <OTPInput
                   length={otpAmount}
                   value={verificationCode}
@@ -142,6 +152,7 @@ function VerifyEmail({ navigation }) {
                 />
               </View>
 
+              {/* Link gửi lại mã */}
               <Text style={styles.bottomText}>
                 Can't get email?{" "}
                 <Text style={styles.linkText} onPress={handleResendCode}>
@@ -149,6 +160,7 @@ function VerifyEmail({ navigation }) {
                 </Text>
               </Text>
 
+              {/* Nút quay lại */}
               <RippleButton
                 buttonStyle={styles.backButton}
                 buttonText="Back Email"

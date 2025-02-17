@@ -1,42 +1,45 @@
-// Import các dependencies cần thiết
-import React, { useState } from "react";
+// Import các thư viện cần thiết từ React và React Native
+import React, { use, useState } from "react";
 import {
-  StyleSheet, // Để tạo stylesheet
-  Text, // Component hiển thị text
-  View, // Component container
-  Dimensions, // API lấy kích thước màn hình
-  Image,
-  Platform,
-  KeyboardAvoidingView, // Component hiển thị hình ảnh
+  StyleSheet, // Component để tạo các styles
+  Text, // Component để hiển thị văn bản
+  View, // Component container cơ bản
+  Dimensions, // API để lấy kích thước màn hình
+  Image, // Component để hiển thị hình ảnh
+  Platform, // API để xác định nền tảng (iOS/Android)
+  KeyboardAvoidingView, // Component để tránh bàn phím che phủ nội dung
 } from "react-native";
 
-// Import các components tùy chỉnh từ thư mục components
-import SafeAreaWrapper from "../components/layout/SafeAreaWrapper"; // Wrapper an toàn cho notch/home indicator
-import SigninInputField from "../components/common/SigninInputField"; // Component input tùy chỉnh
-import Ionicons from "../components/common/VectorIcons/Ionicons"; // Icon từ Ionicons
-import MaterialIcons from "../components/common/VectorIcons/MaterialIcons"; // Icon từ Material
+// Import các components tùy chỉnh
+import SafeAreaWrapper from "../components/layout/SafeAreaWrapper"; // Wrapper để tránh notch và home indicator
+import SigninInputField from "../components/common/SigninInputField"; // Component input field tùy chỉnh
+import Ionicons from "../components/common/VectorIcons/Ionicons"; // Thư viện icon Ionicons
+import MaterialIcons from "../components/common/VectorIcons/MaterialIcons"; // Thư viện icon Material
 import DecorationDot from "../components/common/DecorationDot"; // Component chấm trang trí
-import { TouchableOpacity } from "react-native"; // Component có thể click
+import { TouchableOpacity } from "react-native"; // Component có thể nhấn
 import RippleButton from "../components/common/RippleButton"; // Button có hiệu ứng gợn sóng
 
-// Import các assets hình ảnh
-import googleIcon from "../../assets/image/google_icon.png"; // Logo Google
-import fbIcon from "../../assets/image/fb_round.png"; // Logo Facebook
-import appleIcon from "../../assets/image/apple_logo.png"; // Logo Apple
-import loginHeaderIcon from "../../assets/image/login_bg.png"; // Ảnh header
-import { ScreensName } from "../constants/ScreensName";
-import { login } from "../services/authService";
+// Import các hình ảnh và tài nguyên
+import googleIcon from "../../assets/image/google_icon.png"; // Icon Google
+import fbIcon from "../../assets/image/fb_round.png"; // Icon Facebook
+import appleIcon from "../../assets/image/apple_logo.png"; // Icon Apple
+import loginHeaderIcon from "../../assets/image/login_bg.png"; // Ảnh nền header
+import { ScreensName } from "../constants/ScreensName"; // Constants chứa tên các màn hình
+import ShowToast from "../components/common/CustomToast"; // Component hiển thị thông báo
+import { loginThunk } from "../redux/actions/userThunk"; // Action redux để xử lý đăng nhập
+import { useDispatch } from "react-redux"; // Hook để dispatch actions
 
-// Lấy chiều rộng màn hình
+// Lấy kích thước màn hình
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
 
 function Signin({ navigation }) {
-  // State quản lý form
+  // Khởi tạo state cho form đăng nhập
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const dispatch = useDispatch(); // Khởi tạo dispatch để gửi actions
 
-  // Cấu hình các phương thức đăng nhập
+  // Cấu hình các phương thức đăng nhập bên thứ 3
   const loginMethod = [
     {
       name: "Facebook",
@@ -55,14 +58,28 @@ function Signin({ navigation }) {
     },
   ];
 
-  // Xử lý chuyển màn hình sang welcome
+  // Xử lý sự kiện đăng nhập
   const handlePress = async () => {
-    // navigation.navigate(ScreensName.welcome);
-    const response = await login({ email, password });
-    if (response.status === 200) {
-      console.log(response.data);
-    } else {
-      console.log(response.data?.message);
+    const credentials = {
+      email: email,
+      password: password,
+    };
+
+    try {
+      // Gọi action đăng nhập
+      const responseLogin = await dispatch(loginThunk(credentials));
+      // Kiểm tra kết quả đăng nhập
+      if (
+        responseLogin.type.endsWith("fulfilled") ||
+        responseLogin?.payload?.data?.status === "success"
+      ) {
+        ShowToast("success", "Đăng nhập thành công");
+      } else {
+        ShowToast("error", "Đăng nhập thất bại");
+      }
+    } catch (error) {
+      console.log(error);
+      ShowToast("error", "Đã xảy ra lỗi không mong muốn");
     }
   };
 
@@ -77,8 +94,6 @@ function Signin({ navigation }) {
         <Image
           source={item.icon}
           style={{
-            // width: WIDTH * 0.08,
-            // height: WIDTH * 0.08,
             width: 32,
             height: 32,
             resizeMode: "contain",
@@ -88,19 +103,21 @@ function Signin({ navigation }) {
     ));
   };
 
+  // Render giao diện chính
   return (
     <SafeAreaWrapper headerStyle={{ backgroundColor: "transparent" }}>
-      {/* Phần header với ảnh */}
+      {/* Sử dụng KeyboardAvoidingView để tránh bàn phím che phủ form */}
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.container}
       >
+        {/* Phần header với ảnh nền */}
         <Image source={loginHeaderIcon} style={styles.backgroundImage} />
         <Text style={styles.title}>Sign in with email</Text>
 
-        {/* Form đăng nhập */}
+        {/* Container chứa form đăng nhập */}
         <View style={styles.formContainer}>
-          {/* Input email */}
+          {/* Input trường email */}
           <SigninInputField
             state={email}
             setState={setEmail}
@@ -110,7 +127,7 @@ function Signin({ navigation }) {
             inputType="email-address"
             keyboardType="email-address"
           />
-          {/* Input password */}
+          {/* Input trường mật khẩu */}
           <SigninInputField
             state={password}
             setState={setPassword}
@@ -127,7 +144,7 @@ function Signin({ navigation }) {
           >
             <Text style={styles.forgotPassword}>Forgot Password?</Text>
           </TouchableOpacity>
-          {/* Nút đăng nhập */}
+          {/* Nút đăng nhập chính */}
           <RippleButton
             onPress={handlePress}
             buttonText="Sign in"
@@ -136,7 +153,7 @@ function Signin({ navigation }) {
           />
         </View>
 
-        {/* Phần đăng nhập bằng dịch vụ thứ 3 */}
+        {/* Container chứa các nút đăng nhập bên thứ 3 */}
         <View style={styles.loginMethodContainer}>{renderLoginMethod()}</View>
 
         {/* Các chấm trang trí ở 4 góc màn hình */}
@@ -167,12 +184,8 @@ function Signin({ navigation }) {
             size={HEIGHT * 0.25}
             top={HEIGHT - HEIGHT * 0.15}
             left={WIDTH - WIDTH * 0.4}
-            // bottom={0}
-            // right={0}
             zIndex={9}
             backgroundColor={"#AEC687"}
-            // animation={true}
-            // transform={[{ translateX: -320 }, { translateY: 150 }]}
           />
         </>
       </KeyboardAvoidingView>
