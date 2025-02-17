@@ -22,7 +22,7 @@ function DecorationDot({
         height: size, // Chiều cao của chấm
         backgroundColor, // Màu nền
         opacity, // Độ trong suốt
-        zIndex, // Layer index
+        // zIndex, // Layer index
         position: "absolute", // Vị trí tuyệt đối
         top, // Cách top
         bottom, // Cách bottom

@@ -25,6 +25,7 @@ import fbIcon from "../../assets/image/fb_round.png"; // Icon Facebook
 import appleIcon from "../../assets/image/apple_logo.png"; // Icon Apple
 import loginHeaderIcon from "../../assets/image/login_bg.png"; // Ảnh nền header
 import { ScreensName } from "../constants/ScreensName"; // Constants chứa tên các màn hình
+import Toast from "react-native-toast-message";
 import ShowToast from "../components/common/CustomToast"; // Component hiển thị thông báo
 import { loginThunk } from "../redux/actions/userThunk"; // Action redux để xử lý đăng nhập
 import { useDispatch } from "react-redux"; // Hook để dispatch actions
@@ -43,11 +44,11 @@ function Signin({ navigation }) {
 
   // Cấu hình các phương thức đăng nhập bên thứ 3
   const loginMethod = [
-    {
-      name: "Facebook",
-      icon: fbIcon,
-      color: "#3B5998",
-    },
+    // {
+    //   name: "Facebook",
+    //   icon: fbIcon,
+    //   color: "#3B5998",
+    // },
     {
       name: "Google",
       icon: googleIcon,
@@ -56,11 +57,11 @@ function Signin({ navigation }) {
         await loginGoogle();
       },
     },
-    {
-      name: "IOS",
-      icon: appleIcon,
-      color: "#000000",
-    },
+    // {
+    //   name: "IOS",
+    //   icon: appleIcon,
+    //   color: "#000000",
+    // },
   ];
 
   const loginGoogle = async () => {
@@ -78,10 +79,13 @@ function Signin({ navigation }) {
       // Gọi action đăng nhập
       const responseLogin = await dispatch(loginThunk(credentials));
       // Kiểm tra kết quả đăng nhập
+      ShowToast("success", "Đăng nhập thành công");
+
       if (
-        responseLogin.type.endsWith("fulfilled") ||
-        responseLogin?.payload?.data?.status === "success"
+        responseLogin.type.endsWith("fulfilled") &&
+        responseLogin?.payload?.data?.status
       ) {
+        console.log(responseLogin?.payload?.data?.status);
         ShowToast("success", "Đăng nhập thành công");
       } else {
         ShowToast("error", "Đăng nhập thất bại");
@@ -172,16 +176,24 @@ function Signin({ navigation }) {
         <>
           <DecorationDot
             size={HEIGHT * 0.25}
-            top={-(HEIGHT * 0.2)}
-            left={-(WIDTH * 0.2)}
-            opacity={0.4}
-            zIndex={10}
+            top={-(HEIGHT * 0.1)}
+            left={-(WIDTH * 0.4)}
+            zIndex={1}
+            backgroundColor={"#AEC687"}
           />
           <DecorationDot
             size={HEIGHT * 0.25}
-            top={-(HEIGHT * 0.1)}
-            left={-(WIDTH * 0.4)}
-            zIndex={9}
+            top={-(HEIGHT * 0.2)}
+            left={-(WIDTH * 0.2)}
+            opacity={0.4}
+            zIndex={1}
+          />
+
+          <DecorationDot
+            size={HEIGHT * 0.25}
+            top={HEIGHT - HEIGHT * 0.15}
+            left={WIDTH - WIDTH * 0.4}
+            zIndex={1}
             backgroundColor={"#AEC687"}
           />
           <DecorationDot
@@ -189,18 +201,12 @@ function Signin({ navigation }) {
             top={HEIGHT - HEIGHT * 0.3}
             left={WIDTH - WIDTH * 0.6}
             opacity={0.4}
-            zIndex={10}
+            zIndex={1}
             transform={[{ translateX: 200 }, { translateY: 50 }]}
-          />
-          <DecorationDot
-            size={HEIGHT * 0.25}
-            top={HEIGHT - HEIGHT * 0.15}
-            left={WIDTH - WIDTH * 0.4}
-            zIndex={9}
-            backgroundColor={"#AEC687"}
           />
         </>
       </KeyboardAvoidingView>
+      <Toast />
     </SafeAreaWrapper>
   );
 }

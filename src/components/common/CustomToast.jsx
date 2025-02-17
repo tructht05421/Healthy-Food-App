@@ -4,6 +4,7 @@ import Toast from "react-native-toast-message"; // import Toast from react-nativ
 const ShowToast = (type = "info", message = "", options = {}) => {
   // set type default là info
   // tạo mới trc options để về sau có thể custom thêm
+
   Toast.show({
     type: type, // success, error, or info
     position: "top", // vị trí của toast (top, bottom, bottom, center)

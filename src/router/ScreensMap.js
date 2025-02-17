@@ -12,14 +12,14 @@ import Welcome from "../screens/Welcome";
 
 // PHẦN 2: KHAI BÁO CẤU HÌNH SCREENS
 export const ScreensMap = [
-  {
-    name: ScreensName.welcome,
-    component: Welcome,
-    options: {
-      tabBarButton: () => null,
-    },
-    hiddenBottomTab: true,
-  },
+  // {
+  //   name: ScreensName.welcome,
+  //   component: Welcome,
+  //   options: {
+  //     tabBarButton: () => null,
+  //   },
+  //   hiddenBottomTab: true,
+  // },
   {
     // Cấu hình cho màn hình Signup
     name: ScreensName.signup,
