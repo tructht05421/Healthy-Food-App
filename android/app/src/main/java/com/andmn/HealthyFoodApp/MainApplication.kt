@@ -1,4 +1,4 @@
-package com.andmn.HealthyFoodApp
+package com.tructht.HealthyFoodApp
 
 import android.app.Application
 import android.content.res.Configuration

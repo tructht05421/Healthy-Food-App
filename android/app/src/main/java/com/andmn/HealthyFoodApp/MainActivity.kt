@@ -1,4 +1,4 @@
-package com.andmn.HealthyFoodApp
+package com.tructht.HealthyFoodApp
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build
@@ -10,7 +10,7 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnable
 import com.facebook.react.defaults.DefaultReactActivityDelegate
 
 import expo.modules.ReactActivityDelegateWrapper
-import com.andmn.HealthyFoodApp.BuildConfig  // Add this import
+import com.tructht.HealthyFoodApp.BuildConfig  // Add this import
 
 class MainActivity : ReactActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {

@@ -2,7 +2,7 @@
   "expo": {
     "name": "Healthy-Food-App",
     "slug": "healthy-food-app",
-    "scheme": "com.andmn.HealthyFoodApp",
+    "scheme": "com.tructht.HealthyFoodApp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -21,17 +21,17 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.andmn.HealthyFoodApp"
+      "package": "com.tructht.HealthyFoodApp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": ["expo-font"],
+    "owner": "tructht",
     "extra": {
       "eas": {
-        "projectId": "e70dbaf9-5f92-407e-b5c5-116e9c9be260"
+        "projectId": "06e38a55-f8cf-43a2-9401-ea0b16cd09b1"
       }
-    },
-    "owner": "andnm_1508"
+    }
   }
 }

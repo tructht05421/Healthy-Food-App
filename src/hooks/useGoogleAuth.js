@@ -35,7 +35,7 @@ export const useGoogleAuth = () => {
     selectAccount: true, // Cho phép chọn tài khoản
     usePKCE: true, // Sử dụng PKCE để bảo mật
     responseType: "code", // Loại response
-    redirectUri: "com.andmn.healthyfoodapp://", // URI callback
+    redirectUri: "com.tructht.HealthyFoodApp://", // URI callback
   });
 
   // Xử lý kết quả xác thực
