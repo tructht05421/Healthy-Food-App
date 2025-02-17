@@ -34,7 +34,7 @@ export const signup = async ({
     const response = await axiosInstance.post("api/v1/users/signup", data);
     return response;
   } catch (error) {
-    console.log("signup error: ", error);
+    // console.log("signup error: ", error);
     return error;
   }
 };

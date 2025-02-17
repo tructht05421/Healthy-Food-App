@@ -10,6 +10,12 @@ const ShowToast = (type = "info", message = "", options = {}) => {
     position: "top", // vị trí của toast (top, bottom, bottom, center)
     text1: type.charAt(0).toUpperCase() + type.slice(1), // "Success", "Error", or "Info" : title của toast
     text2: message, // nội dung của toast
+    props: {
+      text2Style: {
+        numberOfLines: 2, // ✅ Limits text2 to 2 lines
+        ellipsizeMode: "tail", // ✅ Adds "..." if text overflows
+      },
+    },
     visibilityTime: 3000, //  thời gian hiển thị toast (ms) - 3000ms = 3s
   });
 };

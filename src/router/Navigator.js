@@ -10,7 +10,6 @@ import { ScreensMap } from "./ScreensMap";
 // ↑ Import danh sách các màn hình cần hiển thị trong tab bar
 
 import CustomTabBar from "../components/common/CustomTabBar";
-import { Easing } from "react-native";
 // ↑ Import component TabBar tùy chỉnh thay thế TabBar mặc định
 
 // PHẦN 2: KHỞI TẠO NAVIGATORS
@@ -20,7 +19,24 @@ const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 // ↑ Tạo Bottom Tab Navigator để quản lý các tab ở bottom
 
-// PHẦN 3: TAB NAVIGATOR
+// PHẦN 3: STACK NAVIGATOR
+function HomeStack() {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+        gestureEnabled: true,
+        gestureDirection: "horizontal",
+      }}
+    >
+      {ScreensMap.map((item, index) => (
+        <Stack.Screen key={index} name={item.name} component={item.component} />
+      ))}
+    </Stack.Navigator>
+  );
+}
+// PHẦN 4: TAB NAVIGATOR
+
 const TabNavigator = () => {
   return (
     <Tab.Navigator
@@ -36,31 +52,17 @@ const TabNavigator = () => {
       })}
       backBehavior="history" // Quay lại theo lịch sử
     >
-      {/* Render các màn hình từ ScreensMap */}
-      {ScreensMap.map((item, index) => (
-        <Tab.Screen
-          key={index}
-          name={item.name} // Tên định danh màn hình
-          component={item.component} // Component của màn hình
-          options={item.options} // Cấu hình cho màn hình
-        />
-      ))}
+      <Tab.Screen
+        name={"Main"} // Tên định danh màn hình
+        component={HomeStack} // Component của màn hình
+      />
     </Tab.Navigator>
   );
 };
 
 // PHẦN 4: STACK NAVIGATOR CHÍNH
 const Navigator = () => {
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {/* Màn hình chính chứa TabNavigator */}
-      <Stack.Screen
-        name="Main"
-        component={TabNavigator}
-        options={{ headerShown: false }}
-      />
-    </Stack.Navigator>
-  );
+  return TabNavigator();
 };
 
 export default Navigator;

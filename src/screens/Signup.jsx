@@ -42,6 +42,7 @@ import { loginThunk } from "../redux/actions/userThunk";
 // Import Toast từ react-native-toast-message để hiển thị thông báo
 import Toast from "react-native-toast-message";
 import ShowToast from "../components/common/CustomToast";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 // Lấy chiều rộng màn hình
 const WIDTH = Dimensions.get("window").width;
@@ -138,15 +139,13 @@ function Signup({ navigation }) {
         }
       } catch (error) {
         // Ghi log lỗi nếu có
-        console.log(error);
+        console.log(error?.response?.mé);
         // Hiển thị thông báo lỗi
-        ShowToast("error", "Đăng nhập thất bại sau khi đăng ký.");
+        // ShowToast("error", "Đăng nhập thất bại sau khi đăng ký.");
       }
     } else {
-      // Ghi log lỗi nếu đăng ký thất bại
-      console.log(response.data);
       // Hiển thị thông báo lỗi
-      ShowToast("error", "Đăng ký thất bại. Vui lòng kiểm tra thông tin.");
+      ShowToast("error", `${response?.response?.data?.error?.message}`);
     }
   };
 
@@ -237,9 +236,16 @@ function Signup({ navigation }) {
         }}
       >
         {/* KeyboardAvoidingView để tránh bàn phím che khuất nội dung */}
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"} // Hành vi khác nhau cho iOS và Android
+        <KeyboardAwareScrollView
+          enableOnAndroid
+          extraScrollHeight={Platform.OS === "ios" ? 20 : 40} // Hành vi khác nhau cho iOS và Android
           style={styles.view}
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={{
+            flex: 1,
+            justifyContent: "flex-end", // Aligns content to the bottom
+            alignItems: "center", // Centers content horizontally
+          }}
         >
           {/* Tiêu đề cho màn hình đăng ký */}
           <Text style={styles.title}>REGISTER</Text>
@@ -340,7 +346,7 @@ function Signup({ navigation }) {
               </Text>
             </Text>
           </View>
-        </KeyboardAvoidingView>
+        </KeyboardAwareScrollView>
 
         {/* Modal nhập mã OTP */}
         <InputOtpModal
@@ -372,8 +378,7 @@ const styles = StyleSheet.create({
   },
   view: {
     flex: 1, // Chiếm hết không gian có sẵn
-    justifyContent: "flex-end", // Căn nội dung về phía cuối container
-    alignItems: "center", // Căn giữa nội dung theo chiều ngang
+
     paddingBottom: 50, // Padding phía dưới
   },
   title: {

@@ -1,5 +1,5 @@
 // Import các thư viện cần thiết từ React và React Native
-import React, { use, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import {
   StyleSheet, // Component để tạo các styles
   Text, // Component để hiển thị văn bản

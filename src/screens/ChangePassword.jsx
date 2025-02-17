@@ -6,7 +6,8 @@ import {
   StyleSheet, // API để tạo styles
   Image, // Component hiển thị hình ảnh
   TextInput, // Component nhập liệu
-  Dimensions, // API lấy kích thước màn hình
+  Dimensions,
+  KeyboardAvoidingView, // API lấy kích thước màn hình
 } from "react-native";
 
 // Import các components tùy chỉnh
@@ -68,7 +69,10 @@ function ChangePassword({ navigation, route }) {
   // Render giao diện
   return (
     <SafeAreaWrapper>
-      <View style={styles.container}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
         <View style={styles.card}>
           {/* Tiêu đề */}
           <Text style={styles.title}>Change New Password</Text>
@@ -122,7 +126,7 @@ function ChangePassword({ navigation, route }) {
             onPress={handleResetPassword}
           />
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </SafeAreaWrapper>
   );
 }

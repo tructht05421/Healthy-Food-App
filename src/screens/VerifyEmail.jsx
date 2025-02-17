@@ -7,7 +7,8 @@ import {
   Image, // Component hiển thị hình ảnh
   TextInput, // Component nhập liệu
   Dimensions, // API lấy kích thước màn hình
-  Platform, // API kiểm tra nền tảng
+  Platform,
+  KeyboardAvoidingView, // API kiểm tra nền tảng
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native"; // Hook xử lý focus màn hình
 
@@ -86,8 +87,11 @@ function VerifyEmail({ navigation }) {
   };
 
   return (
-    <SafeAreaWrapper>
-      <View style={styles.container}>
+    <SafeAreaWrapper headerStyle={{ backgroundColor: "white" }}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
         <View style={styles.card}>
           {/* Hiển thị icon tương ứng với trạng thái */}
           <Image
@@ -170,7 +174,7 @@ function VerifyEmail({ navigation }) {
             </>
           )}
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </SafeAreaWrapper>
   );
 }
