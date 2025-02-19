@@ -124,7 +124,7 @@ export const changePassword = async ({ email, password, passwordConfirm }) => {
     const data = { email, password, passwordConfirm };
 
     const response = await axiosInstance.post(
-      "api/v1/users/change-password",
+      "api/v1/users/new-reset-password",
       data
     );
     return response;
