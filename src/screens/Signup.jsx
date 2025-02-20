@@ -36,13 +36,14 @@ import { signup, verifyAccount } from "../services/authService";
 // Import component InputOtpModal để nhập mã OTP
 import InputOtpModal from "../components/modal/InputOtpModal";
 // Import hook useDispatch từ react-redux để dispatch actions
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 // Import action thunk đăng nhập từ redux actions
 import { loginThunk } from "../redux/actions/userThunk";
 // Import Toast từ react-native-toast-message để hiển thị thông báo
 import Toast from "react-native-toast-message";
 import ShowToast from "../components/common/CustomToast";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { userSelector } from "../redux/selectors/selector";
 
 // Lấy chiều rộng màn hình
 const WIDTH = Dimensions.get("window").width;
@@ -66,21 +67,22 @@ function Signup({ navigation }) {
   const { signIn, userInfo, error } = useGoogleAuth();
   // Sử dụng hook useDispatch để dispatch actions
   const dispatch = useDispatch();
+  const user = useSelector(userSelector);
 
   // useEffect để xử lý khi userInfo thay đổi (sau khi đăng nhập Google)
-  useEffect(() => {
-    if (userInfo) {
-      // Cập nhật state formData với thông tin từ tài khoản Google
-      setFormData((prev) => ({
-        ...prev, // Giữ nguyên các giá trị hiện tại
-        fullName: userInfo.name || "", // Cập nhật tên từ userInfo nếu có
-        email: userInfo.email || "", // Cập nhật email từ userInfo nếu có
-      }));
+  // useEffect(() => {
+  //   if (userInfo) {
+  //     // Cập nhật state formData với thông tin từ tài khoản Google
+  //     setFormData((prev) => ({
+  //       ...prev, // Giữ nguyên các giá trị hiện tại
+  //       fullName: userInfo.name || "", // Cập nhật tên từ userInfo nếu có
+  //       email: userInfo.email || "", // Cập nhật email từ userInfo nếu có
+  //     }));
 
-      // Hiển thị thông báo chào mừng
-      ShowToast("success", `Chào mừng, ${userInfo.name}`);
-    }
-  }, [userInfo]); // Chạy lại effect khi userInfo thay đổi
+  //     // Hiển thị thông báo chào mừng
+  //     ShowToast("success", `Chào mừng, ${userInfo.name}`);
+  //   }
+  // }, [userInfo]); // Chạy lại effect khi userInfo thay đổi
 
   // useEffect để xử lý khi có lỗi từ quá trình đăng nhập Google
   useEffect(() => {
@@ -300,7 +302,10 @@ function Signup({ navigation }) {
               }}
               buttonText="Register" // Text hiển thị trên nút
               textStyle={{ ...styles.textStyle, color: "#ffffff" }} // Style cho text
-              onPress={async () => await onPressRegisterButton()} // Xử lý sự kiện nhấn
+              // onPress={async () => await onPressRegisterButton()} // Xử lý sự kiện nhấn
+              onPress={() => {
+                console.log(user);
+              }} // Xử lý sự kiện nhấn
             />
 
             {/* Dòng phân cách với text ở giữa */}

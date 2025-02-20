@@ -39,18 +39,6 @@ export const signup = async ({
   }
 };
 
-// Verify Account API call
-export const verifyAccount = async ({ otp }) => {
-  try {
-    const data = { otp };
-    const response = await axiosInstance.post("api/v1/users/verify", data);
-    return response;
-  } catch (error) {
-    console.log("verifyAccount error: ", error);
-    return error;
-  }
-};
-
 // Resend OTP API call
 export const resendOTP = async () => {
   try {
@@ -88,30 +76,10 @@ export const forgetPassword = async ({ email }) => {
   }
 };
 
-// Reset Password API call
-export const resetPassword = async ({
-  email,
-  otp,
-  password,
-  passwordConfirm,
-}) => {
-  try {
-    const data = { email, otp, password, passwordConfirm };
-    const response = await axiosInstance.post(
-      "api/v1/users/reset-password",
-      data
-    );
-    return response;
-  } catch (error) {
-    console.log("resetPassword error: ", error);
-    return error;
-  }
-};
-
 export const verifyOtp = async ({ email, otp }) => {
   try {
     const data = { email, otp };
-    const response = await axiosInstance.post("api/v1/users/verify-otp", data);
+    const response = await axiosInstance.post("api/v1/users/verify", data);
     return response;
   } catch (error) {
     console.log("resetPassword error: ", error);
@@ -124,7 +92,7 @@ export const changePassword = async ({ email, password, passwordConfirm }) => {
     const data = { email, password, passwordConfirm };
 
     const response = await axiosInstance.post(
-      "api/v1/users/new-reset-password",
+      "api/v1/users/reset-password",
       data
     );
     return response;

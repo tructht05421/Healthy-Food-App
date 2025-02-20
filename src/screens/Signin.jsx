@@ -80,12 +80,13 @@ function Signin({ navigation }) {
       const responseLogin = await dispatch(loginThunk(credentials));
       // Kiểm tra kết quả đăng nhập
       ShowToast("success", "Đăng nhập thành công");
-
       if (
         responseLogin.type.endsWith("fulfilled") &&
         responseLogin?.payload?.data?.status
       ) {
         const username = responseLogin?.payload?.data?.data?.user?.username;
+        console.log(username);
+
         ShowToast("success", "Welcome back " + username);
       } else {
         ShowToast("error", "Login fail : " + responseLogin?.payload?.message);

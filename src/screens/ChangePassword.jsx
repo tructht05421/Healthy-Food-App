@@ -7,7 +7,8 @@ import {
   Image, // Component hiển thị hình ảnh
   TextInput, // Component nhập liệu
   Dimensions,
-  KeyboardAvoidingView, // API lấy kích thước màn hình
+  KeyboardAvoidingView,
+  Platform, // API lấy kích thước màn hình
 } from "react-native";
 
 // Import các components tùy chỉnh
