@@ -85,14 +85,14 @@ function Signin({ navigation }) {
         responseLogin.type.endsWith("fulfilled") &&
         responseLogin?.payload?.data?.status
       ) {
-        console.log(responseLogin?.payload?.data?.status);
-        ShowToast("success", "Đăng nhập thành công");
+        const username = responseLogin?.payload?.data?.data?.user?.username;
+        ShowToast("success", "Welcome back " + username);
       } else {
-        ShowToast("error", "Đăng nhập thất bại");
+        ShowToast("error", "Login fail : " + responseLogin?.payload?.message);
       }
     } catch (error) {
       console.log(error);
-      ShowToast("error", "Đã xảy ra lỗi không mong muốn");
+      ShowToast("error", "Unexpected error");
     }
   };
 

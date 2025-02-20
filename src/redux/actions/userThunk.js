@@ -32,6 +32,7 @@ export const loginThunk = createAsyncThunk(
       return {
         data: response.data,
         status: response.status,
+        message: response?.response?.data?.message,
         // Set up trả ra các thông tin cần thiết
       };
       // ↑ Gọi API đăng nhập và trả về response (đang bị comment)

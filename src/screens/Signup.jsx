@@ -134,14 +134,14 @@ function Signup({ navigation }) {
           // Hiển thị thông báo thành công
           ShowToast(
             "success",
-            "Đăng ký thành công! Vui lòng xác thực tài khoản."
+            "Register successfully! Please check your email to verify your account."
           );
         }
       } catch (error) {
         // Ghi log lỗi nếu có
-        console.log(error?.response?.mé);
+        // console.log(error?.response?.mé);
         // Hiển thị thông báo lỗi
-        // ShowToast("error", "Đăng nhập thất bại sau khi đăng ký.");
+        ShowToast("error", "Login fail after register.");
       }
     } else {
       // Hiển thị thông báo lỗi
@@ -187,12 +187,12 @@ function Signup({ navigation }) {
     // Kiểm tra nếu xác thực thành công
     if (response.status === 200) {
       // Hiển thị thông báo thành công
-      ShowToast("success", "Xác thực tài khoản thành công");
+      ShowToast("success", "Verify account successfully.");
       // Chuyển hướng đến màn hình home
       navigation.navigate(ScreensName.home);
     } else {
       // Hiển thị thông báo lỗi
-      ShowToast("error", "Xác thực tài khoản thất bại. Vui lòng thử lại.");
+      ShowToast("error", "Verify account fail. Please try again.");
       // Ghi log lỗi
       console.log("error");
     }
