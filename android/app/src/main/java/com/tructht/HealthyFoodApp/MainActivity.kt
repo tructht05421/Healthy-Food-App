@@ -10,7 +10,6 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnable
 import com.facebook.react.defaults.DefaultReactActivityDelegate
 
 import expo.modules.ReactActivityDelegateWrapper
-import com.tructht.HealthyFoodApp.BuildConfig  // Add this import
 
 class MainActivity : ReactActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +36,6 @@ class MainActivity : ReactActivity() {
   override fun createReactActivityDelegate(): ReactActivityDelegate {
     return ReactActivityDelegateWrapper(
           this,
-          // Access BuildConfig directly since we're in the same package
           BuildConfig.IS_NEW_ARCHITECTURE_ENABLED,
           object : DefaultReactActivityDelegate(
               this,
