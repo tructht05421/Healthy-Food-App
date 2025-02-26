@@ -55,7 +55,7 @@ const SafeAreaWrapper = ({
         // Render ImageBackground nếu có backgroundImage
         <ImageBackground
           source={backgroundImage}
-          style={[styles.background && backgroundStyle]} // Áp dụng style background và custom style
+          style={[styles.background, backgroundStyle || {}]} // Áp dụng style background và custom style
           imageStyle={{ resizeMode: "cover" }} // Style cho image
         >
           {/* Render header nếu có headerTitle */}
@@ -81,7 +81,7 @@ const SafeAreaWrapper = ({
             </View>
           ) : null}
           {/* Container cho content với background color */}
-          <View style={[styles.content, { backgroundColor }]}>{children}</View>
+          <View style={[styles.content, backgroundStyle]}>{children}</View>
         </>
       )}
     </SafeAreaView>
@@ -98,6 +98,7 @@ const styles = StyleSheet.create({
   },
   background: {
     flex: 1, // Chiếm toàn bộ không gian có sẵn
+    backgroundColor: "red",
   },
   header: {
     paddingTop: Platform.OS === "ios" ? 15 : 10, // Padding top khác nhau cho iOS và Android

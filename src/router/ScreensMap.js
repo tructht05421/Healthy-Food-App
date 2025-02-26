@@ -7,6 +7,16 @@ import { ScreensName } from "../constants/ScreensName";
 import ChangePassword from "../screens/ChangePassword";
 import VerifyEmail from "../screens/VerifyEmail";
 import Welcome from "../screens/Welcome";
+import Ionicons from "../components/common/VectorIcons/Ionicons";
+import Home from "../screens/Home";
+import FavorList from "../screens/FavorList";
+import Search from "../screens/Search";
+import FavorAndSuggest from "../screens/FavorAndSuggest";
+import Setting from "../screens/Setting";
+import Notification from "../screens/Notification";
+import FontistoIcon from "../components/common/VectorIcons/FontistoIcon";
+import AntDesignIcon from "../components/common/VectorIcons/AntDesignIcon";
+import List from "../screens/List";
 // ↑ Import enum chứa tên các màn hình
 // Giúp tránh lỗi typo và dễ dàng quản lý tên màn hình
 
@@ -20,6 +30,14 @@ export const ScreensMap = [
   //   },
   //   hiddenBottomTab: true,
   // },
+  {
+    name: ScreensName.home,
+    component: Home,
+    options: {
+      tabBarButton: () => null,
+    },
+    // hiddenBottomTab: true,
+  },
   {
     // Cấu hình cho màn hình Signup
     name: ScreensName.signup,
@@ -72,5 +90,81 @@ export const ScreensMap = [
       tabBarButton: () => null,
     },
     hiddenBottomTab: true,
+  },
+  // {
+  //   name: ScreensName.home,
+  //   component: Home,
+  //   options: {
+  //     tabBarButton: () => null,
+  //   },
+  //   hiddenBottomTab: true,
+  // },
+  {
+    name: ScreensName.favorList,
+    component: FavorList,
+    options: {
+      tabBarIcon: ({ color, focused }) => (
+        <Ionicons
+          name="heart-outline" // Tên icon
+          size={32} // Kích thước icon
+          color={color} // Màu sắc (active/inactive)
+        />
+      ),
+    },
+  },
+  {
+    name: ScreensName.search,
+    component: Search,
+    options: {
+      tabBarIcon: ({ color, focused }) => (
+        <Ionicons
+          name="search-outline" // Tên icon
+          size={32} // Kích thước icon
+          color={color} // Màu sắc (active/inactive)
+        />
+      ),
+      iconStyles: { transform: [{ translateX: -25 }] },
+    },
+  },
+  {
+    name: ScreensName.notification,
+    component: Notification,
+    options: {
+      tabBarIcon: ({ color, focused }) => (
+        <FontistoIcon
+          name="bell" // Tên icon
+          size={32} // Kích thước icon
+          color={color} // Màu sắc (active/inactive)
+        />
+      ),
+      iconStyles: { transform: [{ translateX: 25 }] },
+    },
+  },
+  {
+    name: ScreensName.setting,
+    component: Setting,
+    options: {
+      tabBarIcon: ({ color, focused }) => (
+        <AntDesignIcon
+          name="setting" // Tên icon
+          size={32} // Kích thước icon
+          color={color} // Màu sắc (active/inactive)
+        />
+      ),
+    },
+  },
+  {
+    name: ScreensName.list,
+    component: List,
+    options: {
+      tabBarButton: () => null,
+    },
+  },
+  {
+    name: ScreensName.favorAndSuggest,
+    component: FavorAndSuggest,
+    options: {
+      tabBarButton: () => null,
+    },
   },
 ];

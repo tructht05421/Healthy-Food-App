@@ -3,7 +3,14 @@ export const ScreensName = {
   signin: "signin",
   changePassword: "changePassword",
   verifyEmail: "verifyEmail",
+  favorAndSuggest: "favorAndSuggest",
+  favorList: "favorList",
   welcome: "welcome",
+  home: "Home",
+  list: "list",
+  search: "search",
+  setting: "setting",
+  notification: "notification",
 };
 // ↑ Object chứa các hằng số định danh cho các màn hình trong ứng dụng
 

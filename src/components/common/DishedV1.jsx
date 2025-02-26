@@ -1,0 +1,105 @@
+import React from "react";
+import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
+import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
+import CategoryTag from "./CategoryTag";
+import { ScreensName } from "../../constants/ScreensName";
+import { useNavigation } from "@react-navigation/native";
+
+const DishedV1 = ({
+  dish,
+  onSavePress,
+  onArrowPress,
+  disabledDefaultNavigate,
+}) => {
+  const navigation = useNavigation();
+
+  const handleOnArrowPress = () => {
+    !disabledDefaultNavigate &&
+      navigation.navigate(ScreensName.favorAndSuggest, { dish: dish });
+    onArrowPress && onArrowPress();
+  };
+  return (
+    <TouchableOpacity key={dish._id} style={styles.dishCard}>
+      <Image source={{ uri: dish.image_url }} style={styles.dishImage} />
+      <View style={styles.dishInfo}>
+        <Text style={styles.dishTitle}>{dish.name}</Text>
+        <CategoryTag name={dish.type} />
+        <Text style={styles.dishDescription}>{dish.description}</Text>
+      </View>
+      <TouchableOpacity style={styles.saveButton} onPress={onSavePress}>
+        {dish.saved ? (
+          <MaterialCommunityIcons
+            name="heart-multiple"
+            size={24}
+            color="#FC8019"
+          />
+        ) : (
+          <MaterialCommunityIcons
+            name="heart-plus-outline"
+            size={24}
+            color="#FC8019"
+          />
+        )}
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.arrowButton} onPress={handleOnArrowPress}>
+        <Ionicons name="arrow-forward" size={18} color="white" />
+      </TouchableOpacity>
+    </TouchableOpacity>
+  );
+};
+
+const styles = StyleSheet.create({
+  dishCard: {
+    backgroundColor: "white",
+    borderRadius: 10,
+    marginBottom: 16,
+    flexDirection: "row",
+    padding: 12,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+
+    elevation: 3,
+  },
+  dishImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 10,
+    marginRight: 12,
+  },
+  dishInfo: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  dishTitle: {
+    width: "80%",
+    fontSize: 14,
+    fontWeight: "bold",
+    marginBottom: 4,
+  },
+  dishDescription: {
+    width: "80%",
+    fontSize: 12,
+    color: "#888",
+  },
+  saveButton: {
+    position: "absolute",
+    top: "20%",
+    right: 16,
+  },
+  arrowButton: {
+    backgroundColor: "#042628",
+    padding: 4,
+    paddingHorizontal: 8,
+    borderRadius: 8,
+    position: "absolute",
+    bottom: "20%",
+    right: 12,
+  },
+});
+
+export default DishedV1;
