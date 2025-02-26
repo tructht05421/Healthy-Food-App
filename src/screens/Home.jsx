@@ -15,33 +15,14 @@ import { ScreensName } from "../constants/ScreensName";
 import DishedV1 from "../components/common/DishedV1";
 import { getDishes } from "../services/dishes";
 import CategoryCard from "../components/common/CategoryCard";
+import useCurrentSeason from "../hooks/useCurrentSeason";
+import { DishType } from "../constants/DishType";
 const HEIGHT = Dimensions.get("window").height;
 function Home({ navigation }) {
   const [seasonalDishes, setSeasonalDishes] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
-  // Category data
-  const categories = [
-    {
-      id: 1,
-      title: "Heavy Meals",
-      image: require("../../assets/image/light-meals.png"),
-    },
-    {
-      id: 2,
-      title: "Light Meals",
-      image: require("../../assets/image/light-meals.png"),
-    },
-    {
-      id: 3,
-      title: "Beverages",
-      image: require("../../assets/image/light-meals.png"),
-    },
-    {
-      id: 4,
-      title: "Desserts",
-      image: require("../../assets/image/light-meals.png"),
-    },
-  ];
+
+  const season = useCurrentSeason();
 
   // Seasonal dishes data
 
@@ -80,8 +61,15 @@ function Home({ navigation }) {
         <View style={styles.categoriesSection}>
           <Text style={styles.sectionTitle}>Browse by category</Text>
           <View style={styles.categoriesGrid}>
-            {categories.map((category) => (
-              <CategoryCard key={category.id} category={category} />
+            {Object.values(DishType).map((category, key) => (
+              <CategoryCard
+                key={key}
+                category={{
+                  id: key,
+                  title: category,
+                  image: require("../../assets/image/light-meals.png"),
+                }}
+              />
             ))}
           </View>
         </View>
@@ -95,9 +83,13 @@ function Home({ navigation }) {
             </TouchableOpacity>
           </View>
 
-          {seasonalDishes.map((dish) => (
-            <DishedV1 dish={dish} key={dish._id} />
-          ))}
+          {seasonalDishes
+            .filter(
+              (item) => item.season === season || item.season === "All Seasons"
+            )
+            .map((dish) => (
+              <DishedV1 dish={dish} key={dish._id} />
+            ))}
         </View>
       </ScrollView>
     </MainLayoutWrapper>

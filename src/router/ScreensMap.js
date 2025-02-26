@@ -106,7 +106,7 @@ export const ScreensMap = [
       tabBarIcon: ({ color, focused }) => (
         <Ionicons
           name="heart-outline" // Tên icon
-          size={32} // Kích thước icon
+          size={28} // Kích thước icon
           color={color} // Màu sắc (active/inactive)
         />
       ),
@@ -119,7 +119,7 @@ export const ScreensMap = [
       tabBarIcon: ({ color, focused }) => (
         <Ionicons
           name="search-outline" // Tên icon
-          size={32} // Kích thước icon
+          size={28} // Kích thước icon
           color={color} // Màu sắc (active/inactive)
         />
       ),
@@ -133,7 +133,7 @@ export const ScreensMap = [
       tabBarIcon: ({ color, focused }) => (
         <FontistoIcon
           name="bell" // Tên icon
-          size={32} // Kích thước icon
+          size={24} // Kích thước icon
           color={color} // Màu sắc (active/inactive)
         />
       ),
@@ -147,7 +147,7 @@ export const ScreensMap = [
       tabBarIcon: ({ color, focused }) => (
         <AntDesignIcon
           name="setting" // Tên icon
-          size={32} // Kích thước icon
+          size={28} // Kích thước icon
           color={color} // Màu sắc (active/inactive)
         />
       ),

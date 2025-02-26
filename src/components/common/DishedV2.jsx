@@ -9,9 +9,16 @@ import {
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import CategoryTag from "./CategoryTag";
+import useFavorites from "../../hooks/useFavorites";
 const WIDTH = Dimensions.get("window").width;
 
 const DishedV2 = ({ item, onPress, onFavoritePress }) => {
+  const { isFavorite, onChangeFavorite, isLoading } = useFavorites();
+
+  const handleOnSavePress = (dish) => {
+    onChangeFavorite(dish._id);
+    onFavoritePress && onFavoritePress();
+  };
   return (
     <TouchableOpacity
       key={item._id}
@@ -30,9 +37,12 @@ const DishedV2 = ({ item, onPress, onFavoritePress }) => {
         <Text style={styles.resultDescription}>{item.description}</Text>
       </View>
       <Image source={{ uri: item.image_url }} style={styles.resultImage} />
-      <TouchableOpacity style={styles.favoriteButton} onPress={onFavoritePress}>
+      <TouchableOpacity
+        style={styles.favoriteButton}
+        onPress={() => handleOnSavePress(item)}
+      >
         <MaterialCommunityIcons
-          name={item.saved ? "heart" : "heart-outline"}
+          name={isFavorite(item._id) ? "heart" : "heart-outline"}
           size={22}
           color="#FF9500"
         />
@@ -67,7 +77,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 12,
     alignItems: "center",
-    width: "80%",
+    width: "40%",
   },
   resultTitle: {
     fontSize: 16,

@@ -2,10 +2,22 @@ import React from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Ionicons from "../common/VectorIcons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
+import { useSelector } from "react-redux";
+import { userSelector } from "../../redux/selectors/selector";
+import { ScreensName } from "../../constants/ScreensName";
 
 function Header() {
   const navigation = useNavigation();
+  const user = useSelector(userSelector);
   // console.log(navigation.canGoBack());
+
+  const checkAuth = () => {
+    if (user) {
+      navigation.navigate(ScreensName.setting);
+    } else {
+      navigation.navigate(ScreensName.signin);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -22,11 +34,18 @@ function Header() {
         </TouchableOpacity>
       )}
 
-      <TouchableOpacity>
+      <TouchableOpacity onPress={checkAuth}>
         <Image
-          source={require("../../../assets/image/Profile.png")}
+          source={
+            user?.avatar_url
+              ? { uri: user.avatar_url }
+              : require("../../../assets/image/Profile.png")
+          }
           resizeMode="cover"
-          style={styles.profileImage}
+          style={[
+            styles.profileImage,
+            user?.avatar_url ? styles.avtImage : null,
+          ]}
         />
       </TouchableOpacity>
     </View>
@@ -51,6 +70,9 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
     // borderRadius: 100,
+  },
+  avtImage: {
+    borderRadius: 100,
   },
 });
 

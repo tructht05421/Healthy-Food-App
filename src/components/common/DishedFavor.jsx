@@ -9,28 +9,42 @@ import {
   Dimensions,
 } from "react-native";
 import AntDesignIcon from "./VectorIcons/AntDesignIcon";
+import useFavorites from "../../hooks/useFavorites";
 const HEIGHT = Dimensions.get("window").height;
 // DishedFavor component for individual food items
-const DishedFavor = ({ title, imageUrl, hasVideo = false }) => {
+const DishedFavor = ({ item, refresh, onChangeFavorite }) => {
+  // const { onChangeFavorite, isLoading, favoriteList } = useFavorites();
+
+  const handleOnChangeFavorite = () => {
+    onChangeFavorite(item._id);
+  };
+
   return (
     <TouchableOpacity style={styles.dishedFavorContainer}>
       <View style={styles.imageContainer}>
         <Image
           source={
-            imageUrl
-              ? { uri: imageUrl }
+            item.image_url
+              ? { uri: item.image_url }
               : require("../../../assets/image/blueberry-egg.png")
           }
           style={styles.dishImage}
           resizeMode="cover"
         />
-        <TouchableOpacity style={styles.videoIndicator} activeOpacity={0.9}>
+        <TouchableOpacity
+          style={styles.videoIndicator}
+          activeOpacity={0.9}
+          onPress={handleOnChangeFavorite}
+        >
           {/* <Text style={styles.videoIcon}>▶</Text> */}
           <AntDesignIcon name="heart" size={24} color="#40B491" />
         </TouchableOpacity>
       </View>
-      <Text style={styles.dishTitle}>{title}</Text>
-      <TouchableOpacity style={styles.deleteButton}>
+      <Text style={styles.dishTitle}>{item.name}</Text>
+      <TouchableOpacity
+        style={styles.deleteButton}
+        onPress={handleOnChangeFavorite}
+      >
         <AntDesignIcon name="delete" size={24} color="#FF0000" />
         {/* <Text style={styles.deleteIcon}>🗑️</Text> */}
       </TouchableOpacity>
@@ -42,18 +56,17 @@ const styles = StyleSheet.create({
   dishedFavorContainer: {
     backgroundColor: "white",
     borderRadius: 12,
-    overflow: "hidden",
     position: "relative",
     padding: 8,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 3,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
 
-    elevation: 5,
+    elevation: 3,
   },
   imageContainer: {
     position: "relative",

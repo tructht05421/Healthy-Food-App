@@ -120,7 +120,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
                   color: isFocused
                     ? screen.options?.activeColor || "#FF7400"
                     : screen.options?.inactiveColor || "#ABB7C2",
-                  size: 32,
+                  size: 28,
                 })}
             </TouchableOpacity>
           );

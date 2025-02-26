@@ -85,9 +85,8 @@ function Signin({ navigation }) {
         responseLogin?.payload?.data?.status
       ) {
         const username = responseLogin?.payload?.data?.data?.user?.username;
-        console.log(username);
-
         ShowToast("success", "Welcome back " + username);
+        navigation.navigate(ScreensName.home);
       } else {
         ShowToast("error", "Login fail : " + responseLogin?.payload?.message);
       }

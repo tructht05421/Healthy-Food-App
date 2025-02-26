@@ -15,7 +15,7 @@ const CategoryCard = ({ category, onPress, cardWidth, imageSize }) => {
   return (
     <TouchableOpacity
       key={category.id}
-      style={{ ...styles.categoryCard, width: cardWidth ?? "35%" }}
+      style={{ ...styles.categoryCard, width: cardWidth ?? "45%" }}
       onPress={onPress}
     >
       <View style={styles.categoryImageContainer}>
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
   categoryCard: {
     position: "relative",
 
-    width: "35%",
+    width: "45%",
     height: HEIGHT * 0.11,
     backgroundColor: "white",
     borderRadius: 10,
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     borderRadius: 150,
     overflow: "hidden",
     marginBottom: 10,
-    transform: [{ translateY: -WIDTH * 0.08 }],
+    transform: [{ translateY: -WIDTH * 0.1 }],
   },
   categoryImage: {
     width: "100%",

@@ -18,6 +18,8 @@ import {
   getIngredientByName,
   getIngredientByType,
 } from "../services/ingredient";
+import { DishType } from "../constants/DishType";
+import { getDishes } from "../services/dishes";
 
 const WIDTH = Dimensions.get("window").width;
 
@@ -43,32 +45,8 @@ const SearchScreen = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [searchMode, setSearchMode] = useState("initial"); // 'initial', 'results'
   const [searchQuery, setSearchQuery] = useState("");
-  const categories = [
-    {
-      id: 1,
-      title: "Heavy Meals",
-      image: require("../../assets/image/light-meals.png"),
-    },
-    {
-      id: 2,
-      title: "Light Meals",
-      image: require("../../assets/image/light-meals.png"),
-    },
-    {
-      id: 3,
-      title: "Beverages",
-      image: require("../../assets/image/light-meals.png"),
-    },
-    {
-      id: 4,
-      title: "Desserts",
-      image: require("../../assets/image/light-meals.png"),
-    },
-  ];
 
   const handleSearch = async () => {
-    console.log("searchByName : ", searchQuery);
-
     const response = await getIngredientByName(searchQuery);
     if (response.status === 200) {
       setSearchResults(response.data?.data);
@@ -77,7 +55,14 @@ const SearchScreen = () => {
   };
 
   const handleSearchByCategory = async (type) => {
-    console.log("searchByCategory : ", type);
+    const response = await getDishes();
+    setSearchQuery(type);
+    if (response.status === 200) {
+      setSearchResults(
+        response.data?.data?.filter((item) => item.type === type)
+      );
+      setSearchMode("results");
+    }
 
     // const response = await getIngredientByType(type);
     // if (response.status === 200) {
@@ -105,13 +90,24 @@ const SearchScreen = () => {
       <View style={styles.browseSection}>
         <Text style={styles.sectionTitle}>Browse by category</Text>
         <View style={styles.categoriesGrid}>
-          {categories.map((category) => (
+          {/* {categories.map((category) => (
             <CategoryCard
               key={category.id}
               category={category}
               onPress={() => handleSearchByCategory(category.title)}
               // cardWidth={"30%"}
               // imageSize={WIDTH * 0.2}
+            />
+          ))} */}
+          {Object.values(DishType).map((category, key) => (
+            <CategoryCard
+              key={key}
+              onPress={() => handleSearchByCategory(category)}
+              category={{
+                id: key,
+                title: category,
+                image: require("../../assets/image/light-meals.png"),
+              }}
             />
           ))}
         </View>
@@ -137,26 +133,32 @@ const SearchScreen = () => {
 
   return (
     <MainLayoutWrapper>
-      <SearchBar
-        placeholder="What do you need?"
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-        onSubmit={handleSearch}
-        onClear={handleClear}
-      />
-      <ScrollView
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
-      >
-        {searchMode === "initial"
-          ? renderInitialContent()
-          : renderResultsContent()}
-      </ScrollView>
+      <View style={styles.container}>
+        <SearchBar
+          placeholder="What do you need?"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          onSubmit={handleSearch}
+          onClear={handleClear}
+        />
+        <ScrollView
+          style={styles.scrollView}
+          showsVerticalScrollIndicator={false}
+        >
+          {searchMode === "initial"
+            ? renderInitialContent()
+            : renderResultsContent()}
+        </ScrollView>
+      </View>
     </MainLayoutWrapper>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingHorizontal: 16,
+  },
   searchBarContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -217,7 +219,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   browseSection: {
-    paddingHorizontal: 16,
     marginTop: 24,
   },
   categoriesGrid: {

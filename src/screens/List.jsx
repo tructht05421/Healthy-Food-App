@@ -53,12 +53,12 @@ const List = () => {
   return (
     <MainLayoutWrapper>
       <View style={styles.container}>
-        <View style={styles.header}>
+        {/* <View style={styles.header}>
           <Text style={styles.headerTitle}>Desserts</Text>
           <View style={styles.headerRight}>
             <Text style={styles.viewAllText}>View All</Text>
           </View>
-        </View>
+        </View> */}
 
         <TouchableOpacity style={styles.sortButton} onPress={toggleSort}>
           <Text style={styles.sortText}>Sort ({sortType || "none"})</Text>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,53 +9,38 @@ import {
 } from "react-native";
 import MainLayoutWrapper from "../components/layout/MainLayoutWrapper";
 import DishedFavor from "../components/common/DishedFavor";
+import useFavorites from "../hooks/useFavorites";
+import { getDishes } from "../services/dishes";
 
 function FavorList() {
-  // Sample data - replace with your actual data source
-  const favoriteItems = [
-    {
-      id: 1,
-      title: "Sunny Egg & Toast Avocado",
-      imageUrl:
-        "https://sakos.vn/wp-content/uploads/2023/10/pad_thai__1__f7bd4f4931604756939e6ee41ec228d8.jpg",
-      hasVideo: true,
-    },
-    {
-      id: 2,
-      title: "Bowl of noodle with beef",
-      imageUrl:
-        "https://sakos.vn/wp-content/uploads/2023/10/pad_thai__1__f7bd4f4931604756939e6ee41ec228d8.jpg",
-      hasVideo: true,
-    },
-    {
-      id: 3,
-      title: "Easy homemade beef burger",
-      imageUrl:
-        "https://sakos.vn/wp-content/uploads/2023/10/pad_thai__1__f7bd4f4931604756939e6ee41ec228d8.jpg",
-      hasVideo: false,
-    },
-    {
-      id: 4,
-      title: "Half boiled egg sandwich",
-      imageUrl:
-        "https://sakos.vn/wp-content/uploads/2023/10/pad_thai__1__f7bd4f4931604756939e6ee41ec228d8.jpg",
-      hasVideo: false,
-    },
-    {
-      id: 5,
-      title: "Sunny side up with avocado",
-      imageUrl:
-        "https://sakos.vn/wp-content/uploads/2023/10/pad_thai__1__f7bd4f4931604756939e6ee41ec228d8.jpg",
-      hasVideo: false,
-    },
-    {
-      id: 6,
-      title: "Sandwich with strawberry jam",
-      imageUrl:
-        "https://sakos.vn/wp-content/uploads/2023/10/pad_thai__1__f7bd4f4931604756939e6ee41ec228d8.jpg",
-      hasVideo: false,
-    },
-  ];
+  const [favoriteItems, setFavoriteItems] = useState([]);
+  const [dishes, setDishes] = useState([]);
+  const { favoriteList, isFavorite, onChangeFavorite, isLoading } =
+    useFavorites();
+  useEffect(() => {
+    loadDishes();
+  }, []);
+
+  const loadDishes = async () => {
+    const response = await getDishes();
+
+    if (response.status === 200) {
+      setDishes(response.data?.data || []);
+    }
+  };
+
+  useEffect(() => {
+    if (!isLoading && dishes.length > 0) {
+      loadFavoriteItems();
+    }
+  }, [favoriteList, isLoading, dishes, isFavorite]);
+
+  const loadFavoriteItems = () => {
+    console.log(favoriteList);
+
+    const filteredItems = dishes.filter((item) => isFavorite(item._id));
+    setFavoriteItems(filteredItems);
+  };
 
   return (
     <MainLayoutWrapper>
@@ -63,11 +48,19 @@ function FavorList() {
         <Text style={styles.headerTitle}>My Favorites</Text>
         <ScrollView style={styles.scrollContainer}>
           <View style={styles.gridContainer}>
-            {favoriteItems.map((item) => (
-              <View key={item.id} style={styles.gridItem}>
-                <DishedFavor title={item.title} imageUrl={item.imageUrl} />
-              </View>
-            ))}
+            {favoriteItems.length === 0 ? (
+              <Text>No favorite items found.</Text>
+            ) : (
+              favoriteItems.map((item) => (
+                <View key={item._id} style={styles.gridItem}>
+                  <DishedFavor
+                    item={item}
+                    refresh={loadFavoriteItems}
+                    onChangeFavorite={() => onChangeFavorite(item._id)}
+                  />
+                </View>
+              ))
+            )}
           </View>
         </ScrollView>
       </View>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
@@ -11,10 +11,11 @@ const SearchBar = ({
 }) => {
   const [searchText, setSearchText] = useState(value);
 
-  const handleChangeText = (text) => {
-    setSearchText(text);
-    if (onChangeText) onChangeText(text);
-  };
+  useEffect(() => {
+    if (value !== searchText) {
+      setSearchText(value);
+    }
+  }, [value]);
 
   const handleClear = () => {
     setSearchText("");
@@ -27,8 +28,8 @@ const SearchBar = ({
         style={styles.input}
         placeholder={placeholder}
         placeholderTextColor="#999"
-        value={searchText}
-        onChangeText={handleChangeText}
+        value={value}
+        onChangeText={onChangeText}
         onSubmitEditing={onSubmit}
       />
 

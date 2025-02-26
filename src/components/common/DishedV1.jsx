@@ -4,6 +4,7 @@ import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 import CategoryTag from "./CategoryTag";
 import { ScreensName } from "../../constants/ScreensName";
 import { useNavigation } from "@react-navigation/native";
+import useFavorites from "../../hooks/useFavorites";
 
 const DishedV1 = ({
   dish,
@@ -12,11 +13,16 @@ const DishedV1 = ({
   disabledDefaultNavigate,
 }) => {
   const navigation = useNavigation();
+  const { isFavorite, onChangeFavorite, isLoading } = useFavorites();
 
   const handleOnArrowPress = () => {
     !disabledDefaultNavigate &&
       navigation.navigate(ScreensName.favorAndSuggest, { dish: dish });
     onArrowPress && onArrowPress();
+  };
+  const handleOnSavePress = (dish) => {
+    onChangeFavorite(dish._id);
+    onSavePress && onSavePress();
   };
   return (
     <TouchableOpacity key={dish._id} style={styles.dishCard}>
@@ -26,8 +32,11 @@ const DishedV1 = ({
         <CategoryTag name={dish.type} />
         <Text style={styles.dishDescription}>{dish.description}</Text>
       </View>
-      <TouchableOpacity style={styles.saveButton} onPress={onSavePress}>
-        {dish.saved ? (
+      <TouchableOpacity
+        style={styles.saveButton}
+        onPress={() => handleOnSavePress(dish)}
+      >
+        {isFavorite(dish._id) ? (
           <MaterialCommunityIcons
             name="heart-multiple"
             size={24}
