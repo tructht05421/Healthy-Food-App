@@ -84,8 +84,7 @@ function Home({ navigation }) {
                 key={key}
                 category={{
                   id: key,
-                  title: category,
-                  image: require("../../assets/image/light-meals.png"),
+                  ...category,
                 }}
                 onPress={() =>
                   navigation.navigate(ScreensName.search, { category })

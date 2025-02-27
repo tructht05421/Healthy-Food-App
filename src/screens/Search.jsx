@@ -126,8 +126,7 @@ const SearchScreen = ({ route }) => {
               onPress={() => handleSearchByCategory(category)}
               category={{
                 id: key,
-                title: category,
-                image: require("../../assets/image/light-meals.png"),
+                ...category,
               }}
             />
           ))}

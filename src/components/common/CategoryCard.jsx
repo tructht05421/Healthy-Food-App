@@ -20,7 +20,7 @@ const CategoryCard = ({ category, onPress, cardWidth, imageSize }) => {
     >
       <View style={styles.categoryImageContainer}>
         <Image
-          source={category.image}
+          source={{ uri: category.image_url }}
           style={{
             ...styles.categoryImage,
             width: imageSize ?? WIDTH * 0.25,
@@ -28,7 +28,7 @@ const CategoryCard = ({ category, onPress, cardWidth, imageSize }) => {
           }}
         />
       </View>
-      <Text style={styles.categoryTitle}>{category.title}</Text>
+      <Text style={styles.categoryTitle}>{category.name}</Text>
     </TouchableOpacity>
   );
 };
