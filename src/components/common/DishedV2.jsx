@@ -9,16 +9,24 @@ import {
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import CategoryTag from "./CategoryTag";
-import useFavorites from "../../hooks/useFavorites";
+import { useDispatch, useSelector } from "react-redux";
+import { favorSelector } from "../../redux/selectors/selector";
+import { toggleFavorite } from "../../redux/actions/favoriteThunk";
 const WIDTH = Dimensions.get("window").width;
 
 const DishedV2 = ({ item, onPress, onFavoritePress }) => {
-  const { isFavorite, onChangeFavorite, isLoading } = useFavorites();
+  const dispatch = useDispatch();
+  const favorite = useSelector(favorSelector);
+
+  const isFavorite = (id) => {
+    return favorite.favoriteList.includes(id);
+  };
 
   const handleOnSavePress = (dish) => {
-    onChangeFavorite(dish._id);
+    dispatch(toggleFavorite({ id: dish._id }));
     onFavoritePress && onFavoritePress();
   };
+
   return (
     <TouchableOpacity
       key={item._id}
@@ -77,7 +85,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 12,
     alignItems: "center",
-    width: "40%",
+    width: "35%",
   },
   resultTitle: {
     fontSize: 16,

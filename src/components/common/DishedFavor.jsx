@@ -9,14 +9,16 @@ import {
   Dimensions,
 } from "react-native";
 import AntDesignIcon from "./VectorIcons/AntDesignIcon";
-import useFavorites from "../../hooks/useFavorites";
+import { useDispatch, useSelector } from "react-redux";
+import { favorSelector } from "../../redux/selectors/selector";
+import { toggleFavorite } from "../../redux/actions/favoriteThunk";
 const HEIGHT = Dimensions.get("window").height;
 // DishedFavor component for individual food items
-const DishedFavor = ({ item, refresh, onChangeFavorite }) => {
-  // const { onChangeFavorite, isLoading, favoriteList } = useFavorites();
+const DishedFavor = ({ item }) => {
+  const dispatch = useDispatch();
 
   const handleOnChangeFavorite = () => {
-    onChangeFavorite(item._id);
+    dispatch(toggleFavorite({ id: item._id }));
   };
 
   return (

@@ -20,6 +20,10 @@ import {
 } from "../services/ingredient";
 import { DishType } from "../constants/DishType";
 import { getDishes } from "../services/dishes";
+import PaddingScrollViewBottom from "../components/common/PaddingScrollViewBottom";
+// import CustomToast from "../components/common/CustomToast";
+import ShowToast from "../components/common/CustomToast";
+import { useFocusEffect } from "@react-navigation/native";
 
 const WIDTH = Dimensions.get("window").width;
 
@@ -41,16 +45,33 @@ const CategoryButton = ({ title, isActive = false }) => (
   </TouchableOpacity>
 );
 
-const SearchScreen = () => {
+const SearchScreen = ({ route }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [searchMode, setSearchMode] = useState("initial"); // 'initial', 'results'
   const [searchQuery, setSearchQuery] = useState("");
+  // const showToast = CustomToast();
+  useFocusEffect(
+    React.useCallback(() => {
+      if (route.params?.category) {
+        handleSearchByCategory(route.params?.category);
+      }
+    }, [])
+  );
 
-  const handleSearch = async () => {
-    const response = await getIngredientByName(searchQuery);
+  const handleSearch = async (searchString) => {
+    // const response = await getIngredientByName(searchString);
+    // if (response.status === 200) {
+    //   setSearchResults(response.data?.data);
+    //   setSearchMode("results");
+    // }
+    const response = await getDishes();
     if (response.status === 200) {
-      setSearchResults(response.data?.data);
+      setSearchResults(
+        response.data?.data?.filter((item) => searchString.includes(item.name))
+      );
       setSearchMode("results");
+    } else {
+      ShowToast("error", "Something went wrong");
     }
   };
 
@@ -125,9 +146,11 @@ const SearchScreen = () => {
         </TouchableOpacity>
       </View>
 
-      {searchResults.map((item) => (
-        <DishedV2 key={item._id} item={item} />
-      ))}
+      {searchResults.length > 0 ? (
+        searchResults.map((item) => <DishedV2 key={item._id} item={item} />)
+      ) : (
+        <Text style={styles.noResultsText}>No results found</Text>
+      )}
     </View>
   );
 
@@ -138,7 +161,7 @@ const SearchScreen = () => {
           placeholder="What do you need?"
           value={searchQuery}
           onChangeText={setSearchQuery}
-          onSubmit={handleSearch}
+          onSubmit={() => handleSearch(searchQuery)}
           onClear={handleClear}
         />
         <ScrollView
@@ -148,6 +171,7 @@ const SearchScreen = () => {
           {searchMode === "initial"
             ? renderInitialContent()
             : renderResultsContent()}
+          <PaddingScrollViewBottom />
         </ScrollView>
       </View>
     </MainLayoutWrapper>
@@ -196,7 +220,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   historySection: {
-    paddingHorizontal: 16,
     marginTop: 16,
   },
   sectionTitle: {
@@ -273,6 +296,11 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 16,
     right: 16,
+  },
+  noResultsText: {
+    width: "100%",
+    textAlign: "center",
+    fontSize: 20,
   },
 });
 

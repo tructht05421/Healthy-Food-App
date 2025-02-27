@@ -11,6 +11,7 @@ import MaterialCommunityIcons from "../components/common/VectorIcons/MaterialCom
 import MainLayoutWrapper from "../components/layout/MainLayoutWrapper";
 import DishedV1 from "../components/common/DishedV1";
 import { getDishes } from "../services/dishes";
+import PaddingScrollViewBottom from "../components/common/PaddingScrollViewBottom";
 
 const List = () => {
   const [dishes, setDishes] = useState([]);
@@ -75,6 +76,7 @@ const List = () => {
           {filterDishes.map((dish) => (
             <DishedV1 dish={dish} key={dish._id} />
           ))}
+          <PaddingScrollViewBottom />
         </ScrollView>
       </View>
     </MainLayoutWrapper>

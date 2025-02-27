@@ -4,7 +4,9 @@ import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 import CategoryTag from "./CategoryTag";
 import { ScreensName } from "../../constants/ScreensName";
 import { useNavigation } from "@react-navigation/native";
-import useFavorites from "../../hooks/useFavorites";
+import { useDispatch, useSelector } from "react-redux";
+import { favorSelector } from "../../redux/selectors/selector";
+import { toggleFavorite } from "../../redux/actions/favoriteThunk";
 
 const DishedV1 = ({
   dish,
@@ -13,7 +15,12 @@ const DishedV1 = ({
   disabledDefaultNavigate,
 }) => {
   const navigation = useNavigation();
-  const { isFavorite, onChangeFavorite, isLoading } = useFavorites();
+  const dispatch = useDispatch();
+  const favorite = useSelector(favorSelector);
+
+  const isFavorite = (id) => {
+    return favorite.favoriteList.includes(id);
+  };
 
   const handleOnArrowPress = () => {
     !disabledDefaultNavigate &&
@@ -21,9 +28,10 @@ const DishedV1 = ({
     onArrowPress && onArrowPress();
   };
   const handleOnSavePress = (dish) => {
-    onChangeFavorite(dish._id);
+    dispatch(toggleFavorite({ id: dish._id }));
     onSavePress && onSavePress();
   };
+
   return (
     <TouchableOpacity key={dish._id} style={styles.dishCard}>
       <Image source={{ uri: dish.image_url }} style={styles.dishImage} />

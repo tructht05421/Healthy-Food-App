@@ -17,10 +17,18 @@ import { getDishes } from "../services/dishes";
 import CategoryCard from "../components/common/CategoryCard";
 import useCurrentSeason from "../hooks/useCurrentSeason";
 import { DishType } from "../constants/DishType";
+import { useDispatch, useSelector } from "react-redux";
+import { loadFavorites } from "../redux/actions/favoriteThunk";
+import { favorSelector } from "../redux/selectors/selector";
+import SpinnerLoading from "../components/common/SpinnerLoading";
+import PaddingScrollViewBottom from "../components/common/PaddingScrollViewBottom";
 const HEIGHT = Dimensions.get("window").height;
 function Home({ navigation }) {
   const [seasonalDishes, setSeasonalDishes] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState({ loadDishes: true });
+  const favor = useSelector(favorSelector);
+  const dispatch = useDispatch();
 
   const season = useCurrentSeason();
 
@@ -30,6 +38,14 @@ function Home({ navigation }) {
     loadDishes();
   }, []);
 
+  useEffect(() => {
+    loadFavoritesData();
+  }, [dispatch]);
+
+  const loadFavoritesData = async () => {
+    dispatch(loadFavorites());
+  };
+
   const onRefresh = async () => {
     setRefreshing(true);
     await loadDishes();
@@ -37,10 +53,12 @@ function Home({ navigation }) {
   };
 
   const loadDishes = async () => {
+    setLoading({ ...loading, loadDishes: true });
     const response = await getDishes();
     if (response.status === 200) {
       setSeasonalDishes(response.data?.data);
     }
+    setLoading({ ...loading, loadDishes: false });
   };
 
   const handleViewAll = () => {
@@ -69,6 +87,9 @@ function Home({ navigation }) {
                   title: category,
                   image: require("../../assets/image/light-meals.png"),
                 }}
+                onPress={() =>
+                  navigation.navigate(ScreensName.search, { category })
+                }
               />
             ))}
           </View>
@@ -90,7 +111,9 @@ function Home({ navigation }) {
             .map((dish) => (
               <DishedV1 dish={dish} key={dish._id} />
             ))}
+          {loading.loadDishes && favor.isLoading && <SpinnerLoading />}
         </View>
+        <PaddingScrollViewBottom />
       </ScrollView>
     </MainLayoutWrapper>
   );

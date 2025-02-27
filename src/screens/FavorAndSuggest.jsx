@@ -12,6 +12,7 @@ import {
 import MainLayoutWrapper from "../components/layout/MainLayoutWrapper";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import Ionicons from "../components/common/VectorIcons/Ionicons";
+import PaddingScrollViewBottom from "../components/common/PaddingScrollViewBottom";
 const HEIGHT = Dimensions.get("window").height;
 function FavorAndSuggest({ route }) {
   const dish = useMemo(() => {
@@ -94,6 +95,7 @@ function FavorAndSuggest({ route }) {
             </Text>
           </View>
         ))}
+        <PaddingScrollViewBottom />
       </ScrollView>
     );
 
@@ -104,6 +106,7 @@ function FavorAndSuggest({ route }) {
             • {instruction}
           </Text>
         ))} */}
+        <PaddingScrollViewBottom />
       </ScrollView>
     );
 
@@ -222,6 +225,10 @@ const styles = StyleSheet.create({
   },
   cardContent: {
     padding: 16,
+    borderTopLeftRadius: 12,
+    borderTopRigghtRadius: 12,
+    // transform: [{ translateY: -5 }],
+    // backgroundColor: "white",
   },
   recipeName: {
     fontSize: 18,

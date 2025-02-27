@@ -3,6 +3,7 @@ import axios from "axios";
 // Import thư viện axios để thực hiện các HTTP requests
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import ShowToast from "../components/common/CustomToast";
 // Import AsyncStorage để lưu trữ và đọc dữ liệu locally trong React Native
 
 // === PHẦN 2: KHỞI TẠO BIẾN ===
@@ -47,15 +48,16 @@ axiosInstance.interceptors.request.use(
 // ví dụ :
 //    chỉ muốn lấy data trên response, sử dụng response.data
 // nói chung mỗi khi có response trả về đều đi qua đây
-// axiosInstance.interceptors.response.use(
-//   // Hàm xử lý response thành công
-//   (response) => {
-//     return response.data;
-//   },
-//   // Hàm xử lý response lỗi
-//   (error) => {
-//     return Promise.reject(error);
-//   },
-// );
+axiosInstance.interceptors.response.use(
+  // Hàm xử lý response thành công
+  (response) => {
+    return response;
+  },
+  // Hàm xử lý response lỗi
+  (error) => {
+    ShowToast("error", error?.response?.data?.message);
+    return Promise.reject(error);
+  }
+);
 
 export default axiosInstance;

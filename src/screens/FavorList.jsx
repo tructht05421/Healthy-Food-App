@@ -6,17 +6,22 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
+  Dimensions,
 } from "react-native";
 import MainLayoutWrapper from "../components/layout/MainLayoutWrapper";
 import DishedFavor from "../components/common/DishedFavor";
-import useFavorites from "../hooks/useFavorites";
 import { getDishes } from "../services/dishes";
-
+import { favorSelector } from "../redux/selectors/selector";
+import { useSelector } from "react-redux";
+import SpinnerLoading from "../components/common/SpinnerLoading";
+import PaddingScrollViewBottom from "../components/common/PaddingScrollViewBottom";
+const HEIGHT = Dimensions.get("window").height;
 function FavorList() {
   const [favoriteItems, setFavoriteItems] = useState([]);
   const [dishes, setDishes] = useState([]);
-  const { favoriteList, isFavorite, onChangeFavorite, isLoading } =
-    useFavorites();
+  const [loading, setLoading] = useState({ loadFavorDishes: true });
+  const favor = useSelector(favorSelector);
+
   useEffect(() => {
     loadDishes();
   }, []);
@@ -30,38 +35,44 @@ function FavorList() {
   };
 
   useEffect(() => {
-    if (!isLoading && dishes.length > 0) {
+    if (!favor?.isLoading && dishes.length > 0) {
       loadFavoriteItems();
     }
-  }, [favoriteList, isLoading, dishes, isFavorite]);
+  }, [favor.favoriteList, dishes]);
+
+  const isFavorite = (id) => {
+    return favor.favoriteList.includes(id);
+  };
 
   const loadFavoriteItems = () => {
-    console.log(favoriteList);
-
+    setLoading({ ...loading, loadFavorDishes: true });
     const filteredItems = dishes.filter((item) => isFavorite(item._id));
     setFavoriteItems(filteredItems);
+    setLoading({ ...loading, loadFavorDishes: false });
   };
 
   return (
     <MainLayoutWrapper>
       <View style={styles.container}>
         <Text style={styles.headerTitle}>My Favorites</Text>
-        <ScrollView style={styles.scrollContainer}>
+        <ScrollView
+          style={styles.scrollContainer}
+          showsVerticalScrollIndicator={false}
+        >
           <View style={styles.gridContainer}>
-            {favoriteItems.length === 0 ? (
+            {loading.loadFavorDishes ? (
+              <SpinnerLoading />
+            ) : favoriteItems.length === 0 ? (
               <Text>No favorite items found.</Text>
             ) : (
               favoriteItems.map((item) => (
                 <View key={item._id} style={styles.gridItem}>
-                  <DishedFavor
-                    item={item}
-                    refresh={loadFavoriteItems}
-                    onChangeFavorite={() => onChangeFavorite(item._id)}
-                  />
+                  <DishedFavor item={item} />
                 </View>
               ))
             )}
           </View>
+          <PaddingScrollViewBottom />
         </ScrollView>
       </View>
     </MainLayoutWrapper>
@@ -82,6 +93,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   gridContainer: {
+    minHeight: HEIGHT * 0.8,
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
