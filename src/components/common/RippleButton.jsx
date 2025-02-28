@@ -8,6 +8,7 @@ import {
   Platform,
   Dimensions,
   View,
+  ActivityIndicator,
 } from "react-native";
 
 const WIDTH = Dimensions.get("window").width;
@@ -24,6 +25,7 @@ const RippleButton = ({
   leftButtonIcon, // Icon bên trái của button
   rightButtonIcon, // Icon bên phải của button
   contentContainerStyle,
+  loading,
 }) => {
   // Khởi tạo các state cho animation
   const [rippleScale] = useState(new Animated.Value(0)); // Scale của hiệu ứng ripple, bắt đầu từ 0
@@ -93,6 +95,7 @@ const RippleButton = ({
         buttonStyle,
         Platform.OS === "ios" && pressed && styles.iosPressed,
       ]}
+      disabled={loading}
     >
       {/* Hiệu ứng Ripple cho iOS */}
       {Platform.OS === "ios" && (
@@ -115,6 +118,11 @@ const RippleButton = ({
           (buttonText && <Text style={textStyle}>{buttonText}</Text>)}
         {rightButtonIcon}
       </View>
+      {loading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="small" color="white" />
+        </View>
+      )}
     </Pressable>
   );
 };
@@ -145,6 +153,16 @@ const styles = StyleSheet.create({
   },
   iosPressed: {
     opacity: 0.8, // Độ trong suốt khi button được nhấn trên iOS
+  },
+  loadingContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.5)",
   },
 });
 

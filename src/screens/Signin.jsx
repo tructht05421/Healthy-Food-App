@@ -39,6 +39,7 @@ function Signin({ navigation }) {
   // Khởi tạo state cho form đăng nhập
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch(); // Khởi tạo dispatch để gửi actions
   const { signIn, userInfo, error } = useGoogleAuth();
 
@@ -70,6 +71,7 @@ function Signin({ navigation }) {
 
   // Xử lý sự kiện đăng nhập
   const handlePress = async () => {
+    setLoading(true);
     const credentials = {
       email: email,
       password: password,
@@ -94,6 +96,7 @@ function Signin({ navigation }) {
       console.log(error);
       ShowToast("error", "Unexpected error");
     }
+    setLoading(false);
   };
 
   // Render các nút đăng nhập bên thứ 3
@@ -166,6 +169,7 @@ function Signin({ navigation }) {
             buttonText="Sign in"
             buttonStyle={styles.signinButton}
             textStyle={styles.signinButtonText}
+            loading={loading}
           />
         </View>
 

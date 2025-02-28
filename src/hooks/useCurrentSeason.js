@@ -10,7 +10,7 @@ function useCurrentSeason(hemisphere = "northern") {
 
   useEffect(() => {
     // Lấy tháng hiện tại (0-11)
-    const currentMonth = new Date().getMonth();
+    const currentMonth = new Date().getMonth() + 1;
 
     // Xác định mùa dựa vào tháng và bán cầu
     if (hemisphere === "northern") {

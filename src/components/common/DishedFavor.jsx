@@ -43,19 +43,19 @@ const DishedFavor = ({ item }) => {
         </TouchableOpacity>
       </View>
       <Text style={styles.dishTitle}>{item.name}</Text>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={styles.deleteButton}
         onPress={handleOnChangeFavorite}
       >
         <AntDesignIcon name="delete" size={24} color="#FF0000" />
-        {/* <Text style={styles.deleteIcon}>🗑️</Text> */}
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   dishedFavorContainer: {
+    flex: 1,
     backgroundColor: "white",
     borderRadius: 12,
     position: "relative",
@@ -92,7 +92,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   dishTitle: {
-    minHeight: HEIGHT * 0.06,
     fontSize: 15,
     fontWeight: "bold",
     padding: 8,

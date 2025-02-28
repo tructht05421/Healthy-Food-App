@@ -8,13 +8,20 @@ import {
   TouchableOpacity,
   Dimensions,
   useWindowDimensions,
+  ActivityIndicator,
 } from "react-native";
 import MainLayoutWrapper from "../components/layout/MainLayoutWrapper";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import Ionicons from "../components/common/VectorIcons/Ionicons";
 import PaddingScrollViewBottom from "../components/common/PaddingScrollViewBottom";
+import { useDispatch, useSelector } from "react-redux";
+import { favorSelector } from "../redux/selectors/selector";
+import { toggleFavorite } from "../redux/actions/favoriteThunk";
 const HEIGHT = Dimensions.get("window").height;
 function FavorAndSuggest({ route }) {
+  const dispatch = useDispatch();
+  const favorite = useSelector(favorSelector);
+
   const dish = useMemo(() => {
     return route.params.dish;
   }, [route.params.dish]);
@@ -70,6 +77,14 @@ function FavorAndSuggest({ route }) {
       return 0;
     }
   }, [dish]);
+
+  const isFavorite = (id) => {
+    return favorite.favoriteList.includes(id);
+  };
+
+  const handleOnSavePress = (dish) => {
+    dispatch(toggleFavorite({ id: dish._id }));
+  };
 
   const layout = useWindowDimensions();
 
@@ -130,9 +145,18 @@ function FavorAndSuggest({ route }) {
     return (
       <View key={dish._id} style={styles.recipeCard}>
         <Image source={{ uri: dish?.image_url }} style={styles.recipeImage} />
-        <View style={styles.heartIcon}>
-          <Ionicons name="heart-outline" size={24} color="#FF8A65" />
-        </View>
+        <TouchableOpacity
+          style={styles.heartIcon}
+          onPress={() => handleOnSavePress(dish)}
+        >
+          {favorite.isLoading ? (
+            <ActivityIndicator size={24} color="#FC8019" />
+          ) : isFavorite(dish._id) ? (
+            <Ionicons name="heart" size={24} color="#FF8A65" />
+          ) : (
+            <Ionicons name="heart-outline" size={24} color="#FF8A65" />
+          )}
+        </TouchableOpacity>
         <View style={styles.cardContent}>
           <Text style={styles.recipeName}>{dish.name}</Text>
           <Text style={styles.recipeDescription}>{dish.description}</Text>

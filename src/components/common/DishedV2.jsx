@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
+  ActivityIndicator,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import CategoryTag from "./CategoryTag";
@@ -49,11 +50,15 @@ const DishedV2 = ({ item, onPress, onFavoritePress }) => {
         style={styles.favoriteButton}
         onPress={() => handleOnSavePress(item)}
       >
-        <MaterialCommunityIcons
-          name={isFavorite(item._id) ? "heart" : "heart-outline"}
-          size={22}
-          color="#FF9500"
-        />
+        {favorite.isLoading ? (
+          <ActivityIndicator size={22} color="#FC8019" />
+        ) : (
+          <MaterialCommunityIcons
+            name={isFavorite(item._id) ? "heart" : "heart-outline"}
+            size={22}
+            color="#FF9500"
+          />
+        )}
       </TouchableOpacity>
     </TouchableOpacity>
   );

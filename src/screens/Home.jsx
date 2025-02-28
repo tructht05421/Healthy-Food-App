@@ -25,6 +25,7 @@ import PaddingScrollViewBottom from "../components/common/PaddingScrollViewBotto
 const HEIGHT = Dimensions.get("window").height;
 function Home({ navigation }) {
   const [seasonalDishes, setSeasonalDishes] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState({ loadDishes: true });
   const favor = useSelector(favorSelector);
@@ -61,6 +62,14 @@ function Home({ navigation }) {
     setLoading({ ...loading, loadDishes: false });
   };
 
+  const handleSearch = async (searchString) => {
+    navigation.navigate(ScreensName.search, { searchQuery: searchString });
+  };
+
+  const handleClear = () => {
+    setSearchQuery("");
+  };
+
   const handleViewAll = () => {
     navigation.navigate(ScreensName.list);
   };
@@ -74,7 +83,13 @@ function Home({ navigation }) {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        <SearchBar />
+        <SearchBar
+          placeholder="What do you need?"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          onSubmit={() => handleSearch(searchQuery)}
+          onClear={handleClear}
+        />
         {/* Categories Section */}
         <View style={styles.categoriesSection}>
           <Text style={styles.sectionTitle}>Browse by category</Text>
@@ -103,13 +118,16 @@ function Home({ navigation }) {
             </TouchableOpacity>
           </View>
 
-          {seasonalDishes
-            .filter(
-              (item) => item.season === season || item.season === "All Seasons"
-            )
-            .map((dish) => (
-              <DishedV1 dish={dish} key={dish._id} />
-            ))}
+          {seasonalDishes.length > 0 ? (
+            seasonalDishes
+              .filter(
+                (item) =>
+                  item.season === season || item.season === "All Seasons"
+              )
+              .map((dish) => <DishedV1 dish={dish} key={dish._id} />)
+          ) : (
+            <Text style={styles.noResultsText}>No seasonal dishes found</Text>
+          )}
           {loading.loadDishes && favor.isLoading && <SpinnerLoading />}
         </View>
         <PaddingScrollViewBottom />
@@ -152,6 +170,10 @@ const styles = StyleSheet.create({
   viewAllText: {
     color: "#38B2AC",
     fontSize: 14,
+  },
+  noResultsText: {
+    fontSize: 16,
+    textAlign: "center",
   },
 });
 

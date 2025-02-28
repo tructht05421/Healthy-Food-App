@@ -1,5 +1,12 @@
 import React from "react";
-import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
 import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 import CategoryTag from "./CategoryTag";
 import { ScreensName } from "../../constants/ScreensName";
@@ -7,6 +14,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { favorSelector } from "../../redux/selectors/selector";
 import { toggleFavorite } from "../../redux/actions/favoriteThunk";
+import { getSeasonColor } from "../../utils/common";
 
 const DishedV1 = ({
   dish,
@@ -31,7 +39,6 @@ const DishedV1 = ({
     dispatch(toggleFavorite({ id: dish._id }));
     onSavePress && onSavePress();
   };
-
   return (
     <TouchableOpacity key={dish._id} style={styles.dishCard}>
       <Image source={{ uri: dish.image_url }} style={styles.dishImage} />
@@ -44,7 +51,9 @@ const DishedV1 = ({
         style={styles.saveButton}
         onPress={() => handleOnSavePress(dish)}
       >
-        {isFavorite(dish._id) ? (
+        {favorite.isLoading ? (
+          <ActivityIndicator size={24} color="#FC8019" />
+        ) : isFavorite(dish._id) ? (
           <MaterialCommunityIcons
             name="heart-multiple"
             size={24}
@@ -61,6 +70,16 @@ const DishedV1 = ({
       <TouchableOpacity style={styles.arrowButton} onPress={handleOnArrowPress}>
         <Ionicons name="arrow-forward" size={18} color="white" />
       </TouchableOpacity>
+      <View
+        style={{
+          ...styles.seasonTag,
+          borderColor: getSeasonColor(dish.season),
+        }}
+      >
+        <Text style={{ color: getSeasonColor(dish.season), fontSize: 10 }}>
+          {dish?.season}
+        </Text>
+      </View>
     </TouchableOpacity>
   );
 };
@@ -116,6 +135,16 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: "20%",
     right: 12,
+  },
+  seasonTag: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    padding: 4,
+    paddingHorizontal: 8,
+    borderBottomRightRadius: 8,
+    backgroundColor: "rgba(256,256,256,0.9)",
+    borderWidth: 1,
   },
 });
 

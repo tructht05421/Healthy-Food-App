@@ -34,7 +34,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
 
   // If current screen should hide tab bar, return null but maintain layout space
   if (currentScreen?.hiddenBottomTab) {
-    return <View style={{ height: HEIGHT * 0.08 }} />;
+    return <View />;
   }
 
   // Find visible tabs to display in the tab bar

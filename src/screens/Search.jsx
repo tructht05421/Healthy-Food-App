@@ -55,6 +55,11 @@ const SearchScreen = ({ route }) => {
       if (route.params?.category) {
         handleSearchByCategory(route.params?.category);
       }
+
+      if (route.params?.searchQuery) {
+        setSearchQuery(route.params?.searchQuery);
+        handleSearch(route.params?.searchQuery);
+      }
     }, [])
   );
 
@@ -67,7 +72,9 @@ const SearchScreen = ({ route }) => {
     const response = await getDishes();
     if (response.status === 200) {
       setSearchResults(
-        response.data?.data?.filter((item) => searchString.includes(item.name))
+        response.data?.data?.filter((item) =>
+          item.name.toLowerCase().includes(searchString.toLowerCase())
+        )
       );
       setSearchMode("results");
     } else {
@@ -77,10 +84,11 @@ const SearchScreen = ({ route }) => {
 
   const handleSearchByCategory = async (type) => {
     const response = await getDishes();
-    setSearchQuery(type);
+
+    setSearchQuery(type.name);
     if (response.status === 200) {
       setSearchResults(
-        response.data?.data?.filter((item) => item.type === type)
+        response.data?.data?.filter((item) => item.type == type.name)
       );
       setSearchMode("results");
     }

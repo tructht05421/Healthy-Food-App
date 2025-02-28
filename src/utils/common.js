@@ -1,5 +1,6 @@
 // === PHẦN 1: IMPORT ===
 import moment from "moment";
+import { SeasonType } from "../constants/SeasonType";
 // Import thư viện moment.js để xử lý date/time
 
 // === PHẦN 2: FORMAT PRICE ===
@@ -47,3 +48,11 @@ export const formatTime = (date) => {
 // Ví dụ:
 // formatTime("2024-01-11 14:30") => "30-14"
 // formatTime("invalid") => "Invalid time"
+
+export const getSeasonColor = (season) => {
+  if (season == "All Seasons") {
+    return SeasonType.all.color;
+  }
+  const color = SeasonType[season]?.color;
+  return color ?? "black";
+};

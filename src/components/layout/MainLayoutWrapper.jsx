@@ -25,14 +25,14 @@ function MainLayoutWrapper({ children }) {
       {/* {children} */}
       <DecorationDot
         size={HEIGHT * 0.25}
-        top={-(HEIGHT * 0.1)}
+        top={-(HEIGHT * 0.2)}
         left={-(WIDTH * 0.4)}
         zIndex={1}
         backgroundColor={"#AEC687"}
       />
       <DecorationDot
         size={HEIGHT * 0.25}
-        top={-(HEIGHT * 0.2)}
+        top={-(HEIGHT * 0.25)}
         left={-(WIDTH * 0.2)}
         opacity={0.4}
         zIndex={1}

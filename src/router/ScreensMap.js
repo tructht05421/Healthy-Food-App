@@ -6,7 +6,6 @@ import Signup from "../screens/Signup";
 import { ScreensName } from "../constants/ScreensName";
 import ChangePassword from "../screens/ChangePassword";
 import VerifyEmail from "../screens/VerifyEmail";
-import Welcome from "../screens/Welcome";
 import Ionicons from "../components/common/VectorIcons/Ionicons";
 import Home from "../screens/Home";
 import FavorList from "../screens/FavorList";
