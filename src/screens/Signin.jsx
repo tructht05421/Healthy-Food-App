@@ -175,7 +175,18 @@ function Signin({ navigation }) {
 
         {/* Container chứa các nút đăng nhập bên thứ 3 */}
         <View style={styles.loginMethodContainer}>{renderLoginMethod()}</View>
-
+        <Text style={styles.alreadyText}>
+          Don't have account?{" "}
+          <Text
+            style={{
+              textDecorationLine: "underline", // Gạch chân text
+              fontSize: 16, // Kích thước chữ
+            }}
+            onPress={() => navigation.navigate(ScreensName.signup)}
+          >
+            Register
+          </Text>
+        </Text>
         {/* Các chấm trang trí ở 4 góc màn hình */}
         <>
           <DecorationDot
@@ -276,6 +287,13 @@ const styles = StyleSheet.create({
     height: 80, // Chiều cao 80px
     justifyContent: "center", // Căn giữa theo chiều dọc
     alignItems: "center", // Căn giữa theo chiều ngang
+  },
+  alreadyText: {
+    marginHorizontal: 8, // Margin ngang
+    marginVertical: 24, // Margin dọc
+    fontSize: 16, // Kích thước chữ
+    fontFamily: "Aleo_400Regular", // Font chữ
+    zIndex: 10,
   },
 });
 
