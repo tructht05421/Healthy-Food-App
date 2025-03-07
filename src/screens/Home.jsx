@@ -22,6 +22,8 @@ import { loadFavorites } from "../redux/actions/favoriteThunk";
 import { favorSelector } from "../redux/selectors/selector";
 import SpinnerLoading from "../components/common/SpinnerLoading";
 import PaddingScrollViewBottom from "../components/common/PaddingScrollViewBottom";
+
+const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
 function Home({ navigation }) {
   const [seasonalDishes, setSeasonalDishes] = useState([]);
@@ -93,7 +95,15 @@ function Home({ navigation }) {
         {/* Categories Section */}
         <View style={styles.categoriesSection}>
           <Text style={styles.sectionTitle}>Browse by category</Text>
-          <View style={styles.categoriesGrid}>
+          <ScrollView
+            style={styles.categoriesGrid}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{
+              paddingRight:
+                WIDTH * ((Object.values(DishType).length - 1) * 0.22),
+            }}
+          >
             {Object.values(DishType).map((category, key) => (
               <CategoryCard
                 key={key}
@@ -104,9 +114,11 @@ function Home({ navigation }) {
                 onPress={() =>
                   navigation.navigate(ScreensName.search, { category })
                 }
+                cardWidth={"20%"}
+                style={{ marginRight: "4%" }}
               />
             ))}
-          </View>
+          </ScrollView>
         </View>
 
         {/* Seasonal Dishes Section */}
@@ -155,7 +167,7 @@ const styles = StyleSheet.create({
   categoriesGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "space-around",
+    // justifyContent: "space-around",
   },
   // Seasonal dishes section
   seasonalSection: {

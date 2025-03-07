@@ -65,6 +65,7 @@ const styles = StyleSheet.create({
   backIcon: {
     position: "absolute",
     left: "5%",
+    zIndex: 999,
   },
   profileImage: {
     height: 40,

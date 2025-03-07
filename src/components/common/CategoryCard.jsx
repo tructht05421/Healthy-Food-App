@@ -11,11 +11,11 @@ import {
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
 
-const CategoryCard = ({ category, onPress, cardWidth, imageSize }) => {
+const CategoryCard = ({ category, onPress, cardWidth, imageSize, style }) => {
   return (
     <TouchableOpacity
       key={category.id}
-      style={{ ...styles.categoryCard, width: cardWidth ?? "45%" }}
+      style={{ ...styles.categoryCard, width: cardWidth ?? "45%", ...style }}
       onPress={onPress}
     >
       <View style={styles.categoryImageContainer}>

@@ -55,7 +55,6 @@ const DishedFavor = ({ item }) => {
 
 const styles = StyleSheet.create({
   dishedFavorContainer: {
-    flex: 1,
     backgroundColor: "white",
     borderRadius: 12,
     position: "relative",

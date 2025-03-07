@@ -16,6 +16,11 @@ import Notification from "../screens/Notification";
 import FontistoIcon from "../components/common/VectorIcons/FontistoIcon";
 import AntDesignIcon from "../components/common/VectorIcons/AntDesignIcon";
 import List from "../screens/List";
+import Message from "../screens/Message";
+import FontAwesomeIcon from "../components/common/VectorIcons/FontAwesomeIcon";
+import { Image, View } from "react-native";
+import OcticonsIcon from "../components/common/VectorIcons/OcticonsIcon";
+import HeartBeat from "../screens/HeartBeat";
 // ↑ Import enum chứa tên các màn hình
 // Giúp tránh lỗi typo và dễ dàng quản lý tên màn hình
 
@@ -112,12 +117,12 @@ export const ScreensMap = [
     },
   },
   {
-    name: ScreensName.search,
-    component: Search,
+    name: ScreensName.message,
+    component: Message,
     options: {
       tabBarIcon: ({ color, focused }) => (
         <Ionicons
-          name="search-outline" // Tên icon
+          name="chatbubble-ellipses-outline" // Tên icon
           size={28} // Kích thước icon
           color={color} // Màu sắc (active/inactive)
         />
@@ -126,16 +131,32 @@ export const ScreensMap = [
     },
   },
   {
-    name: ScreensName.notification,
-    component: Notification,
+    name: ScreensName.heartBeat,
+    component: HeartBeat,
     options: {
-      tabBarIcon: ({ color, focused }) => (
-        <FontistoIcon
-          name="bell" // Tên icon
-          size={24} // Kích thước icon
-          color={color} // Màu sắc (active/inactive)
-        />
-      ),
+      tabBarIcon: ({ color, focused }) => {
+        return (
+          <View>
+            <FontAwesomeIcon
+              name="heart-o" // Tên icon
+              size={24} // Kích thước icon
+              color={color} // Màu sắc (active/inactive)
+            />
+            <OcticonsIcon
+              name="pulse" // Tên icon
+              size={16} // Kích thước icon
+              color={color} // Màu sắc (active/inactive)
+              style={{
+                position: "absolute",
+                height: 16,
+                width: 32,
+                top: 4,
+                left: 4,
+              }}
+            />
+          </View>
+        );
+      },
       iconStyles: { transform: [{ translateX: 25 }] },
     },
   },
@@ -162,6 +183,20 @@ export const ScreensMap = [
   {
     name: ScreensName.favorAndSuggest,
     component: FavorAndSuggest,
+    options: {
+      tabBarButton: () => null,
+    },
+  },
+  {
+    name: ScreensName.search,
+    component: Search,
+    options: {
+      tabBarButton: () => null,
+    },
+  },
+  {
+    name: ScreensName.notification,
+    component: Notification,
     options: {
       tabBarButton: () => null,
     },
