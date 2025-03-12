@@ -17,6 +17,7 @@ import {
   Aleo_700Bold,
   Aleo_700Bold_Italic,
 } from "@expo-google-fonts/aleo";
+import { ThemeProvider } from "./src/contexts/ThemeContext";
 
 // Create a custom Text component wrapper
 const DefaultText = Text.render;
@@ -40,31 +41,37 @@ export default function App() {
   });
 
   if (!fontsLoaded) {
-    return <ActivityIndicator />;
+    return <ActivityIndicator size="large" />;
   }
 
   // Register the custom toast configuration
   const toastConfig = {
     success: ({ text1, text2, props }) => (
-      <CustomToast text1={text1} text2={text2} type="success" />
+      <View style={{ backgroundColor: "green", padding: 10, borderRadius: 5 }}>
+        <Text style={{ color: "white" }}>{text1}</Text>
+        {text2 && <Text style={{ color: "white" }}>{text2}</Text>}
+      </View>
     ),
     error: ({ text1, text2, props }) => (
-      <CustomToast text1={text1} text2={text2} type="error" />
+      <View style={{ backgroundColor: "red", padding: 10, borderRadius: 5 }}>
+        <Text style={{ color: "white" }}>{text1}</Text>
+        {text2 && <Text style={{ color: "white" }}>{text2}</Text>}
+      </View>
     ),
     info: ({ text1, text2, props }) => (
-      <CustomToast text1={text1} text2={text2} type="info" />
+      <View style={{ backgroundColor: "blue", padding: 10, borderRadius: 5 }}>
+        <Text style={{ color: "white" }}>{text1}</Text>
+        {text2 && <Text style={{ color: "white" }}>{text2}</Text>}
+      </View>
     ),
   };
 
-  // Add a test text to verify font loading
   return (
-    <View style={{ flex: 1 }}>
-      <Provider store={store}>
-        <NavigationContainer>
-          <Navigator />
-          <Toast />
-        </NavigationContainer>
-      </Provider>
-    </View>
+    <Provider store={store}>
+      <ThemeProvider>
+        <Navigator />
+        <Toast config={toastConfig} />
+      </ThemeProvider>
+    </Provider>
   );
 }

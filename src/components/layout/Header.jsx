@@ -13,7 +13,7 @@ function Header() {
 
   const checkAuth = () => {
     if (user) {
-      navigation.navigate(ScreensName.setting);
+      navigation.navigate(ScreensName.profile);
     } else {
       navigation.navigate(ScreensName.signin);
     }

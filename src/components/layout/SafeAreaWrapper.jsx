@@ -1,121 +1,142 @@
-// Import các thư viện và components cần thiết từ React và React Native
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  View, // Component container cơ bản
-  Text, // Component hiển thị text
-  StyleSheet, // Module để tạo styles
-  StatusBar, // Component để tùy chỉnh thanh status bar
-  Platform, // Module để check platform (iOS/Android)
-  ImageBackground, // Component để set background image
-  Dimensions, // Module để lấy kích thước màn hình
+  View,
+  Text,
+  StyleSheet,
+  StatusBar,
+  Platform,
+  ImageBackground,
+  Dimensions,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context"; // Component để handle safe area
+import {
+  SafeAreaView,
+  SafeAreaProvider,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import { useFocusEffect } from "@react-navigation/native";
+import { useTheme } from "../../contexts/ThemeContext";
 
-// Lấy chiều rộng và cao của màn hình device
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
 
-// Component SafeAreaWrapper với các props mặc định
 const SafeAreaWrapper = ({
-  headerTitle = "", // Tiêu đề header, mặc định rỗng
+  headerTitle = "",
   headerStyle = {
-    backgroundColor: "transparent", // Màu nền header, mặc định trong suốt
-    textColor: "#000000", // Màu chữ header, mặc định đen
-    theme: "black", // Theme của status bar, mặc định đen
+    backgroundColor: "transparent",
+    textColor: "#000000",
+    theme: "black",
   },
-  backgroundImage, // Props để truyền ảnh background
-  backgroundStyle, // Style tùy chỉnh cho background
-  children, // Components con bên trong
+  backgroundImage,
+  backgroundStyle,
+  children,
 }) => {
-  // Destructuring các giá trị từ headerStyle
-  const { backgroundColor, textColor, theme } = headerStyle;
+  const { backgroundColor, textColor } = headerStyle;
+  const insets = useSafeAreaInsets(); // Lấy kích thước vùng an toàn
+
+  const { theme, themeMode } = useTheme();
 
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBarStyle(
-        theme === "light" ? "light-content" : "dark-content",
+        themeMode !== "light" ? "light-content" : "dark-content",
         true
       );
     }, [])
   );
 
+  useEffect(() => {
+    StatusBar.setBarStyle(
+      themeMode !== "light" ? "light-content" : "dark-content",
+      true
+    );
+    if (Platform.OS === "android") {
+      StatusBar.setBackgroundColor("#0A1929"); // Đặt màu trực tiếp
+      StatusBar.setTranslucent(true);
+    }
+  }, [themeMode]);
+
   return (
-    // Container chính với SafeAreaView
-    <SafeAreaView style={styles.container}>
-      {/* Cấu hình StatusBar */}
-      <StatusBar
-        barStyle={theme === "light" ? "light-content" : "dark-content"} // Style của status bar dựa vào theme
-        backgroundColor={backgroundColor} // Màu nền của status bar
-        translucent={true} // Cho phép trong suốt
+    <SafeAreaProvider>
+      {/* View này sẽ phủ lên vùng StatusBar để đảm bảo màu nền chính xác */}
+      <View
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: insets.top,
+          backgroundColor: theme.headerBackgroundColor, // Đặt màu trực tiếp
+          zIndex: 2,
+        }}
       />
 
-      {/* Kiểm tra nếu có backgroundImage */}
-      {backgroundImage ? (
-        // Render ImageBackground nếu có backgroundImage
-        <ImageBackground
-          source={backgroundImage}
-          style={[styles.background, backgroundStyle || {}]} // Áp dụng style background và custom style
-          imageStyle={{ resizeMode: "cover" }} // Style cho image
-        >
-          {/* Render header nếu có headerTitle */}
-          {headerTitle ? (
-            <View style={styles.header}>
-              <Text style={[styles.headerText, { color: textColor }]}>
-                {headerTitle}
-              </Text>
-            </View>
-          ) : null}
-          {/* Container cho content */}
-          <View style={styles.content}>{children}</View>
-        </ImageBackground>
-      ) : (
-        // Render view thông thường nếu không có backgroundImage
-        <>
-          {/* Render header nếu có headerTitle */}
-          {headerTitle ? (
-            <View style={[styles.header, { backgroundColor }]}>
-              <Text style={[styles.headerText, { color: textColor }]}>
-                {headerTitle}
-              </Text>
-            </View>
-          ) : null}
-          {/* Container cho content với background color */}
-          <View style={[styles.content, backgroundStyle]}>{children}</View>
-        </>
-      )}
-    </SafeAreaView>
+      <StatusBar
+        barStyle={
+          backgroundColor === "light" ? "light-content" : "dark-content"
+        }
+        backgroundColor={theme.headerBackgroundColor} // Đặt màu trực tiếp
+        translucent={true}
+      />
+
+      <SafeAreaView style={styles.container}>
+        {backgroundImage ? (
+          <ImageBackground
+            source={backgroundImage}
+            style={[styles.background, backgroundStyle || {}]}
+            imageStyle={{ resizeMode: "cover" }}
+          >
+            {headerTitle ? (
+              <View style={styles.header}>
+                <Text style={[styles.headerText, { color: textColor }]}>
+                  {headerTitle}
+                </Text>
+              </View>
+            ) : null}
+            <View style={styles.content}>{children}</View>
+          </ImageBackground>
+        ) : (
+          <>
+            {headerTitle ? (
+              <View style={[styles.header, { backgroundColor }]}>
+                <Text style={[styles.headerText, { color: textColor }]}>
+                  {headerTitle}
+                </Text>
+              </View>
+            ) : null}
+            <View style={[styles.content, backgroundStyle]}>{children}</View>
+          </>
+        )}
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 };
 
-// Định nghĩa styles
 const styles = StyleSheet.create({
   container: {
-    flex: 1, // Chiếm toàn bộ không gian có sẵn
-    width: WIDTH, // Chiều rộng bằng màn hình
-    height: HEIGHT, // Chiều cao bằng màn hình
-    position: "relative", // Position relative để có thể định vị các phần tử con
+    flex: 1,
+    width: WIDTH,
+    height: HEIGHT,
+    position: "relative",
   },
   background: {
-    flex: 1, // Chiếm toàn bộ không gian có sẵn
+    flex: 1,
     backgroundColor: "red",
   },
   header: {
-    paddingTop: Platform.OS === "ios" ? 15 : 10, // Padding top khác nhau cho iOS và Android
-    justifyContent: "center", // Căn giữa theo chiều dọc
-    alignItems: "center", // Căn giữa theo chiều ngang
-    height: 60, // Chiều cao cố định cho header
-    zIndex: 1, // Đảm bảo header hiển thị trên các phần tử khác
+    paddingTop: Platform.OS === "ios" ? 15 : 10,
+    justifyContent: "center",
+    alignItems: "center",
+    height: 60,
+    zIndex: 1,
   },
   headerText: {
-    fontSize: 18, // Kích thước chữ
-    fontWeight: "bold", // Độ đậm của chữ
+    fontSize: 18,
+    fontWeight: "bold",
   },
   content: {
-    flex: 1, // Chiếm phần không gian còn lại
-    zIndex: 0, // Đặt z-index thấp hơn header
+    flex: 1,
+    zIndex: 0,
   },
 });
 
-// Export component để sử dụng ở nơi khác
 export default SafeAreaWrapper;

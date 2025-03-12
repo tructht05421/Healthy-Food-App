@@ -1,4 +1,4 @@
-export const userSelector = (state) => state.user.user;
+export const userSelector = (state) => state.user?.user;
 export const favorSelector = (state) => state.favorite;
 
 // ↑ Tạo và export một selector function để lấy thông tin user từ Redux store

@@ -4,11 +4,15 @@ import { LinearGradient } from "expo-linear-gradient";
 import { ScreensMap } from "../../router/ScreensMap";
 import MaterialCommunityIcons from "./VectorIcons/MaterialCommunityIcons";
 import { ScreensName } from "../../constants/ScreensName";
+import { useTheme } from "../../contexts/ThemeContext";
 
 // Get screen dimensions
 const HEIGHT = Dimensions.get("window").height;
 
 const CustomTabBar = ({ state, descriptors, navigation }) => {
+  // Get theme context
+  const { theme } = useTheme();
+
   // The main tab screen is named "Main" and contains a stack navigator
   const mainRoute = state.routes[0];
   const mainRouteState = mainRoute?.state;
@@ -54,9 +58,9 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
         width: "100%",
         height: HEIGHT * 0.08,
         elevation: 8,
-        shadowColor: "#000",
+        shadowColor: theme.mode === "dark" ? "#000" : "#000",
         shadowOffset: { width: 0, height: -2 },
-        shadowOpacity: 0.1,
+        shadowOpacity: theme.mode === "dark" ? 0.3 : 0.1,
         shadowRadius: 3,
         backgroundColor: "transparent", // Important to ensure visibility
         zIndex: 999, // Ensure it stays on top
@@ -64,7 +68,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
     >
       {/* Gradient background */}
       <LinearGradient
-        colors={["white", "white"]}
+        colors={[theme.tabBarBackground, theme.tabBarBackground]}
         style={{
           position: "absolute",
           width: "100%",
@@ -118,8 +122,12 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
                 screen.options.tabBarIcon({
                   focused: isFocused,
                   color: isFocused
-                    ? screen.options?.activeColor || "#FF7400"
-                    : screen.options?.inactiveColor || "#ABB7C2",
+                    ? theme.tabBarActiveIcon ||
+                      screen.options?.activeColor ||
+                      "#FF7400"
+                    : theme.tabBarInactiveIcon ||
+                      screen.options?.inactiveColor ||
+                      "#ABB7C2",
                   size: 28,
                 })}
             </TouchableOpacity>
@@ -137,7 +145,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
             width: HEIGHT * 0.08,
             height: HEIGHT * 0.08,
             borderRadius: 50,
-            backgroundColor: "#ff9900", // Adjust as needed
+            backgroundColor: theme.mode === "dark" ? "#333" : "#ff9900", // Adjust based on theme
             justifyContent: "center",
             alignItems: "center",
           }}
@@ -147,10 +155,13 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
             });
           }}
           activeOpacity={0.9}
-          // Add desired action for the central button
         >
           <LinearGradient
-            colors={["#40B491", "#FFFFFF"]}
+            colors={
+              theme.mode === "dark"
+                ? ["#2a7660", "#333333"]
+                : ["#40B491", "#FFFFFF"]
+            }
             style={{
               position: "absolute",
               width: "100%",
@@ -160,11 +171,13 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
             start={{ x: 0, y: 1 }}
             end={{ x: 0, y: 0 }}
           >
-            {/* <View style={styles.circleContainer}>
-              <View style={styles.halfCircle} />
-            </View> */}
+            {/* Circle container code remains the same */}
           </LinearGradient>
-          <MaterialCommunityIcons name="home" size={42} color="#F398C1" />
+          <MaterialCommunityIcons
+            name="home"
+            size={42}
+            color={theme.mode === "dark" ? "#E075A2" : "#F398C1"}
+          />
         </TouchableOpacity>
       </View>
     </View>

@@ -22,6 +22,7 @@ import { loadFavorites } from "../redux/actions/favoriteThunk";
 import { favorSelector } from "../redux/selectors/selector";
 import SpinnerLoading from "../components/common/SpinnerLoading";
 import PaddingScrollViewBottom from "../components/common/PaddingScrollViewBottom";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;

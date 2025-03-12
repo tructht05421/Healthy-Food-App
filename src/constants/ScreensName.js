@@ -13,6 +13,7 @@ export const ScreensName = {
   notification: "notification",
   message: "message",
   heartBeat: "heartBeat",
+  profile: "profile",
 };
 // ↑ Object chứa các hằng số định danh cho các màn hình trong ứng dụng
 

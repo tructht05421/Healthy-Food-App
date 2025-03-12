@@ -1,6 +1,10 @@
 // === PHẦN 1: IMPORT ===
 import moment from "moment";
 import { SeasonType } from "../constants/SeasonType";
+import { LightContants } from "../constants/LightConstants";
+import store from "../redux/store";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 // Import thư viện moment.js để xử lý date/time
 
 // === PHẦN 2: FORMAT PRICE ===
@@ -55,4 +59,47 @@ export const getSeasonColor = (season) => {
   }
   const color = SeasonType[season]?.color;
   return color ?? "black";
+};
+
+// Lưu từ khóa tìm kiếm gần nhất (tối đa 3 từ khóa)
+export const saveSearchHistory = async (newKeyword) => {
+  try {
+    const history = await AsyncStorage.getItem("SearchHistory");
+    let historyArray = history ? JSON.parse(history) : [];
+
+    // Loại bỏ từ khóa nếu đã tồn tại và thêm vào đầu danh sách
+    historyArray = [
+      newKeyword,
+      ...historyArray.filter((item) => item !== newKeyword),
+    ];
+
+    // Giữ lại tối đa 3 từ khóa gần nhất
+    if (historyArray.length > 3) {
+      historyArray = historyArray.slice(0, 3);
+    }
+
+    await AsyncStorage.setItem("SearchHistory", JSON.stringify(historyArray));
+  } catch (error) {
+    console.error("Lỗi khi lưu lịch sử tìm kiếm:", error);
+  }
+};
+
+// Lấy danh sách lịch sử tìm kiếm
+export const getSearchHistory = async () => {
+  try {
+    const history = await AsyncStorage.getItem("SearchHistory");
+    return history ? JSON.parse(history) : [];
+  } catch (error) {
+    console.error("Lỗi khi lấy lịch sử tìm kiếm:", error);
+    return [];
+  }
+};
+
+// Xóa lịch sử tìm kiếm
+export const clearSearchHistory = async () => {
+  try {
+    await AsyncStorage.removeItem("SearchHistory");
+  } catch (error) {
+    console.error("Lỗi khi xóa lịch sử tìm kiếm:", error);
+  }
 };

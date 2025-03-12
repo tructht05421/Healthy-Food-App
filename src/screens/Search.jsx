@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -24,15 +24,19 @@ import PaddingScrollViewBottom from "../components/common/PaddingScrollViewBotto
 // import CustomToast from "../components/common/CustomToast";
 import ShowToast from "../components/common/CustomToast";
 import { useFocusEffect } from "@react-navigation/native";
+import { getSearchHistory } from "../utils/common";
 
 const WIDTH = Dimensions.get("window").width;
 
-const CategoryButton = ({ title, isActive = false }) => (
+const CategoryButton = ({ title, isActive = false, onclick }) => (
   <TouchableOpacity
     style={[
       styles.categoryButton,
       { backgroundColor: isActive ? "#38B2AC" : "#F8E1D4" },
     ]}
+    onPress={() => {
+      onclick && onclick();
+    }}
   >
     <Text
       style={[
@@ -49,9 +53,17 @@ const SearchScreen = ({ route }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [searchMode, setSearchMode] = useState("initial"); // 'initial', 'results'
   const [searchQuery, setSearchQuery] = useState("");
+  const [history, setHistory] = useState([]);
   // const showToast = CustomToast();
-  useFocusEffect(
-    React.useCallback(() => {
+  const loadHistory = async () => {
+    const savedHistory = await getSearchHistory();
+    setHistory(savedHistory);
+  };
+
+  useEffect(() => {
+    console.log("get in");
+
+    if (route.params?.category || route.params?.searchQuery) {
       if (route.params?.category) {
         handleSearchByCategory(route.params?.category);
       }
@@ -60,10 +72,19 @@ const SearchScreen = ({ route }) => {
         setSearchQuery(route.params?.searchQuery);
         handleSearch(route.params?.searchQuery);
       }
-    }, [])
-  );
+    } else {
+      loadHistory();
+    }
+  }, [route.params?.category || route.params?.searchQuery]);
+
+  useEffect(() => {
+    if (searchResults.length > 0) {
+      setSearchMode("results");
+    }
+  }, [searchResults]);
 
   const handleSearch = async (searchString) => {
+    // loadHistory();
     // const response = await getIngredientByName(searchString);
     // if (response.status === 200) {
     //   setSearchResults(response.data?.data);
@@ -76,10 +97,10 @@ const SearchScreen = ({ route }) => {
           item.name.toLowerCase().includes(searchString.toLowerCase())
         )
       );
-      setSearchMode("results");
     } else {
       ShowToast("error", "Something went wrong");
     }
+    loadHistory();
   };
 
   const handleSearchByCategory = async (type) => {
@@ -90,8 +111,8 @@ const SearchScreen = ({ route }) => {
       setSearchResults(
         response.data?.data?.filter((item) => item.type == type.name)
       );
-      setSearchMode("results");
     }
+    loadHistory();
 
     // const response = await getIngredientByType(type);
     // if (response.status === 200) {
@@ -102,19 +123,29 @@ const SearchScreen = ({ route }) => {
 
   const handleClear = () => {
     setSearchQuery("");
+    setSearchResults([]);
     setSearchMode("initial");
   };
 
   const renderInitialContent = () => (
     <>
-      <View style={styles.historySection}>
-        <Text style={styles.sectionTitle}>Your search history</Text>
-        <View style={styles.categoryButtonsRow}>
-          <CategoryButton title="Heavy Meals" />
-          <CategoryButton title="Light Meals" />
-          <CategoryButton title="Desserts" />
+      {history.length > 0 && (
+        <View style={styles.historySection}>
+          <Text style={styles.sectionTitle}>Your search history</Text>
+          <View style={styles.categoryButtonsRow}>
+            {history.map((item, key) => (
+              <CategoryButton
+                title={item}
+                key={key}
+                onclick={() => {
+                  setSearchQuery(item);
+                  handleSearch(item);
+                }}
+              />
+            ))}
+          </View>
         </View>
-      </View>
+      )}
 
       <View style={styles.browseSection}>
         <Text style={styles.sectionTitle}>Browse by category</Text>

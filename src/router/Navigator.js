@@ -1,32 +1,33 @@
 // PHẦN 1: IMPORTS
-import React from "react";
+import React, { useEffect } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-// ↑ Import các function để tạo navigation từ React Navigation:
-// - createStackNavigator: tạo navigation dạng chồng màn hình
-// - createBottomTabNavigator: tạo navigation dạng tab ở bottom
+import {
+  NavigationContainer,
+  DefaultTheme,
+  DarkTheme,
+} from "@react-navigation/native";
+import { StatusBar } from "react-native";
 
 import { ScreensMap } from "./ScreensMap";
-// ↑ Import danh sách các màn hình cần hiển thị trong tab bar
-
 import CustomTabBar from "../components/common/CustomTabBar";
-// ↑ Import component TabBar tùy chỉnh thay thế TabBar mặc định
+import { useTheme } from "../contexts/ThemeContext";
 
 // PHẦN 2: KHỞI TẠO NAVIGATORS
 const Stack = createStackNavigator();
-// ↑ Tạo Stack Navigator để quản lý navigation dạng chồng màn hình
-
 const Tab = createBottomTabNavigator();
-// ↑ Tạo Bottom Tab Navigator để quản lý các tab ở bottom
 
 // PHẦN 3: STACK NAVIGATOR
 function HomeStack() {
+  const { theme } = useTheme();
+
   return (
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
         gestureEnabled: true,
         gestureDirection: "horizontal",
+        // Note: We're not setting backgroundColor here as it's handled by ThemedLayoutWrapper
       }}
     >
       {ScreensMap.map((item, index) => (
@@ -38,31 +39,60 @@ function HomeStack() {
 // PHẦN 4: TAB NAVIGATOR
 
 const TabNavigator = () => {
+  const { theme } = useTheme();
+
   return (
     <Tab.Navigator
-      tabBar={(props) => <CustomTabBar {...props} />}
-      // ↑ Sử dụng CustomTabBar thay vì TabBar mặc định
-
+      tabBar={(props) => <CustomTabBar {...props} theme={theme} />}
       screenOptions={({ route }) => ({
-        tabBarShowLabel: false, // Ẩn text label trong tab
-        headerShown: false, // Ẩn header của screen
+        tabBarShowLabel: false,
+        headerShown: false,
         animation: "shift",
-        gestureEnabled: true, // Enable thao tác vuốt
-        gestureDirection: "horizontal", // Hướng vuốt ngang
+        gestureEnabled: true,
+        gestureDirection: "horizontal",
+        // Apply theme colors
+        tabBarStyle: {
+          backgroundColor: theme.tabBarBackground,
+          borderTopColor: theme.border,
+        },
       })}
-      backBehavior="history" // Quay lại theo lịch sử
+      backBehavior="history"
     >
-      <Tab.Screen
-        name={"Main"} // Tên định danh màn hình
-        component={HomeStack} // Component của màn hình
-      />
+      <Tab.Screen name={"Main"} component={HomeStack} />
     </Tab.Navigator>
   );
 };
 
 // PHẦN 4: STACK NAVIGATOR CHÍNH
 const Navigator = () => {
-  return TabNavigator();
+  const { theme, themeMode } = useTheme();
+
+  // Create a custom theme for NavigationContainer based on our theme
+  const navigationTheme = {
+    ...(themeMode === "dark" ? DarkTheme : DefaultTheme),
+    colors: {
+      ...(themeMode === "dark" ? DarkTheme : DefaultTheme).colors,
+      card: theme.cardBackground,
+      text: theme.text,
+      border: theme.border,
+      primary: theme.primary,
+      notification: theme.accent,
+      // Don't set background color here - it's handled by ThemedLayoutWrapper
+    },
+  };
+
+  return (
+    <>
+      <StatusBar
+        barStyle={themeMode === "dark" ? "light-content" : "dark-content"}
+        backgroundColor="transparent"
+        translucent
+      />
+      <NavigationContainer theme={navigationTheme}>
+        {TabNavigator()}
+      </NavigationContainer>
+    </>
+  );
 };
 
 export default Navigator;

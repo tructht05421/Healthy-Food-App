@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
   },
   categoryTagText: {
     color: "black",
-    fontSize: 12,
+    fontSize: 8,
   },
 });
 

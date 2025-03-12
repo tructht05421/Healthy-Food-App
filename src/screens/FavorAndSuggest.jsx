@@ -17,6 +17,7 @@ import PaddingScrollViewBottom from "../components/common/PaddingScrollViewBotto
 import { useDispatch, useSelector } from "react-redux";
 import { favorSelector } from "../redux/selectors/selector";
 import { toggleFavorite } from "../redux/actions/favoriteThunk";
+import MaterialCommunityIcons from "../components/common/VectorIcons/MaterialCommunityIcons";
 const HEIGHT = Dimensions.get("window").height;
 function FavorAndSuggest({ route }) {
   const dispatch = useDispatch();
@@ -152,7 +153,11 @@ function FavorAndSuggest({ route }) {
           {favorite.isLoading ? (
             <ActivityIndicator size={24} color="#FC8019" />
           ) : isFavorite(dish._id) ? (
-            <Ionicons name="heart" size={24} color="#FF8A65" />
+            <MaterialCommunityIcons
+              name="heart-multiple"
+              size={24}
+              color="#FF8A65"
+            />
           ) : (
             <Ionicons name="heart-outline" size={24} color="#FF8A65" />
           )}

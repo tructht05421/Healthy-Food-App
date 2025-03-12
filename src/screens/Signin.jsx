@@ -30,6 +30,7 @@ import ShowToast from "../components/common/CustomToast"; // Component hiển th
 import { loginThunk } from "../redux/actions/userThunk"; // Action redux để xử lý đăng nhập
 import { useDispatch } from "react-redux"; // Hook để dispatch actions
 import { useGoogleAuth } from "../hooks/useGoogleAuth";
+import NonBottomTabWrapper from "../components/layout/NonBottomTabWrapper";
 
 // Lấy kích thước màn hình
 const WIDTH = Dimensions.get("window").width;
@@ -122,107 +123,72 @@ function Signin({ navigation }) {
     ));
   };
 
+  // return(
+  //   <NonBottomTabWrapper headerHidden={true}>
+  // )
+
   // Render giao diện chính
   return (
-    <SafeAreaWrapper headerStyle={{ backgroundColor: "transparent" }}>
+    <NonBottomTabWrapper headerHidden={true} style={styles.container}>
       {/* Sử dụng KeyboardAvoidingView để tránh bàn phím che phủ form */}
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.container}
-      >
-        {/* Phần header với ảnh nền */}
-        <Image source={loginHeaderIcon} style={styles.backgroundImage} />
-        <Text style={styles.title}>Sign in with email</Text>
+      {/* Phần header với ảnh nền */}
+      <Image source={loginHeaderIcon} style={styles.backgroundImage} />
+      <Text style={styles.title}>Sign in with email</Text>
 
-        {/* Container chứa form đăng nhập */}
-        <View style={styles.formContainer}>
-          {/* Input trường email */}
-          <SigninInputField
-            state={email}
-            setState={setEmail}
-            icon={<Ionicons name="mail-outline" size={20} color="#5FC88F" />}
-            iconBackgroundcolor="#DEF5E9"
-            placeholder="Email"
-            inputType="email-address"
-            keyboardType="email-address"
-          />
-          {/* Input trường mật khẩu */}
-          <SigninInputField
-            state={password}
-            setState={setPassword}
-            icon={<MaterialIcons name="lock-open" size={20} color="#9F9DF3" />}
-            iconBackgroundcolor="#EBECFF"
-            placeholder="Password"
-            secureTextEntry
-          />
-          {/* Link quên mật khẩu */}
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate(ScreensName.verifyEmail);
-            }}
-          >
-            <Text style={styles.forgotPassword}>Forgot Password?</Text>
-          </TouchableOpacity>
-          {/* Nút đăng nhập chính */}
-          <RippleButton
-            onPress={handlePress}
-            buttonText="Sign in"
-            buttonStyle={styles.signinButton}
-            textStyle={styles.signinButtonText}
-            loading={loading}
-          />
-        </View>
+      {/* Container chứa form đăng nhập */}
+      <View style={styles.formContainer}>
+        {/* Input trường email */}
+        <SigninInputField
+          state={email}
+          setState={setEmail}
+          icon={<Ionicons name="mail-outline" size={20} color="#5FC88F" />}
+          iconBackgroundcolor="#DEF5E9"
+          placeholder="Email"
+          inputType="email-address"
+          keyboardType="email-address"
+        />
+        {/* Input trường mật khẩu */}
+        <SigninInputField
+          state={password}
+          setState={setPassword}
+          icon={<MaterialIcons name="lock-open" size={20} color="#9F9DF3" />}
+          iconBackgroundcolor="#EBECFF"
+          placeholder="Password"
+          secureTextEntry
+        />
+        {/* Link quên mật khẩu */}
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate(ScreensName.verifyEmail);
+          }}
+        >
+          <Text style={styles.forgotPassword}>Forgot Password?</Text>
+        </TouchableOpacity>
+        {/* Nút đăng nhập chính */}
+        <RippleButton
+          onPress={handlePress}
+          buttonText="Sign in"
+          buttonStyle={styles.signinButton}
+          textStyle={styles.signinButtonText}
+          loading={loading}
+        />
+      </View>
 
-        {/* Container chứa các nút đăng nhập bên thứ 3 */}
-        <View style={styles.loginMethodContainer}>{renderLoginMethod()}</View>
-        <Text style={styles.alreadyText}>
-          Don't have account?{" "}
-          <Text
-            style={{
-              textDecorationLine: "underline", // Gạch chân text
-              fontSize: 16, // Kích thước chữ
-            }}
-            onPress={() => navigation.navigate(ScreensName.signup)}
-          >
-            Register
-          </Text>
+      {/* Container chứa các nút đăng nhập bên thứ 3 */}
+      <View style={styles.loginMethodContainer}>{renderLoginMethod()}</View>
+      <Text style={styles.alreadyText}>
+        Don't have account?{" "}
+        <Text
+          style={{
+            textDecorationLine: "underline", // Gạch chân text
+            fontSize: 16, // Kích thước chữ
+          }}
+          onPress={() => navigation.navigate(ScreensName.signup)}
+        >
+          Register
         </Text>
-        {/* Các chấm trang trí ở 4 góc màn hình */}
-        <>
-          <DecorationDot
-            size={HEIGHT * 0.25}
-            top={-(HEIGHT * 0.1)}
-            left={-(WIDTH * 0.4)}
-            zIndex={1}
-            backgroundColor={"#AEC687"}
-          />
-          <DecorationDot
-            size={HEIGHT * 0.25}
-            top={-(HEIGHT * 0.2)}
-            left={-(WIDTH * 0.2)}
-            opacity={0.4}
-            zIndex={1}
-          />
-
-          <DecorationDot
-            size={HEIGHT * 0.25}
-            top={HEIGHT - HEIGHT * 0.15}
-            left={WIDTH - WIDTH * 0.4}
-            zIndex={1}
-            backgroundColor={"#AEC687"}
-          />
-          <DecorationDot
-            size={HEIGHT * 0.25}
-            top={HEIGHT - HEIGHT * 0.3}
-            left={WIDTH - WIDTH * 0.6}
-            opacity={0.4}
-            zIndex={1}
-            transform={[{ translateX: 200 }, { translateY: 50 }]}
-          />
-        </>
-      </KeyboardAvoidingView>
-      <Toast />
-    </SafeAreaWrapper>
+      </Text>
+    </NonBottomTabWrapper>
   );
 }
 
@@ -234,7 +200,7 @@ const styles = StyleSheet.create({
   },
   backgroundImage: {
     // width: "60%", // Chiếm 60% chiều rộng màn hình
-    height: "40%", // Chiếm 35% chiều cao màn hình
+    height: "30%", // Chiếm 35% chiều cao màn hình
     resizeMode: "contain", // Chế độ resize ảnh
     // marginHorizontal: "20%", // Căn lề 2 bên 20%
     // marginBottom: -HEIGHT * 0.005, // Margin bottom 30px

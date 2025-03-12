@@ -12,6 +12,7 @@ import AntDesignIcon from "./VectorIcons/AntDesignIcon";
 import { useDispatch, useSelector } from "react-redux";
 import { favorSelector } from "../../redux/selectors/selector";
 import { toggleFavorite } from "../../redux/actions/favoriteThunk";
+import MaterialCommunityIcons from "./VectorIcons/MaterialCommunityIcons";
 const HEIGHT = Dimensions.get("window").height;
 // DishedFavor component for individual food items
 const DishedFavor = ({ item }) => {
@@ -39,7 +40,11 @@ const DishedFavor = ({ item }) => {
           onPress={handleOnChangeFavorite}
         >
           {/* <Text style={styles.videoIcon}>▶</Text> */}
-          <AntDesignIcon name="heart" size={24} color="#40B491" />
+          <MaterialCommunityIcons
+            name="heart-multiple"
+            size={24}
+            color="#40B491"
+          />
         </TouchableOpacity>
       </View>
       <Text style={styles.dishTitle}>{item.name}</Text>

@@ -4,7 +4,7 @@ import MainLayoutWrapper from "../components/layout/MainLayoutWrapper";
 
 function Setting() {
   return (
-    <MainLayoutWrapper>
+    <MainLayoutWrapper headerHidden={true}>
       <Text>Setting</Text>
     </MainLayoutWrapper>
   );

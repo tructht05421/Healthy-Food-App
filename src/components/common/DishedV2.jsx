@@ -54,7 +54,7 @@ const DishedV2 = ({ item, onPress, onFavoritePress }) => {
           <ActivityIndicator size={22} color="#FC8019" />
         ) : (
           <MaterialCommunityIcons
-            name={isFavorite(item._id) ? "heart" : "heart-outline"}
+            name={isFavorite(item._id) ? "heart-multiple" : "heart-outline"}
             size={22}
             color="#FF9500"
           />
@@ -83,22 +83,21 @@ const styles = StyleSheet.create({
     elevation: 12,
   },
   resultInfo: {
-    flex: 1,
+    width: "65%",
     justifyContent: "center",
   },
   resultTitleContainer: {
     flexDirection: "row",
-    gap: 12,
-    alignItems: "center",
-    width: "35%",
+    flexWrap: "wrap",
+    // alignItems: "center",
   },
   resultTitle: {
     fontSize: 16,
     fontWeight: "bold",
-    marginBottom: 8,
+    marginRight: 8,
   },
   resultDescription: {
-    width: "80%",
+    width: "100%",
     fontSize: 12,
     color: "#999",
   },

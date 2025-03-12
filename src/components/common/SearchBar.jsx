@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { saveSearchHistory } from "../../utils/common";
 
 const SearchBar = ({
   placeholder = "What do you need?",
@@ -22,6 +23,13 @@ const SearchBar = ({
     if (onClear) onClear();
   };
 
+  const handleSubmit = async () => {
+    if (searchText.trim() !== "") {
+      await saveSearchHistory(searchText);
+      onSubmit && onSubmit();
+    }
+  };
+
   return (
     <View style={styles.container}>
       <TextInput
@@ -30,7 +38,7 @@ const SearchBar = ({
         placeholderTextColor="#999"
         value={value}
         onChangeText={onChangeText}
-        onSubmitEditing={onSubmit}
+        onSubmitEditing={handleSubmit}
       />
 
       {searchText ? (
@@ -39,7 +47,7 @@ const SearchBar = ({
         </TouchableOpacity>
       ) : null}
 
-      <TouchableOpacity style={styles.searchButton} onPress={onSubmit}>
+      <TouchableOpacity style={styles.searchButton} onPress={handleSubmit}>
         <Ionicons name="search" size={22} color="#fff" />
       </TouchableOpacity>
     </View>

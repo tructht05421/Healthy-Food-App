@@ -21,6 +21,7 @@ import FontAwesomeIcon from "../components/common/VectorIcons/FontAwesomeIcon";
 import { Image, View } from "react-native";
 import OcticonsIcon from "../components/common/VectorIcons/OcticonsIcon";
 import HeartBeat from "../screens/HeartBeat";
+import Profile from "../screens/Profile";
 // ↑ Import enum chứa tên các màn hình
 // Giúp tránh lỗi typo và dễ dàng quản lý tên màn hình
 
@@ -160,9 +161,10 @@ export const ScreensMap = [
       iconStyles: { transform: [{ translateX: 25 }] },
     },
   },
+
   {
-    name: ScreensName.setting,
-    component: Setting,
+    name: ScreensName.profile,
+    component: Profile,
     options: {
       tabBarIcon: ({ color, focused }) => (
         <AntDesignIcon
@@ -171,6 +173,14 @@ export const ScreensMap = [
           color={color} // Màu sắc (active/inactive)
         />
       ),
+    },
+    hiddenBottomTab: true,
+  },
+  {
+    name: ScreensName.setting,
+    component: Setting,
+    options: {
+      tabBarButton: () => null,
     },
   },
   {
