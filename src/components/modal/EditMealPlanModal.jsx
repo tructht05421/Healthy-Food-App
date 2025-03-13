@@ -13,8 +13,13 @@ import {
   Image,
   Platform,
 } from "react-native";
-
+import Ionicons from "../common/VectorIcons/Ionicons";
+import SafeAreaWrapper from "../layout/SafeAreaWrapper";
+import { EditModalHeader } from "../common/EditModalHeader";
+import { useTheme } from "../../contexts/ThemeContext";
+const HEIGHT = Dimensions.get("window").height;
 export const EditMealPlanModal = ({ visible, onClose, onSave }) => {
+  const { theme } = useTheme();
   const [mealPlan, setMealPlan] = useState({
     breakfast: "",
     lunch: "",
@@ -34,22 +39,28 @@ export const EditMealPlanModal = ({ visible, onClose, onSave }) => {
       transparent={false}
       onRequestClose={onClose}
     >
-      <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="dark-content" />
-
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity style={styles.backButton} onPress={onClose}>
+      <EditModalHeader onCancel={onClose} />
+      <View
+        style={{
+          ...styles.container,
+          backgroundColor: theme.editModalbackgroundColor,
+        }}
+      >
+        <Text style={{ ...styles.headerTitle, color: theme.textColor }}>
+          Meal Planning
+        </Text>
+        {/* <TouchableOpacity style={styles.backButton} onPress={onClose}>
             <Ionicons name="chevron-back" size={24} color="#000" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Meal Planning</Text>
-        </View>
+          <Text style={styles.headerTitle}>Meal Planning</Text> */}
 
         <ScrollView style={styles.scrollContent}>
           <View style={styles.formGrid}>
             <View style={styles.formRow}>
               <View style={styles.formItem}>
-                <Text style={styles.label}>Breakfast</Text>
+                <Text style={{ ...styles.label, color: theme.greyTextColor }}>
+                  LongOfPlan
+                </Text>
                 <View style={styles.inputContainer}>
                   <TextInput
                     style={styles.input}
@@ -58,17 +69,13 @@ export const EditMealPlanModal = ({ visible, onClose, onSave }) => {
                       setMealPlan({ ...mealPlan, breakfast: text })
                     }
                   />
-                  <Ionicons
-                    name="checkmark"
-                    size={20}
-                    color="#3592E7"
-                    style={styles.inputIcon}
-                  />
                 </View>
               </View>
 
               <View style={styles.formItem}>
-                <Text style={styles.label}>Lunch</Text>
+                <Text style={{ ...styles.label, color: theme.greyTextColor }}>
+                  MealNumber
+                </Text>
                 <View style={styles.inputContainer}>
                   <TextInput
                     style={styles.input}
@@ -77,19 +84,15 @@ export const EditMealPlanModal = ({ visible, onClose, onSave }) => {
                       setMealPlan({ ...mealPlan, lunch: text })
                     }
                   />
-                  <Ionicons
-                    name="checkmark"
-                    size={20}
-                    color="#3592E7"
-                    style={styles.inputIcon}
-                  />
                 </View>
               </View>
             </View>
 
             <View style={styles.formRow}>
               <View style={styles.formItem}>
-                <Text style={styles.label}>Dinner</Text>
+                <Text style={{ ...styles.label, color: theme.greyTextColor }}>
+                  Hate
+                </Text>
                 <View style={styles.inputContainer}>
                   <TextInput
                     style={styles.input}
@@ -98,17 +101,13 @@ export const EditMealPlanModal = ({ visible, onClose, onSave }) => {
                       setMealPlan({ ...mealPlan, dinner: text })
                     }
                   />
-                  <Ionicons
-                    name="checkmark"
-                    size={20}
-                    color="#3592E7"
-                    style={styles.inputIcon}
-                  />
                 </View>
               </View>
 
               <View style={styles.formItem}>
-                <Text style={styles.label}>Snacks</Text>
+                <Text style={{ ...styles.label, color: theme.greyTextColor }}>
+                  RecommendedFoods
+                </Text>
                 <View style={styles.inputContainer}>
                   <TextInput
                     style={styles.input}
@@ -116,12 +115,6 @@ export const EditMealPlanModal = ({ visible, onClose, onSave }) => {
                     onChangeText={(text) =>
                       setMealPlan({ ...mealPlan, snacks: text })
                     }
-                  />
-                  <Ionicons
-                    name="checkmark"
-                    size={20}
-                    color="#3592E7"
-                    style={styles.inputIcon}
                   />
                 </View>
               </View>
@@ -132,11 +125,7 @@ export const EditMealPlanModal = ({ visible, onClose, onSave }) => {
         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
           <Text style={styles.saveButtonText}>Save</Text>
         </TouchableOpacity>
-
-        {/* Decorative corners */}
-        <View style={styles.topLeftCorner} />
-        <View style={styles.bottomRightCorner} />
-      </SafeAreaView>
+      </View>
     </Modal>
   );
 };
@@ -145,6 +134,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+    paddingTop: 16,
+    borderTopLeftRadius: 50,
+    borderTopRightRadius: 50,
   },
   header: {
     position: "relative",
@@ -165,8 +157,9 @@ const styles = StyleSheet.create({
     bottom: "10%",
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: 25,
     fontWeight: "600",
+    textAlign: "center",
   },
   scrollContent: {
     flex: 1,
@@ -195,24 +188,26 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#e0e0e0",
     borderRadius: 8,
-    paddingHorizontal: 12,
     height: 44,
   },
   input: {
     flex: 1,
     height: "100%",
     fontSize: 14,
+    backgroundColor: "#fff",
+    borderRadius: 8,
   },
   inputIcon: {
     marginLeft: 8,
   },
   saveButton: {
-    backgroundColor: "#3592E7",
-    borderRadius: 8,
+    backgroundColor: "#40B491",
+    borderRadius: 100,
     paddingVertical: 12,
     alignItems: "center",
     marginHorizontal: 16,
     marginVertical: 16,
+    marginBottom: HEIGHT * 0.05,
   },
   saveButtonText: {
     color: "#fff",

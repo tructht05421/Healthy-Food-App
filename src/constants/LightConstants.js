@@ -1,6 +1,13 @@
 export const LightContants = {
   light: {
     backgroundColor: ["white", "white", "rgba(64,180,145,0.2)"],
+    editModalbackgroundColor: "white",
+    editModalHeaderBackgroundColor: [
+      "#40B491",
+      "#70CFB2",
+      "rgba(217, 217, 217, 0)",
+    ],
+
     tabBarBackgroundColor: "#FFFFFF",
     safeAreaBackgroundColor: "transparent",
     headerBackgroundColor: "#ffffff",
@@ -16,6 +23,12 @@ export const LightContants = {
   },
   dark: {
     backgroundColor: ["#0A1929", "#0A1929", "#16373e"],
+    editModalbackgroundColor: "#0F2732",
+    editModalHeaderBackgroundColor: [
+      "#0A1929",
+      "#537A8B",
+      "rgba(217, 217, 217, 0)",
+    ],
     tabBarBackgroundColor: "#2D2D2D",
     safeAreaBackgroundColor: "#0A1929",
     headerBackgroundColor: "#0A1929",

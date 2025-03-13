@@ -18,6 +18,9 @@ import DecorationDot from "../components/common/DecorationDot";
 import NonBottomTabWrapper from "../components/layout/NonBottomTabWrapper";
 import { EditHealthModal } from "../components/modal/EditHealthModal";
 import { useTheme } from "../contexts/ThemeContext";
+import { EditProfileModal } from "../components/modal/EditProfileModal";
+import { EditMealPlanModal } from "../components/modal/EditMealPlanModal";
+import { ScreensName } from "../constants/ScreensName";
 
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
@@ -34,10 +37,24 @@ function Profile({ navigation }) {
     toggleTheme();
   };
 
+  const handleEditHealth = (data) => {
+    setModalVisible({
+      ...modalVisible,
+      EditHealthModal: false,
+    });
+  };
+
   const handleEditProfile = (data) => {
     setModalVisible({
       ...modalVisible,
       EditProfileModal: false,
+    });
+  };
+
+  const handleEditMealPlan = (data) => {
+    setModalVisible({
+      ...modalVisible,
+      EditMealPlanModal: false,
     });
   };
 
@@ -93,7 +110,12 @@ function Profile({ navigation }) {
 
       {/* Menu Items */}
       <View style={styles.menuContainer}>
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity
+          style={styles.menuItem}
+          onPress={() => {
+            navigation.navigate(ScreensName.favorList);
+          }}
+        >
           <Ionicons name="heart-outline" size={24} color={theme.textColor} />
           <Text style={{ ...styles.menuText, color: theme.textColor }}>
             Favourites
@@ -121,7 +143,15 @@ function Profile({ navigation }) {
           style={{ ...styles.separator, backgroundColor: theme.textColor }}
         />
 
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity
+          style={styles.menuItem}
+          onPress={() => {
+            setModalVisible({
+              ...modalVisible,
+              EditMealPlanModal: true,
+            });
+          }}
+        >
           <Ionicons name="calendar-outline" size={24} color={theme.textColor} />
           <Text style={{ ...styles.menuText, color: theme.textColor }}>
             Meal Planning
@@ -148,6 +178,24 @@ function Profile({ navigation }) {
         visible={modalVisible.EditHealthModal}
         onClose={() => {
           setModalVisible({ ...modalVisible, EditHealthModal: false });
+        }}
+        onSave={(data) => {
+          handleEditHealth(data);
+        }}
+      />
+      <EditMealPlanModal
+        visible={modalVisible.EditMealPlanModal}
+        onClose={() => {
+          setModalVisible({ ...modalVisible, EditMealPlanModal: false });
+        }}
+        onSave={(data) => {
+          handleEditMealPlan(data);
+        }}
+      />
+      <EditProfileModal
+        visible={modalVisible.EditProfileModal}
+        onClose={() => {
+          setModalVisible({ ...modalVisible, EditProfileModal: false });
         }}
         onSave={(data) => {
           handleEditProfile(data);
