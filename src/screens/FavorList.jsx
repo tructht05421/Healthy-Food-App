@@ -15,12 +15,14 @@ import { favorSelector } from "../redux/selectors/selector";
 import { useSelector } from "react-redux";
 import SpinnerLoading from "../components/common/SpinnerLoading";
 import PaddingScrollViewBottom from "../components/common/PaddingScrollViewBottom";
+import { useTheme } from "../contexts/ThemeContext";
 const HEIGHT = Dimensions.get("window").height;
 function FavorList() {
   const [favoriteItems, setFavoriteItems] = useState([]);
   const [dishes, setDishes] = useState([]);
   const [loading, setLoading] = useState({ loadFavorDishes: true });
   const favor = useSelector(favorSelector);
+  const { theme } = useTheme();
 
   useEffect(() => {
     loadDishes();
@@ -54,7 +56,9 @@ function FavorList() {
   return (
     <MainLayoutWrapper>
       <View style={styles.container}>
-        <Text style={styles.headerTitle}>My Favorites</Text>
+        <Text style={{ ...styles.headerTitle, color: theme.textColor }}>
+          My Favorites
+        </Text>
         <ScrollView
           style={styles.scrollContainer}
           showsVerticalScrollIndicator={false}

@@ -115,6 +115,7 @@ export const ScreensMap = [
           color={color} // Màu sắc (active/inactive)
         />
       ),
+      requireAuthen: true,
     },
   },
   {
@@ -173,6 +174,7 @@ export const ScreensMap = [
           color={color} // Màu sắc (active/inactive)
         />
       ),
+      requireAuthen: true,
     },
     hiddenBottomTab: true,
   },

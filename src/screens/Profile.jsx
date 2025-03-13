@@ -49,9 +49,9 @@ function Profile({ navigation }) {
           onPress={() => navigation.goBack()}
           style={styles.backButton}
         >
-          <Ionicons name="chevron-back" size={24} color="#000" />
+          <Ionicons name="chevron-back" size={24} color={theme.textColor} />
         </TouchableOpacity>
-        <Text style={{ ...styles.headerTitle, color: theme.text }}>
+        <Text style={{ ...styles.headerTitle, color: theme.textColor }}>
           My Profile
         </Text>
       </View>
@@ -67,11 +67,11 @@ function Profile({ navigation }) {
           style={styles.profileImage}
         />
         <View style={styles.profileInfoContainer}>
-          <Text style={{ ...styles.profileName, color: theme.text }}>
-            Sabrina Aryan
+          <Text style={{ ...styles.profileName, color: theme.textColor }}>
+            {user?.username}
           </Text>
-          <Text style={{ ...styles.profileEmail, color: theme.text }}>
-            SabrinaAry208@gmail.com
+          <Text style={{ ...styles.profileEmail, color: theme.textColor }}>
+            {user?.email}
           </Text>
           <View style={styles.editButtonContainer}>
             <TouchableOpacity
@@ -83,7 +83,7 @@ function Profile({ navigation }) {
                 });
               }}
             >
-              <Text style={{ ...styles.editButtonText, color: theme.text }}>
+              <Text style={{ ...styles.editButtonText, color: "white" }}>
                 Edit Profile
               </Text>
             </TouchableOpacity>
@@ -94,8 +94,8 @@ function Profile({ navigation }) {
       {/* Menu Items */}
       <View style={styles.menuContainer}>
         <TouchableOpacity style={styles.menuItem}>
-          <Ionicons name="heart-outline" size={24} color={theme.text} />
-          <Text style={{ ...styles.menuText, color: theme.text }}>
+          <Ionicons name="heart-outline" size={24} color={theme.textColor} />
+          <Text style={{ ...styles.menuText, color: theme.textColor }}>
             Favourites
           </Text>
           <Ionicons name="chevron-forward" size={24} color="#999" />
@@ -110,26 +110,28 @@ function Profile({ navigation }) {
             });
           }}
         >
-          <Ionicons name="body-outline" size={24} color={theme.text} />
-          <Text style={{ ...styles.menuText, color: theme.text }}>
+          <Ionicons name="body-outline" size={24} color={theme.textColor} />
+          <Text style={{ ...styles.menuText, color: theme.textColor }}>
             Health Information
           </Text>
           <Ionicons name="chevron-forward" size={24} color="#999" />
         </TouchableOpacity>
 
-        <View style={{ ...styles.separator, backgroundColor: theme.text }} />
+        <View
+          style={{ ...styles.separator, backgroundColor: theme.textColor }}
+        />
 
         <TouchableOpacity style={styles.menuItem}>
-          <Ionicons name="calendar-outline" size={24} color={theme.text} />
-          <Text style={{ ...styles.menuText, color: theme.text }}>
+          <Ionicons name="calendar-outline" size={24} color={theme.textColor} />
+          <Text style={{ ...styles.menuText, color: theme.textColor }}>
             Meal Planning
           </Text>
           <Ionicons name="chevron-forward" size={24} color="#999" />
         </TouchableOpacity>
 
         <View style={styles.menuItem}>
-          <Ionicons name="contrast-outline" size={24} color={theme.text} />
-          <Text style={{ ...styles.menuText, color: theme.text }}>
+          <Ionicons name="contrast-outline" size={24} color={theme.textColor} />
+          <Text style={{ ...styles.menuText, color: theme.textColor }}>
             Dark/Light
           </Text>
           <Switch
@@ -138,7 +140,9 @@ function Profile({ navigation }) {
             trackColor={{ false: "#ccc", true: "#75a57f" }}
           />
         </View>
-        <View style={{ ...styles.separator, backgroundColor: theme.text }} />
+        <View
+          style={{ ...styles.separator, backgroundColor: theme.textColor }}
+        />
       </View>
       <EditHealthModal
         visible={modalVisible.EditHealthModal}

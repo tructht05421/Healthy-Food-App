@@ -13,17 +13,24 @@ import { useDispatch, useSelector } from "react-redux";
 import { favorSelector } from "../../redux/selectors/selector";
 import { toggleFavorite } from "../../redux/actions/favoriteThunk";
 import MaterialCommunityIcons from "./VectorIcons/MaterialCommunityIcons";
+import { useTheme } from "../../contexts/ThemeContext";
 const HEIGHT = Dimensions.get("window").height;
 // DishedFavor component for individual food items
 const DishedFavor = ({ item }) => {
   const dispatch = useDispatch();
+  const { theme } = useTheme();
 
   const handleOnChangeFavorite = () => {
     dispatch(toggleFavorite({ id: item._id }));
   };
 
   return (
-    <TouchableOpacity style={styles.dishedFavorContainer}>
+    <TouchableOpacity
+      style={{
+        ...styles.dishedFavorContainer,
+        backgroundColor: theme.cardBackgroundColor,
+      }}
+    >
       <View style={styles.imageContainer}>
         <Image
           source={
@@ -47,7 +54,9 @@ const DishedFavor = ({ item }) => {
           />
         </TouchableOpacity>
       </View>
-      <Text style={styles.dishTitle}>{item.name}</Text>
+      <Text style={{ ...styles.dishTitle, color: theme.textColor }}>
+        {item.name}
+      </Text>
       {/* <TouchableOpacity
         style={styles.deleteButton}
         onPress={handleOnChangeFavorite}
@@ -60,8 +69,11 @@ const DishedFavor = ({ item }) => {
 
 const styles = StyleSheet.create({
   dishedFavorContainer: {
+    minHeight: HEIGHT * 0.2,
     backgroundColor: "white",
     borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "white",
     position: "relative",
     padding: 8,
     shadowColor: "#000",
@@ -96,7 +108,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   dishTitle: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: "bold",
     padding: 8,
   },

@@ -52,7 +52,7 @@ const TabNavigator = () => {
         gestureDirection: "horizontal",
         // Apply theme colors
         tabBarStyle: {
-          backgroundColor: theme.tabBarBackground,
+          backgroundColor: theme.tabBarBackgroundColor,
           borderTopColor: theme.border,
         },
       })}
@@ -73,7 +73,7 @@ const Navigator = () => {
     colors: {
       ...(themeMode === "dark" ? DarkTheme : DefaultTheme).colors,
       card: theme.cardBackground,
-      text: theme.text,
+      text: theme.textColor,
       border: theme.border,
       primary: theme.primary,
       notification: theme.accent,

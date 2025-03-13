@@ -1,11 +1,22 @@
 import React from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
+import { useTheme } from "../../contexts/ThemeContext";
 
-const CategoryTag = ({ name = "", color = "#FF6B00" }) => (
-  <View style={{ ...styles.categoryTag, borderColor: color }}>
-    <Text style={{ ...styles.categoryTagText, color: color }}>{name}</Text>
-  </View>
-);
+const CategoryTag = ({ name = "", color = "#FF6B00" }) => {
+  const { theme } = useTheme();
+
+  return (
+    <View
+      style={{
+        ...styles.categoryTag,
+        borderColor: color,
+        backgroundColor: theme.categoryTagBackgroundColor,
+      }}
+    >
+      <Text style={{ ...styles.categoryTagText, color: color }}>{name}</Text>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   categoryTag: {

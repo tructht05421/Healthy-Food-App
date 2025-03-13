@@ -5,10 +5,12 @@ import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { userSelector } from "../../redux/selectors/selector";
 import { ScreensName } from "../../constants/ScreensName";
+import { useTheme } from "../../contexts/ThemeContext";
 
 function Header() {
   const navigation = useNavigation();
   const user = useSelector(userSelector);
+  const { theme } = useTheme();
   // console.log(navigation.canGoBack());
 
   const checkAuth = () => {
@@ -20,7 +22,12 @@ function Header() {
   };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={{
+        ...styles.container,
+        backgroundColor: theme.headerBackgroundColor,
+      }}
+    >
       {navigation.canGoBack() && (
         <TouchableOpacity
           style={styles.backIcon}
@@ -29,7 +36,7 @@ function Header() {
           <Ionicons
             name="chevron-back" // Tên icon
             size={32} // Kích thước icon
-            color={"#40B491"} // Màu sắc (active/inactive)
+            color={theme.backButtonColor} // Màu sắc (active/inactive)
           />
         </TouchableOpacity>
       )}

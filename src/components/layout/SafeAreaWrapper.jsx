@@ -65,7 +65,7 @@ const SafeAreaWrapper = ({
           left: 0,
           right: 0,
           height: insets.top,
-          backgroundColor: theme.headerBackgroundColor, // Đặt màu trực tiếp
+          backgroundColor: theme.safeAreaBackgroundColor, // Đặt màu trực tiếp
           zIndex: 2,
         }}
       />
@@ -74,7 +74,7 @@ const SafeAreaWrapper = ({
         barStyle={
           backgroundColor === "light" ? "light-content" : "dark-content"
         }
-        backgroundColor={theme.headerBackgroundColor} // Đặt màu trực tiếp
+        backgroundColor={theme.safeAreaBackgroundColor} // Đặt màu trực tiếp
         translucent={true}
       />
 

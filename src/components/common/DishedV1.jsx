@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { favorSelector } from "../../redux/selectors/selector";
 import { toggleFavorite } from "../../redux/actions/favoriteThunk";
 import { getSeasonColor } from "../../utils/common";
+import { useTheme } from "../../contexts/ThemeContext";
 
 const DishedV1 = ({
   dish,
@@ -25,9 +26,10 @@ const DishedV1 = ({
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const favorite = useSelector(favorSelector);
+  const { theme } = useTheme();
 
   const isFavorite = (id) => {
-    return favorite.favoriteList.includes(id);
+    return favorite.favoriteList?.includes(id);
   };
 
   const handleOnArrowPress = () => {
@@ -40,10 +42,18 @@ const DishedV1 = ({
     onSavePress && onSavePress();
   };
   return (
-    <TouchableOpacity key={dish._id} style={styles.dishCard}>
+    <TouchableOpacity
+      key={dish._id}
+      style={{
+        ...styles.dishCard,
+        backgroundColor: theme.cardBackgroundColor,
+      }}
+    >
       <Image source={{ uri: dish.image_url }} style={styles.dishImage} />
       <View style={styles.dishInfo}>
-        <Text style={styles.dishTitle}>{dish.name}</Text>
+        <Text style={{ ...styles.dishTitle, color: theme.textColor }}>
+          {dish.name}
+        </Text>
         <CategoryTag name={dish.type} />
         <Text style={styles.dishDescription}>{dish.description}</Text>
       </View>
@@ -67,7 +77,13 @@ const DishedV1 = ({
           />
         )}
       </TouchableOpacity>
-      <TouchableOpacity style={styles.arrowButton} onPress={handleOnArrowPress}>
+      <TouchableOpacity
+        style={{
+          ...styles.arrowButton,
+          backgroundColor: theme.nextButtonColor,
+        }}
+        onPress={handleOnArrowPress}
+      >
         <Ionicons name="arrow-forward" size={18} color="white" />
       </TouchableOpacity>
       <View
@@ -88,6 +104,8 @@ const styles = StyleSheet.create({
   dishCard: {
     backgroundColor: "white",
     borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "white",
     marginBottom: 16,
     flexDirection: "row",
     padding: 12,
@@ -143,6 +161,7 @@ const styles = StyleSheet.create({
     padding: 4,
     paddingHorizontal: 8,
     borderBottomRightRadius: 8,
+    borderTopLeftRadius: 8,
     backgroundColor: "rgba(256,256,256,0.9)",
     borderWidth: 1,
   },

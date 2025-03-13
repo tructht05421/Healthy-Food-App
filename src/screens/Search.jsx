@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -25,6 +25,7 @@ import PaddingScrollViewBottom from "../components/common/PaddingScrollViewBotto
 import ShowToast from "../components/common/CustomToast";
 import { useFocusEffect } from "@react-navigation/native";
 import { getSearchHistory } from "../utils/common";
+import { useTheme } from "../contexts/ThemeContext";
 
 const WIDTH = Dimensions.get("window").width;
 
@@ -54,6 +55,9 @@ const SearchScreen = ({ route }) => {
   const [searchMode, setSearchMode] = useState("initial"); // 'initial', 'results'
   const [searchQuery, setSearchQuery] = useState("");
   const [history, setHistory] = useState([]);
+  const [sortType, setSortType] = useState(""); // Sorting state
+  const { theme } = useTheme();
+
   // const showToast = CustomToast();
   const loadHistory = async () => {
     const savedHistory = await getSearchHistory();
@@ -61,8 +65,6 @@ const SearchScreen = ({ route }) => {
   };
 
   useEffect(() => {
-    console.log("get in");
-
     if (route.params?.category || route.params?.searchQuery) {
       if (route.params?.category) {
         handleSearchByCategory(route.params?.category);
@@ -92,11 +94,13 @@ const SearchScreen = ({ route }) => {
     // }
     const response = await getDishes();
     if (response.status === 200) {
-      setSearchResults(
-        response.data?.data?.filter((item) =>
-          item.name.toLowerCase().includes(searchString.toLowerCase())
-        )
+      const resultList = response.data?.data?.filter((item) =>
+        item.name.toLowerCase().includes(searchString.toLowerCase())
       );
+      if (resultList.length === 0) {
+        ShowToast("warning", "No results found");
+      }
+      setSearchResults(resultList);
     } else {
       ShowToast("error", "Something went wrong");
     }
@@ -108,9 +112,13 @@ const SearchScreen = ({ route }) => {
 
     setSearchQuery(type.name);
     if (response.status === 200) {
-      setSearchResults(
-        response.data?.data?.filter((item) => item.type == type.name)
+      const resultList = response.data?.data?.filter(
+        (item) => item.type == type.name
       );
+      if (resultList.length === 0) {
+        ShowToast("warning", "No results found");
+      }
+      setSearchResults(resultList);
     }
     loadHistory();
 
@@ -126,6 +134,22 @@ const SearchScreen = ({ route }) => {
     setSearchResults([]);
     setSearchMode("initial");
   };
+
+  const toggleSort = () => {
+    setSortType((prev) => (prev !== "asc" ? "asc" : "desc"));
+  };
+
+  const filterResult = useMemo(() => {
+    const filteredResult = [...searchResults];
+
+    if (sortType === "asc") {
+      filteredResult.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sortType === "desc") {
+      filteredResult.sort((a, b) => b.name.localeCompare(a.name));
+    }
+
+    return filteredResult;
+  }, [searchResults, sortType]);
 
   const renderInitialContent = () => (
     <>
@@ -178,14 +202,16 @@ const SearchScreen = ({ route }) => {
     <View style={styles.resultsContainer}>
       <View style={styles.sortHeader}>
         <View />
-        <TouchableOpacity style={styles.sortButton}>
-          <Text style={styles.sortText}>Sort</Text>
+        <TouchableOpacity style={{ ...styles.sortButton }} onPress={toggleSort}>
+          <Text style={{ ...styles.sortText }}>
+            Sort ({sortType || "none"})
+          </Text>
           <MaterialCommunityIcons name="sort" size={20} color="#333" />
         </TouchableOpacity>
       </View>
 
-      {searchResults.length > 0 ? (
-        searchResults.map((item) => <DishedV2 key={item._id} item={item} />)
+      {filterResult.length > 0 ? (
+        filterResult.map((item) => <DishedV2 key={item._id} item={item} />)
       ) : (
         <Text style={styles.noResultsText}>No results found</Text>
       )}
@@ -300,6 +326,18 @@ const styles = StyleSheet.create({
   sortButton: {
     flexDirection: "row",
     alignItems: "center",
+    padding: 4,
+    borderRadius: 8,
+    backgroundColor: "white",
+    shadowColor: "#343C41",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+
+    elevation: 5,
   },
   sortText: {
     marginRight: 5,

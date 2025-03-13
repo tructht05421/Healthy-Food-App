@@ -5,6 +5,8 @@ import { ScreensMap } from "../../router/ScreensMap";
 import MaterialCommunityIcons from "./VectorIcons/MaterialCommunityIcons";
 import { ScreensName } from "../../constants/ScreensName";
 import { useTheme } from "../../contexts/ThemeContext";
+import { userSelector } from "../../redux/selectors/selector";
+import { useSelector } from "react-redux";
 
 // Get screen dimensions
 const HEIGHT = Dimensions.get("window").height;
@@ -12,6 +14,7 @@ const HEIGHT = Dimensions.get("window").height;
 const CustomTabBar = ({ state, descriptors, navigation }) => {
   // Get theme context
   const { theme } = useTheme();
+  const user = useSelector(userSelector);
 
   // The main tab screen is named "Main" and contains a stack navigator
   const mainRoute = state.routes[0];
@@ -68,7 +71,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
     >
       {/* Gradient background */}
       <LinearGradient
-        colors={[theme.tabBarBackground, theme.tabBarBackground]}
+        colors={[theme.tabBarBackgroundColor, theme.tabBarBackgroundColor]}
         style={{
           position: "absolute",
           width: "100%",
@@ -97,9 +100,21 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
           const onPress = () => {
             if (!isFocused) {
               // Navigate through the stack in Main
-              navigation.navigate("Main", {
-                screen: screen.name,
-              });
+              if (screen?.options?.requireAuthen) {
+                if (!user) {
+                  navigation.navigate("Main", {
+                    screen: ScreensName.signin,
+                  });
+                } else {
+                  navigation.navigate("Main", {
+                    screen: screen.name,
+                  });
+                }
+              } else {
+                navigation.navigate("Main", {
+                  screen: screen.name,
+                });
+              }
             }
           };
 

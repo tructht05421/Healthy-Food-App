@@ -24,14 +24,16 @@ export const createDishes = async (dishid) => {
   }
 };
 
-export const getRecipes = async (recipeId) => {
+export const getRecipesById = async (dishId, recipeId) => {
   try {
     const response = await axiosInstance.get(
-      `api/v1/dishes/recipes${recipeId ? `/${recipeId}` : ""}`
+      `api/v1/dishes${dishId ? `/${dishId}` : ""}/recipes${
+        recipeId ? `/${recipeId}` : ""
+      }`
     );
     return response;
   } catch (error) {
-    console.log("getRecipes in service/dishes error : ", error);
+    console.log("getRecipesById in service/dishes error : ", error);
     return error;
   }
 };

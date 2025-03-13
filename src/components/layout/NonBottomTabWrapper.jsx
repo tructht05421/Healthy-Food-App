@@ -37,7 +37,7 @@ function NonBottomTabWrapper({ children, headerHidden, style }) {
           top={-(HEIGHT * 0.1)}
           left={-(WIDTH * 0.4)}
           zIndex={1}
-          backgroundColor={theme.greenDecorationDot}
+          backgroundColor={theme.greenDecorationDotColor}
         />
         <DecorationDot
           size={HEIGHT * 0.25}
@@ -45,7 +45,7 @@ function NonBottomTabWrapper({ children, headerHidden, style }) {
           left={-(WIDTH * 0.2)}
           opacity={0.4}
           zIndex={1}
-          backgroundColor={theme.blackDecorationDot}
+          backgroundColor={theme.blackDecorationDotColor}
         />
 
         <DecorationDot
@@ -53,7 +53,7 @@ function NonBottomTabWrapper({ children, headerHidden, style }) {
           top={HEIGHT - HEIGHT * 0.15}
           left={WIDTH - WIDTH * 0.4}
           zIndex={1}
-          backgroundColor={theme.greenDecorationDot}
+          backgroundColor={theme.greenDecorationDotColor}
         />
         <DecorationDot
           size={HEIGHT * 0.25}
@@ -62,7 +62,7 @@ function NonBottomTabWrapper({ children, headerHidden, style }) {
           opacity={0.4}
           zIndex={1}
           transform={[{ translateX: 200 }, { translateY: 50 }]}
-          backgroundColor={theme.blackDecorationDot}
+          backgroundColor={theme.blackDecorationDotColor}
         />
       </>
     </SafeAreaWrapper>

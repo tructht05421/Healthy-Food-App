@@ -19,10 +19,9 @@ import useCurrentSeason from "../hooks/useCurrentSeason";
 import { DishType } from "../constants/DishType";
 import { useDispatch, useSelector } from "react-redux";
 import { loadFavorites } from "../redux/actions/favoriteThunk";
-import { favorSelector } from "../redux/selectors/selector";
+import { favorSelector, userSelector } from "../redux/selectors/selector";
 import SpinnerLoading from "../components/common/SpinnerLoading";
 import PaddingScrollViewBottom from "../components/common/PaddingScrollViewBottom";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
@@ -32,6 +31,7 @@ function Home({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState({ loadDishes: true });
   const favor = useSelector(favorSelector);
+  const user = useSelector(userSelector);
   const dispatch = useDispatch();
 
   const season = useCurrentSeason();
@@ -44,15 +44,18 @@ function Home({ navigation }) {
 
   useEffect(() => {
     loadFavoritesData();
-  }, [dispatch]);
+  }, [dispatch, user]);
 
   const loadFavoritesData = async () => {
-    dispatch(loadFavorites());
+    if (user) {
+      dispatch(loadFavorites());
+    }
   };
 
   const onRefresh = async () => {
     setRefreshing(true);
     await loadDishes();
+    await loadFavoritesData();
     setRefreshing(false);
   };
 

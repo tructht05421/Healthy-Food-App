@@ -61,10 +61,18 @@ const List = () => {
           </View>
         </View> */}
 
-        <TouchableOpacity style={styles.sortButton} onPress={toggleSort}>
-          <Text style={styles.sortText}>Sort ({sortType || "none"})</Text>
-          <MaterialCommunityIcons name="sort" size={20} color="#333" />
-        </TouchableOpacity>
+        <View style={styles.sortHeader}>
+          <View />
+          <TouchableOpacity
+            style={{ ...styles.sortButton }}
+            onPress={toggleSort}
+          >
+            <Text style={{ ...styles.sortText }}>
+              Sort ({sortType || "none"})
+            </Text>
+            <MaterialCommunityIcons name="sort" size={20} color="#333" />
+          </TouchableOpacity>
+        </View>
 
         <ScrollView
           style={{ paddingHorizontal: 2 }}
@@ -108,10 +116,27 @@ const styles = StyleSheet.create({
     color: "#38B2AC",
     fontSize: 14,
   },
+  sortHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
   sortButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-end",
+    padding: 4,
+    borderRadius: 8,
+    backgroundColor: "white",
+    shadowColor: "#343C41",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+
+    elevation: 5,
     marginBottom: 12,
   },
   sortText: {

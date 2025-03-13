@@ -5,8 +5,8 @@ export const ModeName = {
 
 export const variableColorName = {
   backgroundColor: "backgroundColor",
-  headerBackgroundColor: "headerBackgroundColor",
-  greenDecorationDot: "greenDecorationDot",
-  blackDecorationDot: "blackDecorationDot",
+  safeAreaBackgroundColor: "safeAreaBackgroundColor",
+  greenDecorationDotColor: "greenDecorationDotColor",
+  blackDecorationDotColor: "blackDecorationDotColor",
   text: "text",
 };

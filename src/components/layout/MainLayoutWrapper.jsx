@@ -30,7 +30,7 @@ function MainLayoutWrapper({ children, headerHidden }) {
         top={-(HEIGHT * 0.2)}
         left={-(WIDTH * 0.4)}
         zIndex={1}
-        backgroundColor={"#AEC687"}
+        backgroundColor={theme.greenDecorationDotColor}
       />
       <DecorationDot
         size={HEIGHT * 0.25}
@@ -38,6 +38,7 @@ function MainLayoutWrapper({ children, headerHidden }) {
         left={-(WIDTH * 0.2)}
         opacity={0.4}
         zIndex={1}
+        backgroundColor={theme.blackDecorationDotColor}
       />
     </SafeAreaWrapper>
   );

@@ -13,14 +13,16 @@ import CategoryTag from "./CategoryTag";
 import { useDispatch, useSelector } from "react-redux";
 import { favorSelector } from "../../redux/selectors/selector";
 import { toggleFavorite } from "../../redux/actions/favoriteThunk";
+import { useTheme } from "../../contexts/ThemeContext";
 const WIDTH = Dimensions.get("window").width;
 
 const DishedV2 = ({ item, onPress, onFavoritePress }) => {
   const dispatch = useDispatch();
   const favorite = useSelector(favorSelector);
+  const { theme } = useTheme();
 
   const isFavorite = (id) => {
-    return favorite.favoriteList.includes(id);
+    return favorite.favoriteList?.includes(id);
   };
 
   const handleOnSavePress = (dish) => {
@@ -33,13 +35,15 @@ const DishedV2 = ({ item, onPress, onFavoritePress }) => {
       key={item._id}
       style={[
         styles.resultCard,
-        { backgroundColor: item.bgColor ?? "#FFEBE6" },
+        { backgroundColor: item.bgColor ?? theme.cardBackgroundColor },
       ]}
       onPress={onPress}
     >
       <View style={styles.resultInfo}>
         <View style={styles.resultTitleContainer}>
-          <Text style={styles.resultTitle}>{item.name}</Text>
+          <Text style={{ ...styles.resultTitle, color: theme.textColor }}>
+            {item.name}
+          </Text>
           <CategoryTag name={item.type} color="#FF6B00" />
         </View>
 
@@ -54,7 +58,9 @@ const DishedV2 = ({ item, onPress, onFavoritePress }) => {
           <ActivityIndicator size={22} color="#FC8019" />
         ) : (
           <MaterialCommunityIcons
-            name={isFavorite(item._id) ? "heart-multiple" : "heart-outline"}
+            name={
+              isFavorite(item._id) ? "heart-multiple" : "heart-plus-outline"
+            }
             size={22}
             color="#FF9500"
           />

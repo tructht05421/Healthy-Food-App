@@ -7,15 +7,24 @@ import {
   StyleSheet,
   Dimensions,
 } from "react-native";
+import { useTheme } from "../../contexts/ThemeContext";
 
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
 
 const CategoryCard = ({ category, onPress, cardWidth, imageSize, style }) => {
+  const { theme } = useTheme();
+
   return (
     <TouchableOpacity
       key={category.id}
-      style={{ ...styles.categoryCard, width: cardWidth ?? "45%", ...style }}
+      style={{
+        ...styles.categoryCard,
+        width: cardWidth ?? "45%",
+        backgroundColor: theme.cardBackgroundColor,
+        // shadowColor: theme.cardShadowColor,
+        ...style,
+      }}
       onPress={onPress}
     >
       <View style={styles.categoryImageContainer}>
@@ -28,7 +37,14 @@ const CategoryCard = ({ category, onPress, cardWidth, imageSize, style }) => {
           }}
         />
       </View>
-      <Text style={styles.categoryTitle}>{category.name}</Text>
+      <Text
+        style={{
+          ...styles.categoryTitle,
+          color: theme.textColor,
+        }}
+      >
+        {category.name}
+      </Text>
     </TouchableOpacity>
   );
 };
@@ -47,13 +63,15 @@ const styles = StyleSheet.create({
     padding: 12,
     paddingVertical: 14,
     marginTop: HEIGHT * 0.05,
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    shadowColor: "#343C41",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
 
-    elevation: 10,
+    elevation: 3,
   },
   categoryImageContainer: {
     position: "absolute",
