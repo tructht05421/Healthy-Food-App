@@ -19,7 +19,7 @@ const userSlice = createSlice({
 
   // Các reducers thông thường - xử lý sync actions
   reducers: {
-    updateUser: (state, action) => {
+    updateUserAct: (state, action) => {
       state.user = action.payload; // Cập nhật thông tin user
     },
     removeUser: (state) => {
@@ -50,6 +50,6 @@ const userSlice = createSlice({
 
 // PHẦN 4: EXPORTS
 // Export các action creators
-export const { updateUser, removeUser } = userSlice.actions;
+export const { updateUserAct, removeUser } = userSlice.actions;
 // Export reducer
 export default userSlice.reducer;

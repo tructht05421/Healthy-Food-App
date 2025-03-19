@@ -98,7 +98,7 @@ const SearchScreen = ({ route }) => {
         item.name.toLowerCase().includes(searchString.toLowerCase())
       );
       if (resultList.length === 0) {
-        ShowToast("warning", "No results found");
+        ShowToast("error", "No results found");
       }
       setSearchResults(resultList);
     } else {
@@ -116,7 +116,7 @@ const SearchScreen = ({ route }) => {
         (item) => item.type == type.name
       );
       if (resultList.length === 0) {
-        ShowToast("warning", "No results found");
+        ShowToast("error", "No results found");
       }
       setSearchResults(resultList);
     }

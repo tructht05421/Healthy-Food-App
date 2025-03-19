@@ -130,7 +130,9 @@ export const ScreensMap = [
         />
       ),
       iconStyles: { transform: [{ translateX: -25 }] },
+      requireAuthen: true,
     },
+    hiddenBottomTab: true,
   },
   {
     name: ScreensName.heartBeat,

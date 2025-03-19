@@ -302,10 +302,10 @@ function Signup({ navigation }) {
               }}
               buttonText="Register" // Text hiển thị trên nút
               textStyle={{ ...styles.textStyle, color: "#ffffff" }} // Style cho text
-              // onPress={async () => await onPressRegisterButton()} // Xử lý sự kiện nhấn
-              onPress={() => {
-                console.log(user);
-              }} // Xử lý sự kiện nhấn
+              onPress={async () => await onPressRegisterButton()} // Xử lý sự kiện nhấn
+              // onPress={() => {
+              //   console.log(user);
+              // }} // Xử lý sự kiện nhấn
             />
 
             {/* Dòng phân cách với text ở giữa */}

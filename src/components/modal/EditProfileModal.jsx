@@ -40,7 +40,6 @@ export const EditProfileModal = ({ visible, onClose, onSave }) => {
 
   const handleSave = () => {
     onSave(profile);
-    onClose();
   };
 
   const [showGenderPicker, setShowGenderPicker] = useState(false);
@@ -164,7 +163,7 @@ export const EditProfileModal = ({ visible, onClose, onSave }) => {
               <View style={styles.phoneInputContainer}>
                 <TouchableOpacity
                   style={styles.countryCodeContainer}
-                  onPress={() => setShowChooseCountry(true)}
+                  // onPress={() => setShowChooseCountry(true)}
                 >
                   <Text style={styles.countryCode}>{profile.countryCode}</Text>
                 </TouchableOpacity>
@@ -176,6 +175,7 @@ export const EditProfileModal = ({ visible, onClose, onSave }) => {
                   }
                   placeholder="Phone number"
                   keyboardType="phone-pad"
+                  editable={false}
                 />
               </View>
 

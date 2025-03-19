@@ -101,3 +101,13 @@ export const changePassword = async ({ email, password, passwordConfirm }) => {
     return error;
   }
 };
+
+export const updateUser = async (user) => {
+  try {
+    const response = await axiosInstance.put(`api/v1/users/${user?._id}`, user);
+    return response;
+  } catch (error) {
+    console.log("updateUser error: ", error);
+    return error;
+  }
+};
