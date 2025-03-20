@@ -37,7 +37,10 @@ const userSlice = createSlice({
       })
       // Khi API đăng nhập thành công
       .addCase(loginThunk.fulfilled, (state, action) => {
-        state.user = action.payload?.data?.data?.user; // Lưu thông tin user
+        state.user = {
+          ...action.payload?.data?.data?.user,
+          accessToken: action.payload?.data?.token,
+        }; // Lưu thông tin user
         state.loading = false; // Tắt loading
       })
       // Khi API đăng nhập thất bại

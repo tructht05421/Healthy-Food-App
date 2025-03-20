@@ -16,31 +16,32 @@ import MainLayoutWrapper from "../components/layout/MainLayoutWrapper";
 import messageSocket from "../services/messageSocket";
 import { userSelector } from "../redux/selectors/selector";
 import { useSelector } from "react-redux";
+import {
+  createConversation,
+  getConversationMessage,
+  getUserConversations,
+} from "../services/conversationService";
+import InputModal from "../components/modal/InputModal";
+import Ionicons from "../components/common/VectorIcons/Ionicons";
+import { useTheme } from "../contexts/ThemeContext";
+import ShowToast from "../components/common/CustomToast";
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
-function Message() {
+function Message({ navigation }) {
   const user = useSelector(userSelector);
 
-  const [messages, setMessages] = useState([
-    {
-      id: "1",
-      text: "Hello!",
-      sender: "other",
-      timestamp: new Date().toISOString(),
-    },
-    {
-      id: "2",
-      text: "Hi there!",
-      sender: "me",
-      timestamp: new Date().toISOString(),
-    },
-  ]);
+  const [messages, setMessages] = useState([]);
+  const [conversation, setConversation] = useState({});
+  const [screenState, setScreenState] = useState("onboarding");
   const [inputText, setInputText] = useState("");
+  const [visible, setVisible] = useState({ inputTopic: false });
+  const { theme } = useTheme();
   const flatListRef = useRef(null);
 
   useEffect(() => {
     // Initialize socket connection when app starts
-    messageSocket.init({ userId: user?._id });
+    messageSocket.init({ userId: user?._id, token: user?.accessToken });
+    loadConversation();
 
     // Clean up socket connection when app is closed
     return () => {
@@ -48,6 +49,45 @@ function Message() {
       messageSocket.off("receive_message");
     };
   }, []);
+
+  const loadConversation = async () => {
+    // Fetch conversation details from API or database
+    const response = await getUserConversations(user?._id);
+    if (response.status === 200) {
+      setConversation(response.data?.data[0]);
+      loadMessgageHistory(response.data?.data[0]._id);
+    }
+  };
+
+  const loadMessgageHistory = async (conversationId) => {
+    const response = await getConversationMessage(conversationId);
+    if (response.status === 200) {
+      setMessages(
+        response.data?.data?.map((item) => ({
+          ...item,
+          sender: item.senderId === user?._id ? "me" : "other",
+        }))
+      );
+    }
+  };
+
+  const getStarted = () => {
+    if (conversation) {
+      setScreenState("chat");
+      ShowToast("success", "Topic : " + conversation.topic);
+    } else {
+      setVisible({ ...visible, inputTopic: true });
+    }
+  };
+
+  const handleCreateConversation = async (topic) => {
+    const response = await createConversation(user?._id, topic);
+    if (response.status === 200) {
+      setScreenState("chat");
+      setConversation(response.data?.data);
+      setVisible({ ...visible, inputTopic: false });
+    }
+  };
 
   const onSend = () => {
     const messageToSend = {
@@ -61,29 +101,14 @@ function Message() {
 
     // Send message through socket
     messageSocket.emit("send_message", {
-      conversationId: "67db0e237946051c65e569ff",
+      conversationId: conversation._id,
       senderId: user?._id,
-      receiverId: user?._id,
+      receiverId: "",
       text: messageToSend.text,
       createdAt: new Date(),
     });
     setInputText("");
   };
-
-  messageSocket.on("receive_message", (message) => {
-    console.log("New message received:", message);
-    const generateId = () =>
-      `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
-    const messageToReceived = {
-      id: message._id + generateId(),
-      text: message.text,
-      sender: "other",
-      timestamp: message.updatedAt,
-    };
-
-    // Add message to local state
-    setMessages((previousMessages) => [...previousMessages, messageToReceived]);
-  });
 
   const renderMessage = ({ item }) => {
     const isMyMessage = item.sender === "me";
@@ -98,7 +123,7 @@ function Message() {
           {item.text}
         </Text>
         <Text style={[styles.timestamp, isMyMessage && styles.mySender]}>
-          {new Date(item.timestamp).toLocaleTimeString([], {
+          {new Date(item.updatedAt).toLocaleTimeString([], {
             hour: "2-digit",
             minute: "2-digit",
           })}
@@ -107,6 +132,19 @@ function Message() {
     );
   };
 
+  messageSocket.on("receive_message", (message) => {
+    console.log("New message received:", message);
+    const messageToReceived = {
+      id: message._id,
+      text: message.text,
+      sender: "other",
+      timestamp: message.updatedAt,
+    };
+
+    // Add message to local state
+    setMessages((previousMessages) => [...previousMessages, messageToReceived]);
+  });
+
   return (
     <MainLayoutWrapper headerHidden={true}>
       <Image
@@ -114,39 +152,91 @@ function Message() {
         style={styles.backgroundImage}
         resizeMode="cover"
       />
-      <FlatList
-        ref={flatListRef}
-        data={messages}
-        renderItem={renderMessage}
-        keyExtractor={(item) => item.id}
-        style={styles.messagesList}
-        contentContainerStyle={styles.messagesListContent}
-        onContentSizeChange={() =>
-          flatListRef.current?.scrollToEnd({ animated: true })
-        }
-        onLayout={() => flatListRef.current?.scrollToEnd({ animated: true })}
-      />
-
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
-        style={styles.inputContainer}
-      >
-        <TextInput
-          style={styles.input}
-          value={inputText}
-          onChangeText={setInputText}
-          placeholder="Type a message..."
-          multiline
-        />
+      {navigation.canGoBack() && (
         <TouchableOpacity
-          style={styles.sendButton}
-          onPress={onSend}
-          disabled={inputText.trim() === ""}
+          style={styles.backIcon}
+          onPress={() => navigation.goBack()}
         >
-          <Text style={styles.sendButtonText}>Send</Text>
+          <Ionicons
+            name="chevron-back" // Tên icon
+            size={32} // Kích thước icon
+            color={theme.backButtonColor} // Màu sắc (active/inactive)
+          />
         </TouchableOpacity>
-      </KeyboardAvoidingView>
+      )}
+      {screenState === "onboarding" ? (
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
+          style={{
+            ...styles.messagesList,
+            marginTop: HEIGHT * 0.6,
+            paddingTop: HEIGHT * 0.05,
+            alignItems: "center",
+          }}
+        >
+          <Text style={styles.onboardingTitle}>
+            Chatting App That Connects People
+          </Text>
+          <Text style={styles.onboardingDescription}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore.
+          </Text>
+          <TouchableOpacity
+            style={styles.getStartedButton}
+            onPress={getStarted}
+          >
+            <Text style={styles.getStartedButtonText}>Get Started</Text>
+          </TouchableOpacity>
+        </KeyboardAvoidingView>
+      ) : (
+        <>
+          <FlatList
+            ref={flatListRef}
+            data={messages}
+            renderItem={renderMessage}
+            keyExtractor={(item) => item.id}
+            style={styles.messagesList}
+            contentContainerStyle={styles.messagesListContent}
+            onContentSizeChange={() =>
+              flatListRef.current?.scrollToEnd({ animated: true })
+            }
+            onLayout={() =>
+              flatListRef.current?.scrollToEnd({ animated: true })
+            }
+          />
+
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
+            style={styles.inputContainer}
+          >
+            <TextInput
+              style={styles.input}
+              value={inputText}
+              onChangeText={setInputText}
+              placeholder="Type a message..."
+              multiline
+            />
+            <TouchableOpacity
+              style={styles.sendButton}
+              onPress={onSend}
+              disabled={inputText.trim() === ""}
+            >
+              <Text style={styles.sendButtonText}>Send</Text>
+            </TouchableOpacity>
+          </KeyboardAvoidingView>
+        </>
+      )}
+      <InputModal
+        visible={visible.inputTopic}
+        onClose={() => {
+          setVisible({ ...visible, inputTopic: false });
+        }}
+        onSubmit={handleCreateConversation}
+        title={"Enter Topic Name"}
+        placeholder={"Type here..."}
+      />
     </MainLayoutWrapper>
   );
 }
@@ -168,13 +258,45 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
   },
+  onboardingTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign: "center",
+    width: "70%",
+  },
+  onboardingDescription: {
+    fontSize: 16,
+    marginBottom: 20,
+    color: "#6A6D75",
+    textAlign: "center",
+    width: "70%",
+  },
+  getStartedButton: {
+    width: WIDTH * 0.9,
+    backgroundColor: "#40B491",
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    borderRadius: 50,
+    alignItems: "center",
+  },
+  getStartedButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
   backgroundImage: {
     position: "absolute",
     top: -HEIGHT * 0.15,
     left: 0,
     right: 0,
     width: WIDTH,
-    height: HEIGHT * 0.35,
+    height: HEIGHT,
+  },
+  backIcon: {
+    position: "absolute",
+    left: "8%",
+    zIndex: 999,
   },
   messagesList: {
     flex: 1,

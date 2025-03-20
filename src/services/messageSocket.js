@@ -2,10 +2,7 @@
 import { io } from "socket.io-client";
 
 // Use your server's URL here
-const SOCKET_URL = "http://192.168.1.225:8080"; // Replace with your actual server URL
-const token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZGFlMWExNDcwOTEyNDc0MGU5YTQ2ZSIsImlhdCI6MTc0MjQwNzEzNywiZXhwIjoxNzUwMTgzMTM3fQ.9CJIwSafgszL7VGFFYBuYj7FcUh-WLFMcgvGbU2NDGU";
-
+const SOCKET_URL = process.env.EXPO_PUBLIC_API_URL; // Replace with your actual server UR
 class MessageSocket {
   socket = null;
 
@@ -24,7 +21,7 @@ class MessageSocket {
       reconnectionAttempts: 10,
       withCredentials: true,
       auth: {
-        token: token,
+        token: data?.token,
       },
     });
 
