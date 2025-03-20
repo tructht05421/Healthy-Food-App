@@ -110,8 +110,9 @@ function Message({ navigation }) {
     setInputText("");
   };
 
-  const renderMessage = ({ item }) => {
+  const renderMessage = ({ item, index }) => {
     const isMyMessage = item.sender === "me";
+
     return (
       <View
         style={[
