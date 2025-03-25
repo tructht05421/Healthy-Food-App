@@ -6,6 +6,7 @@ import { combineReducers } from "redux";
 
 import userReducer from "./userReducer";
 import favoriteReducer from "./favoriteReducer";
+import drawerReducer from "./drawerReducer";
 // ↑ Import reducer xử lý các actions liên quan đến user
 // userReducer sẽ quản lý các state như thông tin đăng nhập, profile user,...
 
@@ -13,6 +14,7 @@ import favoriteReducer from "./favoriteReducer";
 const rootReducer = combineReducers({
   user: userReducer,
   favorite: favoriteReducer,
+  drawer: drawerReducer,
 });
 // ↑ Tạo rootReducer bằng cách kết hợp các reducers con
 // - Khóa 'user' xác định tên của state slice trong Redux store

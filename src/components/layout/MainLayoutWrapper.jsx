@@ -15,7 +15,7 @@ function MainLayoutWrapper({ children, headerHidden }) {
 
   return (
     <SafeAreaWrapper headerStyle={{ backgroundColor: "transparent" }}>
-      {!headerHidden && <Header />}
+      <Header />
       <LinearGradient
         colors={theme.backgroundColor}
         start={{ x: 0, y: 0 }}

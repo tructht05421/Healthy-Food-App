@@ -20,10 +20,8 @@ import {
 } from "../services/ingredient";
 import { DishType } from "../constants/DishType";
 import { getDishes } from "../services/dishes";
-import PaddingScrollViewBottom from "../components/common/PaddingScrollViewBottom";
 // import CustomToast from "../components/common/CustomToast";
 import ShowToast from "../components/common/CustomToast";
-import { useFocusEffect } from "@react-navigation/native";
 import { getSearchHistory } from "../utils/common";
 import { useTheme } from "../contexts/ThemeContext";
 
@@ -235,7 +233,6 @@ const SearchScreen = ({ route }) => {
           {searchMode === "initial"
             ? renderInitialContent()
             : renderResultsContent()}
-          <PaddingScrollViewBottom />
         </ScrollView>
       </View>
     </MainLayoutWrapper>

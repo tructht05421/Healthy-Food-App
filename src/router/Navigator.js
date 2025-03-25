@@ -1,4 +1,4 @@
-// PHẦN 1: IMPORTS
+
 import React, { useEffect } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -12,12 +12,13 @@ import { StatusBar } from "react-native";
 import { ScreensMap } from "./ScreensMap";
 import CustomTabBar from "../components/common/CustomTabBar";
 import { useTheme } from "../contexts/ThemeContext";
+import CustomDrawerLayout from "../components/layout/CustomDrawerLayout";
 
-// PHẦN 2: KHỞI TẠO NAVIGATORS
+
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// PHẦN 3: STACK NAVIGATOR
+
 function HomeStack() {
   const { theme } = useTheme();
 
@@ -27,7 +28,7 @@ function HomeStack() {
         headerShown: false,
         gestureEnabled: true,
         gestureDirection: "horizontal",
-        // Note: We're not setting backgroundColor here as it's handled by ThemedLayoutWrapper
+
       }}
     >
       {ScreensMap.map((item, index) => (
@@ -36,7 +37,6 @@ function HomeStack() {
     </Stack.Navigator>
   );
 }
-// PHẦN 4: TAB NAVIGATOR
 
 const TabNavigator = () => {
   const { theme } = useTheme();
@@ -50,7 +50,7 @@ const TabNavigator = () => {
         animation: "shift",
         gestureEnabled: true,
         gestureDirection: "horizontal",
-        // Apply theme colors
+
         tabBarStyle: {
           backgroundColor: theme.tabBarBackgroundColor,
           borderTopColor: theme.border,
@@ -63,11 +63,11 @@ const TabNavigator = () => {
   );
 };
 
-// PHẦN 4: STACK NAVIGATOR CHÍNH
+
 const Navigator = () => {
   const { theme, themeMode } = useTheme();
 
-  // Create a custom theme for NavigationContainer based on our theme
+
   const navigationTheme = {
     ...(themeMode === "dark" ? DarkTheme : DefaultTheme),
     colors: {
@@ -77,7 +77,7 @@ const Navigator = () => {
       border: theme.border,
       primary: theme.primary,
       notification: theme.accent,
-      // Don't set background color here - it's handled by ThemedLayoutWrapper
+
     },
   };
 
@@ -89,7 +89,9 @@ const Navigator = () => {
         translucent
       />
       <NavigationContainer theme={navigationTheme}>
-        {TabNavigator()}
+        <CustomDrawerLayout theme={theme}>
+          {TabNavigator()}
+        </CustomDrawerLayout>
       </NavigationContainer>
     </>
   );

@@ -22,8 +22,10 @@ const userSlice = createSlice({
     updateUserAct: (state, action) => {
       state.user = action.payload; // Cập nhật thông tin user
     },
-    removeUser: (state) => {
-      state.user = null; // Xóa thông tin user (logout)
+    removeUser :  (state) => {
+      AsyncStorage.removeItem("accessToken");
+      // state.user = null; // Xóa thông tin user (logout)
+      return state
     },
   },
 

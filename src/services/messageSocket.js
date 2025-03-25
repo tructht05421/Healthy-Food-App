@@ -1,19 +1,15 @@
-// src/services/socketService.js
 import { io } from "socket.io-client";
 
-// Use your server's URL here
-const SOCKET_URL = process.env.EXPO_PUBLIC_API_URL; // Replace with your actual server UR
+const SOCKET_URL = process.env.EXPO_PUBLIC_SOCKET_URL;
 class MessageSocket {
   socket = null;
 
-  // Initialize the socket connection
   init = (data) => {
     if (this.socket) {
       console.log("Socket already initialized");
       return;
     }
 
-    // Create socket connection
     this.socket = io(SOCKET_URL, {
       transports: ["websocket"],
       reconnection: true,
@@ -25,7 +21,6 @@ class MessageSocket {
       },
     });
 
-    // Socket connection events
     this.socket.on("connect", () => {
       console.log("Connected to server: ", data?.userId);
       data?.userId && socket.emit("join", data?.userId);
@@ -40,7 +35,6 @@ class MessageSocket {
     });
   };
 
-  // Disconnect and clean up
   disconnect = () => {
     if (this.socket) {
       this.socket.disconnect();
@@ -48,12 +42,10 @@ class MessageSocket {
     }
   };
 
-  // Check if socket is connected
   isConnected = () => {
     return this.socket && this.socket.connected;
   };
 
-  // Emit an event
   emit = (event, data) => {
     if (this.socket) {
       this.socket.emit(event, data);
@@ -62,7 +54,6 @@ class MessageSocket {
     }
   };
 
-  // Listen for an event
   on = (event, callback) => {
     if (this.socket) {
       this.socket.on(event, callback);
@@ -71,21 +62,18 @@ class MessageSocket {
     }
   };
 
-  // Remove listener
   off = (event) => {
     if (this.socket) {
       this.socket.off(event);
     }
   };
 
-  // Join a room
   joinRoom = (roomId) => {
     if (this.socket) {
       this.socket.emit("join_room", roomId);
     }
   };
 
-  // Leave a room
   leaveRoom = (roomId) => {
     if (this.socket) {
       this.socket.emit("leave_room", roomId);

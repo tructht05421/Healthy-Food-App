@@ -1,57 +1,48 @@
-// Import các thư viện cần thiết từ React và React Native
 import React, { useState } from "react";
 import {
-  Text, // Component hiển thị text
-  View, // Component container
-  StyleSheet, // API để tạo styles
-  Image, // Component hiển thị hình ảnh
-  TextInput, // Component nhập liệu
+  Text,
+  View,
+  StyleSheet,
+  Image,
+  TextInput,
   Dimensions,
   KeyboardAvoidingView,
-  Platform, // API lấy kích thước màn hình
+  Platform,
 } from "react-native";
 
-// Import các components tùy chỉnh
-import SafeAreaWrapper from "../components/layout/SafeAreaWrapper"; // Component wrapper an toàn cho notch/home indicator
-import RippleButton from "../components/common/RippleButton"; // Button có hiệu ứng gợn sóng
-import proundCactusIcon from "../../assets/image/pround_cactus.png"; // Ảnh icon xương rồng
-import ShowToast from "../components/common/CustomToast"; // Component hiển thị thông báo
-import { changePassword } from "../services/authService"; // Service xử lý đổi mật khẩu
-import { ScreensName } from "../constants/ScreensName"; // Constant chứa tên các màn hình
+import SafeAreaWrapper from "../components/layout/SafeAreaWrapper";
+import RippleButton from "../components/common/RippleButton";
+import proundCactusIcon from "../../assets/image/pround_cactus.png";
+import ShowToast from "../components/common/CustomToast";
+import { changePassword } from "../services/authService";
+import { ScreensName } from "../constants/ScreensName";
 
-// Lấy kích thước màn hình
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
 
 function ChangePassword({ navigation, route }) {
-  // Lấy email từ params của route
   const email = route.params?.email;
-  // Khởi tạo state cho mật khẩu mới và xác nhận mật khẩu
+
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  // Hàm xử lý đổi mật khẩu
   const handleResetPassword = async () => {
-    // Kiểm tra các trường có trống không
     if (!newPassword || !confirmPassword) {
       ShowToast("error", "Vui lòng điền đầy đủ thông tin");
       return;
     }
 
-    // Kiểm tra mật khẩu có khớp không
     if (newPassword !== confirmPassword) {
       ShowToast("error", "Mật khẩu không khớp");
       return;
     }
 
-    // Gọi API đổi mật khẩu
     console.log({
       email: email?.trim(),
       password: newPassword,
       passwordConfirm: confirmPassword,
     });
 
-    // Xử lý response từ API
     const response = await changePassword({
       email: email.trim(),
       password: newPassword,
@@ -59,7 +50,6 @@ function ChangePassword({ navigation, route }) {
     });
     console.log(response.status);
 
-    // Kiểm tra kết quả và điều hướng
     if (response.status === 200) {
       ShowToast("success", "Đổi mật khẩu thành công");
       console.log("Password reset:", newPassword);
@@ -67,7 +57,6 @@ function ChangePassword({ navigation, route }) {
     }
   };
 
-  // Render giao diện
   return (
     <SafeAreaWrapper>
       <KeyboardAvoidingView
@@ -75,17 +64,12 @@ function ChangePassword({ navigation, route }) {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <View style={styles.card}>
-          {/* Tiêu đề */}
           <Text style={styles.title}>Change New Password</Text>
-
-          {/* Phụ đề */}
           <Text style={styles.subtitle}>
             Enter a different password with{"\n"}the previous
           </Text>
 
-          {/* Container chứa các input */}
           <View style={styles.inputContainer}>
-            {/* Input mật khẩu mới */}
             <Text style={styles.label}>New Password</Text>
             <TextInput
               style={styles.input}
@@ -96,7 +80,6 @@ function ChangePassword({ navigation, route }) {
               secureTextEntry
             />
 
-            {/* Input xác nhận mật khẩu */}
             <Text style={styles.label}>Confirm Password</Text>
             <TextInput
               style={styles.input}
@@ -108,10 +91,8 @@ function ChangePassword({ navigation, route }) {
             />
           </View>
 
-          {/* Container chứa hình minh họa */}
           <View style={styles.illustrationContainer}>
             <Image source={proundCactusIcon} style={styles.cactusIcon} />
-            {/* Các phần tử trang trí */}
             <View style={styles.decorations}>
               <View style={[styles.star, styles.starOrange]} />
               <View style={[styles.star, styles.starYellow]} />
@@ -119,7 +100,6 @@ function ChangePassword({ navigation, route }) {
             </View>
           </View>
 
-          {/* Nút đổi mật khẩu */}
           <RippleButton
             buttonStyle={styles.submitButton}
             buttonText="Reset Password"
