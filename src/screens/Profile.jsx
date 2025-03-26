@@ -92,6 +92,7 @@ function Profile({ navigation }) {
 
   const handleEditProfile = async (data) => {
     const response = await updateUser(data);
+    console.log(data);
 
     if (response.status === 200) {
       ShowToast("success", "Update user profile successfull");
@@ -154,8 +155,8 @@ function Profile({ navigation }) {
       <View style={styles.profileSection}>
         <Image
           source={
-            user?.avatar_url
-              ? { uri: user.avatar_url }
+            user?.avatarUrl
+              ? { uri: user.avatarUrl }
               : require("../../assets/image/Profile.png")
           }
           style={styles.profileImage}

@@ -21,6 +21,7 @@ import { CountryPicker } from "react-native-country-codes-picker";
 import { Picker } from "@react-native-picker/picker";
 import RNPickerSelect from "react-native-picker-select";
 import { useTheme } from "../../contexts/ThemeContext";
+import * as ImagePicker from "expo-image-picker";
 
 const HEIGHT = Dimensions.get("window").height;
 const WIDTH = Dimensions.get("window").width;
@@ -51,6 +52,28 @@ export const EditProfileModal = ({ visible, onClose, onSave }) => {
     { label: "Non-binary", value: "non-binary" },
     { label: "Prefer not to say", value: "prefer-not-to-say" },
   ];
+
+  const pickImage = async () => {
+    // Request permission to access media library
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert("Sorry, we need camera roll permissions to make this work!");
+      return;
+    }
+
+    // Launch image picker
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setProfile((pre) => ({ ...pre, avatarUrl: result.assets[0].uri }));
+      // uploadToCloudinary(result.assets[0].uri);
+    }
+  };
 
   // For iOS, we'll use a modal with the picker
   const renderGenderPickerModal = () => {
@@ -116,9 +139,9 @@ export const EditProfileModal = ({ visible, onClose, onSave }) => {
           {/* Profile Image */}
           <View style={styles.profileImageContainer}>
             <View style={styles.profileImageWrapper}>
-              {profile?.avatar_url ? (
+              {profile?.avatarUrl ? (
                 <Image
-                  source={{ uri: profile.avatar_url }}
+                  source={{ uri: profile.avatarUrl }}
                   style={styles.profileImage}
                 />
               ) : (
@@ -126,9 +149,9 @@ export const EditProfileModal = ({ visible, onClose, onSave }) => {
                   style={[styles.profileImage, styles.profileImagePlaceholder]}
                 />
               )}
-              <View style={styles.editProfileImageButton}>
-                <Ionicons name="checkmark" size={20} color="#fff" />
-              </View>
+              <TouchableOpacity style={styles.editProfileImageButton} onPress={pickImage}>
+                <Ionicons name="pencil" size={20} color="#fff" />
+              </TouchableOpacity>
             </View>
           </View>
 
