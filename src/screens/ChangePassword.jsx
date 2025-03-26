@@ -16,12 +16,14 @@ import proundCactusIcon from "../../assets/image/pround_cactus.png";
 import ShowToast from "../components/common/CustomToast";
 import { changePassword } from "../services/authService";
 import { ScreensName } from "../constants/ScreensName";
+import { useTheme } from "../contexts/ThemeContext";
 
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
 
 function ChangePassword({ navigation, route }) {
   const email = route.params?.email;
+  const { theme } = useTheme();
 
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -60,17 +62,24 @@ function ChangePassword({ navigation, route }) {
   return (
     <SafeAreaWrapper>
       <KeyboardAvoidingView
-        style={styles.container}
+        style={{
+          ...styles.container,
+          backgroundColor: theme.editModalbackgroundColor,
+        }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <View style={styles.card}>
-          <Text style={styles.title}>Change New Password</Text>
-          <Text style={styles.subtitle}>
+          <Text style={{ ...styles.title, color: theme.textColor }}>
+            Change New Password
+          </Text>
+          <Text style={{ ...styles.subtitle, color: theme.greyTextColor }}>
             Enter a different password with{"\n"}the previous
           </Text>
 
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>New Password</Text>
+            <Text style={{ ...styles.label, color: theme.greyTextColor }}>
+              New Password
+            </Text>
             <TextInput
               style={styles.input}
               placeholder="••••••••••••"
@@ -80,7 +89,9 @@ function ChangePassword({ navigation, route }) {
               secureTextEntry
             />
 
-            <Text style={styles.label}>Confirm Password</Text>
+            <Text style={{ ...styles.label, color: theme.greyTextColor }}>
+              Confirm Password
+            </Text>
             <TextInput
               style={styles.input}
               placeholder="••••••••••••"
@@ -122,7 +133,6 @@ const styles = StyleSheet.create({
   card: {
     width: "100%",
     alignItems: "center",
-    backgroundColor: "#FFFFFF",
   },
   title: {
     fontSize: 24,

@@ -9,8 +9,6 @@ import {
   ScrollView,
   Dimensions,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons"; // Assuming you're using Expo for icons
-import MainLayoutWrapper from "../components/layout/MainLayoutWrapper";
 import { favorSelector, userSelector } from "../redux/selectors/selector";
 import { useDispatch, useSelector } from "react-redux";
 import SafeAreaWrapper from "../components/layout/SafeAreaWrapper";
@@ -31,6 +29,8 @@ import {
 import { useFocusEffect } from "@react-navigation/native";
 import ConfirmDeleteAccountModal from "../components/modal/ConfirmDeleteAccountModal";
 import { toggleVisible } from "../redux/reducers/drawerReducer";
+import Ionicons from "../components/common/VectorIcons/Ionicons";
+import FontAwesomeIcon from "../components/common/VectorIcons/FontAwesomeIcon";
 
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
@@ -223,15 +223,12 @@ function Profile({ navigation }) {
         <TouchableOpacity
           style={styles.menuItem}
           onPress={() => {
-            setModalVisible({
-              ...modalVisible,
-              EditMealPlanModal: true,
-            });
+            navigation.navigate(ScreensName.verifyEmail);
           }}
         >
-          <Ionicons name="calendar-outline" size={24} color={theme.textColor} />
+          <FontAwesomeIcon name="edit" size={24} color={theme.textColor} />
           <Text style={{ ...styles.menuText, color: theme.textColor }}>
-            Meal Planning
+            Change password
           </Text>
           <Ionicons name="chevron-forward" size={24} color="#999" />
         </TouchableOpacity>

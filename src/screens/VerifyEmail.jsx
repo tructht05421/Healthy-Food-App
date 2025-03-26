@@ -22,6 +22,7 @@ import sadCactusIcon from "../../assets/image/sad_cactus.png"; // Icon xương r
 import happyCactusIcon from "../../assets/image/happy_cactus.png"; // Icon xương rồng vui
 import { forgetPassword, verifyOtp } from "../services/authService"; // Services xử lý quên mật khẩu
 import OTPInput from "../components/common/OtpInput"; // Component nhập OTP
+import { useTheme } from "../contexts/ThemeContext";
 
 // Lấy kích thước màn hình
 const WIDTH = Dimensions.get("window").width;
@@ -33,6 +34,7 @@ function VerifyEmail({ navigation }) {
   const [verificationCode, setVerificationCode] = useState(""); // State lưu mã OTP
   const [otpAmount] = useState(4); // Số lượng ký tự OTP
   const [isCodeSent, setIsCodeSent] = useState(false); // Trạng thái đã gửi mã
+  const { theme } = useTheme();
 
   // Reset trạng thái khi focus màn hình
   // useFocusEffect sẽ chạy mỗi khi focus vào màn hình,
@@ -87,9 +89,12 @@ function VerifyEmail({ navigation }) {
   };
 
   return (
-    <SafeAreaWrapper headerStyle={{ backgroundColor: "white" }}>
+    <SafeAreaWrapper>
       <KeyboardAvoidingView
-        style={styles.container}
+        style={{
+          ...styles.container,
+          backgroundColor: theme.editModalbackgroundColor,
+        }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <View style={styles.card}>
@@ -100,12 +105,12 @@ function VerifyEmail({ navigation }) {
           />
 
           {/* Tiêu đề */}
-          <Text style={styles.title}>
+          <Text style={{ ...styles.title, color: theme.textColor }}>
             {isCodeSent ? "Success" : "Forget Password"}
           </Text>
 
           {/* Phụ đề */}
-          <Text style={styles.subtitle}>
+          <Text style={{ ...styles.subtitle, color: theme.greyTextColor }}>
             {isCodeSent
               ? "Please check your email for create\na new password"
               : "Enter your registered email below"}
@@ -115,7 +120,9 @@ function VerifyEmail({ navigation }) {
           {!isCodeSent ? (
             <>
               {/* Form nhập email */}
-              <Text style={styles.label}>Email address</Text>
+              <Text style={{ ...styles.label, color: theme.greyTextColor }}>
+                Email address
+              </Text>
               <TextInput
                 style={styles.emailInput}
                 placeholder="emirhan.begg@gmail.com"
@@ -135,7 +142,9 @@ function VerifyEmail({ navigation }) {
               />
 
               {/* Link đăng nhập */}
-              <Text style={styles.bottomText}>
+              <Text
+                style={{ ...styles.bottomText, color: theme.greyTextColor }}
+              >
                 Remember the password?{" "}
                 <Text
                   style={styles.linkText}
@@ -157,7 +166,7 @@ function VerifyEmail({ navigation }) {
               </View>
 
               {/* Link gửi lại mã */}
-              <Text style={styles.bottomText}>
+              <Text style={{ ...styles.bottomText, color: theme.textColor }}>
                 Can't get email?{" "}
                 <Text style={styles.linkText} onPress={handleResendCode}>
                   Resubmit
@@ -189,7 +198,6 @@ const styles = StyleSheet.create({
   card: {
     width: "100%",
     alignItems: "center",
-    backgroundColor: "#FFFFFF",
   },
   cactusIcon: {
     width: WIDTH * 0.8,
@@ -254,7 +262,7 @@ const styles = StyleSheet.create({
   },
   backButton: {
     width: "100%",
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#32B768",
     padding: 15,
     borderRadius: 12,
     marginTop: 10,
@@ -266,7 +274,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   backButtonText: {
-    color: "#40B491",
+    color: "white",
   },
   bottomText: {
     fontSize: 16,
