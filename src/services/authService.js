@@ -1,3 +1,4 @@
+import axios from "axios";
 import axiosInstance from "./axiosInstance";
 
 export const login = async ({ email, password }) => {
@@ -95,5 +96,38 @@ export const deleteUser = async (userId) => {
   } catch (error) {
     console.log("deleteUser error: ", error);
     return error;
+  }
+};
+
+export const uploadToCloudinary = async (uri) => {
+  // Create form data
+  const formData = new FormData();
+  formData.append('file', {
+    uri: uri,
+    type: 'image/jpeg', // or the actual mime type
+    name: 'upload.jpg',
+  });
+  formData.append('upload_preset', 'avt_image'); // Replace with your Cloudinary upload preset
+
+  try {
+    // Upload to Cloudinary
+
+    const response = await axios.post(
+      `https://api.cloudinary.com/v1_1/dfkq4jmyu/image/upload`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+
+    // Get the secure URL from Cloudinary response
+    const cloudinaryUrl = response?.data?.secure_url;
+
+    return cloudinaryUrl
+  } catch (error) {
+    console.error('Upload error:', error);
+    return error
   }
 };

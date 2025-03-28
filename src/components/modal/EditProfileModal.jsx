@@ -12,6 +12,7 @@ import {
   StatusBar,
   Image,
   Platform,
+  Alert,
 } from "react-native";
 import Ionicons from "../common/VectorIcons/Ionicons";
 import { EditModalHeader } from "../common/EditModalHeader";
@@ -22,6 +23,10 @@ import { Picker } from "@react-native-picker/picker";
 import RNPickerSelect from "react-native-picker-select";
 import { useTheme } from "../../contexts/ThemeContext";
 import * as ImagePicker from "expo-image-picker";
+import {
+  testNetworkCall,
+  uploadToCloudinary,
+} from "../../services/authService";
 
 const HEIGHT = Dimensions.get("window").height;
 const WIDTH = Dimensions.get("window").width;
@@ -54,7 +59,6 @@ export const EditProfileModal = ({ visible, onClose, onSave }) => {
   ];
 
   const pickImage = async () => {
-    // Request permission to access media library
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
       Alert.alert("Sorry, we need camera roll permissions to make this work!");
@@ -70,7 +74,9 @@ export const EditProfileModal = ({ visible, onClose, onSave }) => {
     });
 
     if (!result.canceled) {
-      setProfile((pre) => ({ ...pre, avatarUrl: result.assets[0].uri }));
+      const response = await uploadToCloudinary(result.assets[0].uri);
+      setProfile((pre) => ({ ...pre, avatarUrl: response }));
+
       // uploadToCloudinary(result.assets[0].uri);
     }
   };
@@ -149,7 +155,10 @@ export const EditProfileModal = ({ visible, onClose, onSave }) => {
                   style={[styles.profileImage, styles.profileImagePlaceholder]}
                 />
               )}
-              <TouchableOpacity style={styles.editProfileImageButton} onPress={pickImage}>
+              <TouchableOpacity
+                style={styles.editProfileImageButton}
+                onPress={pickImage}
+              >
                 <Ionicons name="pencil" size={20} color="#fff" />
               </TouchableOpacity>
             </View>
@@ -205,46 +214,27 @@ export const EditProfileModal = ({ visible, onClose, onSave }) => {
               <Text style={{ ...styles.label, color: theme.greyTextColor }}>
                 Gender
               </Text>
-              {Platform.OS === "ios" ? (
-                <TouchableOpacity
-                  style={styles.genderSelector}
-                  onPress={() => setShowGenderPicker(true)}
-                >
-                  <Text>
-                    {profile.gender
-                      ? genderOptions.find(
-                          (opt) => opt.value === profile.gender
-                        )?.label
-                      : "Select gender"}
-                  </Text>
-                  <Ionicons name="chevron-down" size={20} color="#000" />
-                </TouchableOpacity>
-              ) : (
-                <View style={styles.genderSelector}>
-                  <Picker
-                    selectedValue={profile.gender}
-                    onValueChange={(itemValue) =>
-                      setProfile({ ...profile, gender: itemValue })
-                    }
-                    style={styles.androidPicker}
-                  >
-                    {genderOptions.map((option) => (
-                      <Picker.Item
-                        key={option.value}
-                        label={option.label}
-                        value={option.value}
-                      />
-                    ))}
-                  </Picker>
-                </View>
-              )}
+              <Picker
+                selectedValue={profile.gender}
+                onValueChange={(itemValue) =>
+                  setProfile({ ...profile, gender: itemValue })
+                }
+                style={styles.genderSelector}
+              >
+                {genderOptions.map((option) => (
+                  <Picker.Item
+                    key={option.value}
+                    label={option.label}
+                    value={option.value}
+                  />
+                ))}
+              </Picker>
               {/* <TouchableOpacity style={styles.genderSelector}>
                 <Text>{profile.gender || "Select gender"}</Text>
                 <Ionicons name="chevron-down" size={20} color="#000" />
               </TouchableOpacity> */}
             </View>
           </ScrollView>
-          {renderGenderPickerModal()}
           <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
             <Text style={styles.saveButtonText}>Save</Text>
           </TouchableOpacity>
@@ -369,7 +359,6 @@ const styles = StyleSheet.create({
     borderColor: "#e0e0e0",
     borderRadius: 8,
     paddingHorizontal: 12,
-    height: 44,
     marginBottom: 16,
     backgroundColor: "white",
   },
