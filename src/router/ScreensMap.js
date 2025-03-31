@@ -22,6 +22,7 @@ import { Image, View } from "react-native";
 import OcticonsIcon from "../components/common/VectorIcons/OcticonsIcon";
 import HeartBeat from "../screens/HeartBeat";
 import Profile from "../screens/Profile";
+import MealPlan from "../screens/MealPlan/MealPlan";
 // ↑ Import enum chứa tên các màn hình
 // Giúp tránh lỗi typo và dễ dàng quản lý tên màn hình
 
@@ -135,21 +136,17 @@ export const ScreensMap = [
     hiddenBottomTab: true,
   },
   {
-    name: ScreensName.heartBeat,
-    component: HeartBeat,
+    name: ScreensName.mealPlan,
+    component: MealPlan,
     options: {
       tabBarIcon: ({ color, focused }) => {
         return (
           <View>
-            <FontAwesomeIcon
-              name="heart-o" // Tên icon
-              size={24} // Kích thước icon
-              color={color} // Màu sắc (active/inactive)
-            />
+            <FontAwesomeIcon name="heart-o" size={24} color={color} />
             <OcticonsIcon
-              name="pulse" // Tên icon
-              size={16} // Kích thước icon
-              color={color} // Màu sắc (active/inactive)
+              name="pulse"
+              size={16}
+              color={color}
               style={{
                 position: "absolute",
                 height: 16,
