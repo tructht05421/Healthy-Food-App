@@ -1,6 +1,9 @@
 import axios from "axios";
 import axiosInstance from "./axiosInstance";
 
+const cloudinaryUrl = process.env.EXPO_PUBLIC_CLOUDINARY_URL;
+const cloudinaryPreset = process.env.EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+
 export const login = async ({ email, password }) => {
   try {
     const data = {
@@ -107,13 +110,13 @@ export const uploadToCloudinary = async (uri) => {
     type: 'image/jpeg', // or the actual mime type
     name: 'upload.jpg',
   });
-  formData.append('upload_preset', 'avt_image'); // Replace with your Cloudinary upload preset
+  formData.append('upload_preset', cloudinaryPreset); // Replace with your Cloudinary upload preset
 
   try {
     // Upload to Cloudinary
 
     const response = await axios.post(
-      `https://api.cloudinary.com/v1_1/dfkq4jmyu/image/upload`,
+      cloudinaryUrl,
       formData,
       {
         headers: {
@@ -123,9 +126,9 @@ export const uploadToCloudinary = async (uri) => {
     );
 
     // Get the secure URL from Cloudinary response
-    const cloudinaryUrl = response?.data?.secure_url;
+    const imageUrl = response?.data?.secure_url;
 
-    return cloudinaryUrl
+    return imageUrl
   } catch (error) {
     console.error('Upload error:', error);
     return error
