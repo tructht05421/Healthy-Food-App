@@ -10,7 +10,10 @@ import {
   StyleSheet,
   Image,
   Dimensions,
+  ScrollView,
+  Modal,
 } from "react-native";
+import * as ImagePicker from "expo-image-picker";
 import MainLayoutWrapper from "../components/layout/MainLayoutWrapper";
 import messageSocket from "../services/messageSocket";
 import { userSelector } from "../redux/selectors/selector";
@@ -24,6 +27,8 @@ import InputModal from "../components/modal/InputModal";
 import Ionicons from "../components/common/VectorIcons/Ionicons";
 import { useTheme } from "../contexts/ThemeContext";
 import ShowToast from "../components/common/CustomToast";
+import { uploadImages } from "../services/authService";
+import { arrayToString, stringToArray } from "../utils/common";
 
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
@@ -36,8 +41,13 @@ function Message({ navigation }) {
   const [screenState, setScreenState] = useState("chat"); // onboarding
   const [inputText, setInputText] = useState("");
   const [visible, setVisible] = useState({ inputTopic: false });
+  const [selectedImages, setSelectedImages] = useState([]);
   const { theme, themeMode } = useTheme();
   const flatListRef = useRef(null);
+  
+  // Add these states for the image viewer modal
+  const [imageViewerVisible, setImageViewerVisible] = useState(false);
+  const [selectedViewImage, setSelectedViewImage] = useState(null);
 
   useEffect(() => {
     messageSocket.init({ userId: user?._id, token: user?.accessToken });
@@ -50,6 +60,7 @@ function Message({ navigation }) {
         text: message.text,
         sender: message.senderId === user?._id ? "me" : "other", // Check senderId to determine if it's the user's message
         timestamp: message.updatedAt,
+        images: message.images || [],
       };
 
       setMessages((previousMessages) => {
@@ -109,15 +120,84 @@ function Message({ navigation }) {
     }
   };
 
-  const onSend = () => {
-    messageSocket.emit("send_message", {
-      conversationId: conversation._id,
-      senderId: user?._id,
-      receiverId: "",
-      text: inputText,
-      createdAt: new Date(),
+  // Function to handle image press - open the image viewer
+  const handleImagePress = (imageUrl) => {
+    setSelectedViewImage(imageUrl);
+    setImageViewerVisible(true);
+  };
+
+  // Hàm để chọn ảnh từ thư viện
+  const pickImages = async () => {
+    // Yêu cầu quyền truy cập thư viện ảnh
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (status !== "granted") {
+      ShowToast(
+        "error",
+        "Cần quyền truy cập vào thư viện ảnh để sử dụng tính năng này"
+      );
+      return;
+    }
+
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsMultipleSelection: true,
+      aspect: [4, 3],
+      quality: 1,
     });
-    setInputText("");
+
+    if (!result.canceled) {
+      setSelectedImages(result.assets);
+    }
+  };
+
+  // Hàm để xóa ảnh đã chọn
+  const removeImage = (index) => {
+    const newImages = [...selectedImages];
+    newImages.splice(index, 1);
+    setSelectedImages(newImages);
+  };
+
+  // Gọi hàm uploadImages từ file khác để upload ảnh lên DB
+  const handleUploadImages = async () => {
+    // Nếu có ảnh được chọn, gọi hàm upload
+    if (selectedImages.length > 0) {
+      const imageFiles = selectedImages.map((img) => ({
+        uri: img.uri,
+        type: "image/jpeg",
+        name: `image_${Date.now()}.jpg`,
+      }));
+
+      const uploadedImages = await uploadImages(imageFiles);
+      return uploadedImages; // Trả về mảng URL hoặc thông tin ảnh đã upload
+    }
+    return [];
+  };
+
+  const onSend = async () => {
+    if (inputText.trim() === "" && selectedImages.length === 0) return;
+
+    try {
+      // Upload ảnh trước khi gửi tin nhắn
+      const uploadedImages = await handleUploadImages();
+      console.log(uploadedImages.map((item) => item.url));
+
+      // Gửi tin nhắn với cả text và ảnh
+      messageSocket.emit("send_message", {
+        conversationId: conversation._id,
+        senderId: user?._id,
+        receiverId: "",
+        text: inputText,
+        imageUrl: arrayToString(uploadedImages.map((item) => item.url)),
+        createdAt: new Date(),
+      });
+
+      setInputText("");
+      setSelectedImages([]);
+    } catch (error) {
+      console.error("Send message error:", error);
+      ShowToast("error", "Có lỗi xảy ra khi gửi tin nhắn");
+    }
   };
 
   const renderMessage = ({ item, index }) => {
@@ -133,6 +213,26 @@ function Message({ navigation }) {
         <Text style={[styles.messageSender, isMyMessage && styles.mySender]}>
           {item.text}
         </Text>
+
+        {/* Hiển thị các ảnh trong tin nhắn */}
+        {item.imageUrl && (
+          <View style={styles.messageImageContainer}>
+            {stringToArray(item.imageUrl).map((image, imgIndex) => (
+              <TouchableOpacity
+                key={`${item.id}-image-${imgIndex}`}
+                onPress={() => handleImagePress(image.url || image)}
+                activeOpacity={0.8}
+              >
+                <Image
+                  source={{ uri: image.url || image }}
+                  style={styles.messageImage}
+                  resizeMode="cover"
+                />
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+
         <Text style={[styles.timestamp, isMyMessage && styles.mySender]}>
           {new Date(item.updatedAt || item.timestamp).toLocaleTimeString([], {
             hour: "2-digit",
@@ -154,18 +254,6 @@ function Message({ navigation }) {
         style={styles.backgroundImage}
         resizeMode="cover"
       />
-      {/* {navigation.canGoBack() && (
-        <TouchableOpacity
-          style={styles.backIcon}
-          onPress={() => navigation.goBack()}
-        >
-          <Ionicons
-            name="chevron-back"
-            size={32}
-            color={theme.backButtonColor}
-          />
-        </TouchableOpacity>
-      )} */}
       {screenState === "onboarding" ? (
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -217,6 +305,33 @@ function Message({ navigation }) {
             }
           />
 
+          {/* Hiển thị ảnh đã chọn */}
+          {selectedImages.length > 0 && (
+            <View
+              style={{
+                ...styles.selectedImagesContainer,
+                backgroundColor: theme.editModalbackgroundColor,
+              }}
+            >
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {selectedImages.map((image, index) => (
+                  <View key={index} style={styles.selectedImageWrapper}>
+                    <Image
+                      source={{ uri: image.uri }}
+                      style={styles.selectedImage}
+                    />
+                    <TouchableOpacity
+                      style={styles.removeImageButton}
+                      onPress={() => removeImage(index)}
+                    >
+                      <Ionicons name="close-circle" size={20} color="#fff" />
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </ScrollView>
+            </View>
+          )}
+
           <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : "height"}
             keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
@@ -226,6 +341,10 @@ function Message({ navigation }) {
               borderTopWidth: themeMode === "light" ? 1 : 0,
             }}
           >
+            <TouchableOpacity style={styles.attachButton} onPress={pickImages}>
+              <Ionicons name="image-outline" size={24} color="#999" />
+            </TouchableOpacity>
+
             <TextInput
               style={styles.input}
               value={inputText}
@@ -233,16 +352,48 @@ function Message({ navigation }) {
               placeholder="Type a message..."
               multiline
             />
+
             <TouchableOpacity
-              style={styles.sendButton}
+              style={[
+                styles.sendButton,
+                inputText.trim() === "" &&
+                  selectedImages.length === 0 &&
+                  styles.sendButtonDisabled,
+              ]}
               onPress={onSend}
-              disabled={inputText.trim() === ""}
+              disabled={inputText.trim() === "" && selectedImages.length === 0}
             >
               <Text style={styles.sendButtonText}>Send</Text>
             </TouchableOpacity>
           </KeyboardAvoidingView>
         </>
       )}
+      
+      {/* Image Viewer Modal */}
+      <Modal
+        visible={imageViewerVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setImageViewerVisible(false)}
+      >
+        <View style={styles.imageViewerContainer}>
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={() => setImageViewerVisible(false)}
+          >
+            <Ionicons name="close" size={30} color="#fff" />
+          </TouchableOpacity>
+          
+          {selectedViewImage && (
+            <Image
+              source={{ uri: selectedViewImage }}
+              style={styles.fullImage}
+              resizeMode="contain"
+            />
+          )}
+        </View>
+      </Modal>
+      
       <InputModal
         visible={visible.inputTopic}
         onClose={() => {
@@ -366,6 +517,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#000",
   },
+  messageImageContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginTop: 5,
+  },
+  messageImage: {
+    width: 150,
+    height: 150,
+    borderRadius: 8,
+    marginRight: 5,
+    marginBottom: 5,
+  },
   timestamp: {
     fontSize: 11,
     color: "#999",
@@ -396,10 +559,58 @@ const styles = StyleSheet.create({
     backgroundColor: "#A4DC5D",
     borderRadius: 50,
   },
+  sendButtonDisabled: {
+    backgroundColor: "#cccccc",
+  },
   sendButtonText: {
     color: "#fff",
     fontWeight: "bold",
   },
+  attachButton: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: 40,
+    marginRight: 5,
+  },
+  selectedImagesContainer: {
+    padding: 10,
+    borderTopWidth: 1,
+    borderTopColor: "#e5e5e5",
+  },
+  selectedImageWrapper: {
+    position: "relative",
+    marginRight: 10,
+  },
+  selectedImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 5,
+  },
+  removeImageButton: {
+    position: "absolute",
+    top: -8,
+    right: -8,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    borderRadius: 10,
+  },
+  // Image viewer modal styles
+  imageViewerContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fullImage: {
+    width: WIDTH,
+    height: HEIGHT * 0.7,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 40,
+    right: 20,
+    zIndex: 10,
+    padding: 10,
+  }
 });
 
 export default Message;

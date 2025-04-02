@@ -103,3 +103,11 @@ export const clearSearchHistory = async () => {
     console.error("Lỗi khi xóa lịch sử tìm kiếm:", error);
   }
 };
+
+export function arrayToString(arr) {
+  return arr.join(",");
+}
+
+export function stringToArray(str) {
+  return str.split(",");
+}
