@@ -14,7 +14,6 @@ const RemindService = {
 
     try {
       const token = await AsyncStorage.getItem("accessToken");
-      console.log("🔍 Token trước khi gửi:", token);
 
       if (!socket) {
         socket = io(SOCKET_URL, {

@@ -27,8 +27,8 @@ import InputModal from "../components/modal/InputModal";
 import Ionicons from "../components/common/VectorIcons/Ionicons";
 import { useTheme } from "../contexts/ThemeContext";
 import ShowToast from "../components/common/CustomToast";
-import { uploadImages } from "../services/authService";
 import { arrayToString, stringToArray } from "../utils/common";
+import { uploadImages } from "../services/cloundaryService";
 
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
@@ -44,7 +44,7 @@ function Message({ navigation }) {
   const [selectedImages, setSelectedImages] = useState([]);
   const { theme, themeMode } = useTheme();
   const flatListRef = useRef(null);
-  
+
   // Add these states for the image viewer modal
   const [imageViewerVisible, setImageViewerVisible] = useState(false);
   const [selectedViewImage, setSelectedViewImage] = useState(null);
@@ -368,7 +368,7 @@ function Message({ navigation }) {
           </KeyboardAvoidingView>
         </>
       )}
-      
+
       {/* Image Viewer Modal */}
       <Modal
         visible={imageViewerVisible}
@@ -383,7 +383,7 @@ function Message({ navigation }) {
           >
             <Ionicons name="close" size={30} color="#fff" />
           </TouchableOpacity>
-          
+
           {selectedViewImage && (
             <Image
               source={{ uri: selectedViewImage }}
@@ -393,7 +393,7 @@ function Message({ navigation }) {
           )}
         </View>
       </Modal>
-      
+
       <InputModal
         visible={visible.inputTopic}
         onClose={() => {
@@ -596,21 +596,21 @@ const styles = StyleSheet.create({
   // Image viewer modal styles
   imageViewerContainer: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.9)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0, 0, 0, 0.9)",
+    justifyContent: "center",
+    alignItems: "center",
   },
   fullImage: {
     width: WIDTH,
     height: HEIGHT * 0.7,
   },
   closeButton: {
-    position: 'absolute',
+    position: "absolute",
     top: 40,
     right: 20,
     zIndex: 10,
     padding: 10,
-  }
+  },
 });
 
 export default Message;

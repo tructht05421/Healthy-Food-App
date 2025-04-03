@@ -69,17 +69,13 @@ function ChangePassword({ navigation, route }) {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <View style={styles.card}>
-          <Text style={{ ...styles.title, color: theme.textColor }}>
-            Change New Password
-          </Text>
+          <Text style={{ ...styles.title, color: theme.textColor }}>Change New Password</Text>
           <Text style={{ ...styles.subtitle, color: theme.greyTextColor }}>
             Enter a different password with{"\n"}the previous
           </Text>
 
           <View style={styles.inputContainer}>
-            <Text style={{ ...styles.label, color: theme.greyTextColor }}>
-              New Password
-            </Text>
+            <Text style={{ ...styles.label, color: theme.greyTextColor }}>New Password</Text>
             <TextInput
               style={styles.input}
               placeholder="••••••••••••"
@@ -89,9 +85,7 @@ function ChangePassword({ navigation, route }) {
               secureTextEntry
             />
 
-            <Text style={{ ...styles.label, color: theme.greyTextColor }}>
-              Confirm Password
-            </Text>
+            <Text style={{ ...styles.label, color: theme.greyTextColor }}>Confirm Password</Text>
             <TextInput
               style={styles.input}
               placeholder="••••••••••••"

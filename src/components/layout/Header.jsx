@@ -14,7 +14,6 @@ import RemindService from "../../services/reminderService";
 function Header() {
   const navigation = useNavigation();
   const user = useSelector(userSelector);
-
   const dispatch = useDispatch();
   const { theme } = useTheme();
 
@@ -54,20 +53,14 @@ function Header() {
     >
       {/* Nút Drawer */}
       <TouchableOpacity style={styles.backIcon} onPress={onDrawerPress}>
-        <Ionicons
-          name="reorder-three"
-          size={32}
-          color={theme.backButtonColor}
-        />
+        <Ionicons name="reorder-three" size={32} color={theme.backButtonColor} />
       </TouchableOpacity>
 
       {/* Tích hợp ReminderNotification */}
       {user ? (
         <ReminderNotification userId={user?._id} /> // Truyền userId từ user
       ) : (
-        <TouchableOpacity
-          onPress={() => navigation.navigate(ScreensName.signin)}
-        >
+        <TouchableOpacity onPress={() => navigation.navigate(ScreensName.signin)}>
           <Text style={{ fontSize: 32, color: theme.backButtonColor }}>🔔</Text>
         </TouchableOpacity>
       )}
@@ -81,11 +74,7 @@ function Header() {
             style={[styles.profileImage, styles.avtImage]}
           />
         ) : (
-          <MaterialIcons
-            name="account-circle"
-            size={40}
-            color={theme.backButtonColor}
-          />
+          <MaterialIcons name="account-circle" size={40} color={theme.backButtonColor} />
         )}
       </TouchableOpacity>
     </View>

@@ -44,8 +44,9 @@ export const EditProfileModal = ({ visible, onClose, onSave }) => {
     ...user,
   });
 
-  const handleSave = () => {
-    onSave(profile);
+  const handleSave = async () => {
+    const response = await uploadToCloudinary(profile?.avatarUrl);
+    onSave({ ...profile, avatarUrl: response });
   };
 
   const [showGenderPicker, setShowGenderPicker] = useState(false);
@@ -74,7 +75,6 @@ export const EditProfileModal = ({ visible, onClose, onSave }) => {
     });
 
     if (!result.canceled) {
-      const response = await uploadToCloudinary(result.assets[0].uri);
       setProfile((pre) => ({ ...pre, avatarUrl: response }));
 
       // uploadToCloudinary(result.assets[0].uri);

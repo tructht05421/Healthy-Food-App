@@ -1,4 +1,4 @@
-// === PHẦN 1: IMPORTS ===
+
 import React, { useEffect, useState } from "react";
 import {
   Text,
@@ -9,19 +9,15 @@ import {
   Dimensions,
   PixelRatio,
 } from "react-native";
-// Import các component cơ bản từ React Native
-// Platform: API để check nền tảng (iOS/Android)
-// Dimensions: API lấy kích thước màn hình
+
 
 import { LinearGradient } from "expo-linear-gradient";
-// Import LinearGradient từ Expo để tạo gradient background
 
-// Import các components tùy chỉnh và assets
+
 import SafeAreaWrapper from "../components/layout/SafeAreaWrapper";
 import RippleButton from "../components/common/RippleButton";
 import SplitLine from "../components/common/SplitLine";
 
-// Import assets hình ảnh
 import backgroundImage from "../../assets/image/welcome_bg.png";
 import googleIcon from "../../assets/image/google_icon.png";
 import fbIcon from "../../assets/image/fb_logo_square.png";
@@ -29,25 +25,25 @@ import appleIcon from "../../assets/image/apple_logo.png";
 import { ScreensName } from "../constants/ScreensName";
 import { TouchableOpacity } from "react-native";
 
-// === PHẦN 2: KHỞI TẠO BIẾN ===
+
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
 
-// === PHẦN 3: COMPONENT CHÍNH ===
+
 function Welcome({ navigation }) {
   const [buttonWidth, setButtonWidth] = useState(WIDTH);
 
-  // Các hàm xử lý sự kiện
+
   const onPressGoogleButton = () => {
-    // navigation.navigate(ScreensName.signin);
+   
   };
 
   const onPressFacebookButton = () => {
-    // navigation.navigate(ScreensName.signin);
+   
   };
 
   const onPressAppleButton = () => {
-    // navigation.navigate(ScreensName.signin);
+ 
   };
 
   const onPressSignupButton = () => {
@@ -56,9 +52,9 @@ function Welcome({ navigation }) {
 
   const getTextWidth = (text, fontSize, fontFamily) => {
     const scaledFontSize = fontSize * PixelRatio.getFontScale();
-    // Add extra padding for the icon and safety margin
-    const extraPadding = 0; // Adjust this value based on your needs
-    return text.length * scaledFontSize * 0.6 + extraPadding; // 0.6 is an approximate character width ratio
+    
+    const extraPadding = 0; 
+    return text.length * scaledFontSize * 0.6 + extraPadding; 
   };
 
   const calculateMaxButtonWidth = () => {
@@ -73,18 +69,18 @@ function Welcome({ navigation }) {
       getTextWidth(text, 18, "Aleo_700Bold")
     );
 
-    // Get the maximum width, but ensure it's not larger than 80% of screen width
+ 
     const maxWidth = Math.min(Math.max(...textWidths), WIDTH * 0.8);
 
     setButtonWidth(maxWidth);
   };
 
-  // Calculate max width on component mount
+
   useEffect(() => {
     calculateMaxButtonWidth();
   }, []);
 
-  // Cấu hình danh sách các nút đăng ký
+
   const buttonList = [
     {
       text: "Continue with Google",
@@ -119,15 +115,15 @@ function Welcome({ navigation }) {
     },
   ];
 
-  // === PHẦN 4: RENDER UI ===
+ 
   return (
     <SafeAreaWrapper
       headerStyle={{ theme: "light", backgroundColor: "transparent" }}
     >
-      {/* Background Image */}
+     
       <Image source={backgroundImage} style={styles.backgroundImage} />
 
-      {/* Gradient Overlay */}
+     
       <LinearGradient
         colors={[
           "transparent",
@@ -149,7 +145,7 @@ function Welcome({ navigation }) {
           right: 0,
         }}
       >
-        {/* Content Container */}
+       
         <View style={styles.view}>
           {/* Sign up with email button */}
           <RippleButton
@@ -163,14 +159,14 @@ function Welcome({ navigation }) {
             onPress={onPressSignupButton}
           />
 
-          {/* Divider */}
+          
           <SplitLine
             text="or use social sign up"
             textStyle={styles.splitTextStyle}
             lineStyle={styles.splitLineStyle}
           />
 
-          {/* Social Login Buttons */}
+          
           {buttonList.map((item, index) => (
             <RippleButton
               key={index}
@@ -190,12 +186,10 @@ function Welcome({ navigation }) {
             />
           ))}
 
-          {/* Login Link */}
+          
           <Text style={styles.alreadyText}>
             Already have account?{" "}
-            {/* <TouchableOpacity
-              onPress={() => navigation.navigate(ScreensName.signin)}
-            > */}
+            
             <Text
               style={{
                 textDecorationLine: "underline",
@@ -206,7 +200,6 @@ function Welcome({ navigation }) {
             >
               Log In
             </Text>
-            {/* </TouchableOpacity> */}
           </Text>
         </View>
       </LinearGradient>
@@ -214,11 +207,11 @@ function Welcome({ navigation }) {
   );
 }
 
-// === PHẦN 5: STYLES ===
+
 const styles = StyleSheet.create({
   backgroundImage: {
     position: "absolute",
-    top: -HEIGHT * 0.08, // Điều chỉnh theo platform
+    top: -HEIGHT * 0.08, 
     width: "100%",
     height: "65%",
     resizeMode: "cover",

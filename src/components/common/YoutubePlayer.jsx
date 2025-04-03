@@ -15,7 +15,7 @@ const YouTubePlayer = ({ videoId }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Extract video ID from full URL if needed
+  
   const getVideoId = (idOrUrl) => {
     if (idOrUrl.includes("youtube.com") || idOrUrl.includes("youtu.be")) {
       if (idOrUrl.includes("youtube.com/embed/")) {
@@ -42,7 +42,7 @@ const YouTubePlayer = ({ videoId }) => {
     setIsLoading(false);
   };
 
-  // The key fix here is to use the YouTube iframe API properly with hardware acceleration
+ 
   const htmlContent = `
     <!DOCTYPE html>
     <html>
@@ -154,7 +154,7 @@ const YouTubePlayer = ({ videoId }) => {
                 setIsLoading(false);
               }
             }}
-            // Fixing hardware acceleration issues
+            
             useWebKit={true}
             renderLoading={() => (
               <ActivityIndicator color="#fff" size="large" />

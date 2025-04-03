@@ -1,44 +1,43 @@
-// Import các thư viện cần thiết
-import * as WebBrowser from "expo-web-browser"; // Thư viện xử lý web browser trong Expo
-import * as Google from "expo-auth-session/providers/google"; // Provider xác thực Google
-import AsyncStorage from "@react-native-async-storage/async-storage"; // Lưu trữ local
+
+import * as WebBrowser from "expo-web-browser"; 
+import * as Google from "expo-auth-session/providers/google";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useState, useEffect } from "react";
 import { Platform, Modal, View, StyleSheet } from "react-native";
-import { WebView } from "react-native-webview"; // Component hiển thị web
+import { WebView } from "react-native-webview"; 
 
-// Khởi tạo phiên xác thực web
+
 WebBrowser.maybeCompleteAuthSession();
 
-// Cấu hình Google Auth
+
 const googleConfig = {
-  // Client ID cho Android
+  
   androidClientId:
     "155145337295-8k2hph51rqh94qmi1lpp93ro72vg1kva.apps.googleusercontent.com",
-  // Client ID cho iOS
+  
   iosClientId:
     "155145337295-voo79g6h7n379738rce0ipoo4qoj1dom.apps.googleusercontent.com",
-  scopes: ["openid", "profile", "email"], // Các quyền yêu cầu
+  scopes: ["openid", "profile", "email"], 
 };
 
-// Custom hook xử lý xác thực Google
 export const useGoogleAuth = () => {
-  // Khởi tạo các state
-  const [userInfo, setUserInfo] = useState(null); // Thông tin người dùng
-  const [loading, setLoading] = useState(false); // Trạng thái loading
-  const [error, setError] = useState(null); // Thông tin lỗi
-  const [showModal, setShowModal] = useState(false); // Trạng thái hiển thị modal
-  const [authUrl, setAuthUrl] = useState(""); // URL xác thực
+ 
+  const [userInfo, setUserInfo] = useState(null); 
+  const [loading, setLoading] = useState(false); 
+  const [error, setError] = useState(null); 
+  const [showModal, setShowModal] = useState(false); 
+  const [authUrl, setAuthUrl] = useState(""); 
 
-  // Hook xử lý yêu cầu xác thực
+  
   const [request, response, promptAsync] = Google.useAuthRequest({
     ...googleConfig,
-    selectAccount: true, // Cho phép chọn tài khoản
-    usePKCE: true, // Sử dụng PKCE để bảo mật
-    responseType: "code", // Loại response
-    redirectUri: "com.tructht.HealthyFoodApp://", // URI callback
+    selectAccount: true, 
+    usePKCE: true, 
+    responseType: "code", 
+    redirectUri: "com.tructht.HealthyFoodApp://",
   });
 
-  // Xử lý kết quả xác thực
+  
   useEffect(() => {
     if (response?.type === "success") {
       const { authentication } = response;
@@ -50,10 +49,10 @@ export const useGoogleAuth = () => {
     }
   }, [response]);
 
-  // Xử lý đăng nhập thành công
+  
   const handleSuccessfulLogin = async (accessToken) => {
     try {
-      // Lấy thông tin người dùng từ Google
+     
       const userInfoResponse = await fetch(
         "https://www.googleapis.com/userinfo/v2/me",
         {
@@ -62,7 +61,7 @@ export const useGoogleAuth = () => {
       );
       const userData = await userInfoResponse.json();
 
-      // Lưu thông tin vào AsyncStorage
+      
       await AsyncStorage.setItem("userData", JSON.stringify(userData));
       await AsyncStorage.setItem("googleToken", accessToken);
 
@@ -73,27 +72,27 @@ export const useGoogleAuth = () => {
     }
   };
 
-  // Xử lý thay đổi trạng thái navigation trong WebView
+  
   const handleNavigationStateChange = (navState) => {
-    // Kiểm tra URL có chứa access token
+   
     if (navState.url.includes("access_token=")) {
       const accessToken = navState.url.split("access_token=")[1].split("&")[0];
       handleSuccessfulLogin(accessToken);
       setShowModal(false);
     }
-    // Xử lý khi hủy xác thực
+    
     if (navState.url.includes("error=")) {
       setShowModal(false);
       setError("Authentication cancelled");
     }
   };
 
-  // Hàm xử lý đăng nhập
+ 
   const signIn = async () => {
     setLoading(true);
     setError(null);
     try {
-      // Lấy URL xác thực nhưng chưa chuyển hướng
+     
       const authUrlResult = await promptAsync({
         useProxy: false,
         showInRecents: false,
@@ -112,10 +111,10 @@ export const useGoogleAuth = () => {
     }
   };
 
-  // Hàm xử lý đăng xuất
+ 
   const signOut = async () => {
     try {
-      // Xóa dữ liệu khỏi AsyncStorage
+      
       await AsyncStorage.removeItem("userData");
       await AsyncStorage.removeItem("googleToken");
       setUserInfo(null);
@@ -124,7 +123,7 @@ export const useGoogleAuth = () => {
     }
   };
 
-  // Component Modal chứa WebView
+  
   const AuthModal = () => (
     <Modal
       visible={showModal}
@@ -138,15 +137,15 @@ export const useGoogleAuth = () => {
             source={{ uri: authUrl }}
             onNavigationStateChange={handleNavigationStateChange}
             style={styles.webview}
-            incognito={true} // Chế độ ẩn danh
-            sharedCookiesEnabled={false} // Không chia sẻ cookies
+            incognito={true} 
+            sharedCookiesEnabled={false} 
           />
         </View>
       </View>
     </Modal>
   );
 
-  // Kiểm tra phiên đăng nhập đã tồn tại
+ 
   useEffect(() => {
     const checkExistingSession = async () => {
       try {
@@ -161,33 +160,33 @@ export const useGoogleAuth = () => {
     checkExistingSession();
   }, []);
 
-  // Trả về các hàm và state cần thiết
+  
   return {
     signIn,
     signOut,
     userInfo,
     loading,
     error,
-    AuthModal, // Export component modal
+    AuthModal,
   };
 };
 
-// Định nghĩa styles
+
 const styles = StyleSheet.create({
   modalContainer: {
-    flex: 1, // Chiếm toàn màn hình
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Nền mờ
+    flex: 1, 
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
     justifyContent: "center",
     alignItems: "center",
   },
   modalContent: {
-    width: "90%", // Chiều rộng modal
-    height: "80%", // Chiều cao modal
+    width: "90%", 
+    height: "80%", 
     backgroundColor: "white",
     borderRadius: 10,
     overflow: "hidden",
   },
   webview: {
-    flex: 1, // WebView chiếm hết không gian
+    flex: 1, 
   },
 });

@@ -1,6 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-// ↑ Import createSlice từ Redux Toolkit để tạo reducer và actions
-// ↑ Import createAsyncThunk để xử lý các async actions
+
 import {
   addDishFavorite,
   getFavoriteList,
@@ -8,8 +7,6 @@ import {
 } from "../../services/favoriteService";
 import ShowToast from "../../components/common/CustomToast";
 
-// PHẦN 2: TẠO ASYNC THUNKS
-// Thunk để load danh sách yêu thích
 export const loadFavorites = createAsyncThunk(
   "favorites/loadFavorites",
   async (_, { getState, rejectWithValue }) => {
@@ -30,7 +27,6 @@ export const loadFavorites = createAsyncThunk(
   }
 );
 
-// Thunk để thay đổi trạng thái yêu thích (thêm/xóa)
 export const toggleFavorite = createAsyncThunk(
   "favorites/toggleFavorite",
   async ({ id }, { getState, rejectWithValue }) => {
@@ -39,11 +35,11 @@ export const toggleFavorite = createAsyncThunk(
         ShowToast("error", "Please, login to use this feature");
         return [];
       }
-      // Lưu ý cách truy cập state đúng tại đây:
+      
       const favoriteList = getState().favorite.favoriteList;
 
       if (favoriteList?.includes(id)) {
-        // Nếu id đã tồn tại, xóa khỏi danh sách
+        
         const response = await removeDishFavorite(
           getState()?.user?.user?._id,
           id
@@ -54,7 +50,7 @@ export const toggleFavorite = createAsyncThunk(
         }
       } else {
         const response = await addDishFavorite(getState()?.user?.user?._id, id);
-        // Nếu id chưa tồn tại, thêm vào danh sách
+       
         if (response?.status === 201) {
           ShowToast("success", "Add to favorite successfull");
           return [...favoriteList, id];

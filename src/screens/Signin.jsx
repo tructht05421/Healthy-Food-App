@@ -1,56 +1,45 @@
-// Import các thư viện cần thiết từ React và React Native
 import React, { use, useEffect, useState } from "react";
 import {
-  StyleSheet, // Component để tạo các styles
-  Text, // Component để hiển thị văn bản
-  View, // Component container cơ bản
-  Dimensions, // API để lấy kích thước màn hình
-  Image, // Component để hiển thị hình ảnh
-  Platform, // API để xác định nền tảng (iOS/Android)
-  KeyboardAvoidingView, // Component để tránh bàn phím che phủ nội dung
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+  Image,
+  Platform,
+  KeyboardAvoidingView,
 } from "react-native";
 
-// Import các components tùy chỉnh
-import SafeAreaWrapper from "../components/layout/SafeAreaWrapper"; // Wrapper để tránh notch và home indicator
-import SigninInputField from "../components/common/SigninInputField"; // Component input field tùy chỉnh
-import Ionicons from "../components/common/VectorIcons/Ionicons"; // Thư viện icon Ionicons
-import MaterialIcons from "../components/common/VectorIcons/MaterialIcons"; // Thư viện icon Material
-import DecorationDot from "../components/common/DecorationDot"; // Component chấm trang trí
-import { TouchableOpacity } from "react-native"; // Component có thể nhấn
-import RippleButton from "../components/common/RippleButton"; // Button có hiệu ứng gợn sóng
+import SafeAreaWrapper from "../components/layout/SafeAreaWrapper";
+import SigninInputField from "../components/common/SigninInputField";
+import Ionicons from "../components/common/VectorIcons/Ionicons";
+import MaterialIcons from "../components/common/VectorIcons/MaterialIcons";
+import DecorationDot from "../components/common/DecorationDot";
+import { TouchableOpacity } from "react-native";
+import RippleButton from "../components/common/RippleButton";
 
-// Import các hình ảnh và tài nguyên
-import googleIcon from "../../assets/image/google_icon.png"; // Icon Google
-import fbIcon from "../../assets/image/fb_round.png"; // Icon Facebook
-import appleIcon from "../../assets/image/apple_logo.png"; // Icon Apple
-import loginHeaderIcon from "../../assets/image/login_bg.png"; // Ảnh nền header
-import { ScreensName } from "../constants/ScreensName"; // Constants chứa tên các màn hình
+import googleIcon from "../../assets/image/google_icon.png";
+import fbIcon from "../../assets/image/fb_round.png";
+import appleIcon from "../../assets/image/apple_logo.png";
+import loginHeaderIcon from "../../assets/image/login_bg.png";
+import { ScreensName } from "../constants/ScreensName";
 import Toast from "react-native-toast-message";
-import ShowToast from "../components/common/CustomToast"; // Component hiển thị thông báo
-import { loginThunk } from "../redux/actions/userThunk"; // Action redux để xử lý đăng nhập
-import { useDispatch } from "react-redux"; // Hook để dispatch actions
+import ShowToast from "../components/common/CustomToast";
+import { loginThunk } from "../redux/actions/userThunk";
+import { useDispatch } from "react-redux";
 import { useGoogleAuth } from "../hooks/useGoogleAuth";
 import NonBottomTabWrapper from "../components/layout/NonBottomTabWrapper";
 
-// Lấy kích thước màn hình
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
 
 function Signin({ navigation }) {
-  // Khởi tạo state cho form đăng nhập
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const dispatch = useDispatch(); // Khởi tạo dispatch để gửi actions
+  const dispatch = useDispatch();
   const { signIn, userInfo, error } = useGoogleAuth();
 
-  // Cấu hình các phương thức đăng nhập bên thứ 3
   const loginMethod = [
-    // {
-    //   name: "Facebook",
-    //   icon: fbIcon,
-    //   color: "#3B5998",
-    // },
     {
       name: "Google",
       icon: googleIcon,
@@ -59,18 +48,12 @@ function Signin({ navigation }) {
         await loginGoogle();
       },
     },
-    // {
-    //   name: "IOS",
-    //   icon: appleIcon,
-    //   color: "#000000",
-    // },
   ];
 
   const loginGoogle = async () => {
     await signIn();
   };
 
-  // Xử lý sự kiện đăng nhập
   const handlePress = async () => {
     setLoading(true);
     const credentials = {
@@ -79,14 +62,10 @@ function Signin({ navigation }) {
     };
 
     try {
-      // Gọi action đăng nhập
       const responseLogin = await dispatch(loginThunk(credentials));
-      // Kiểm tra kết quả đăng nhập
+
       ShowToast("success", "Đăng nhập thành công");
-      if (
-        responseLogin.type.endsWith("fulfilled") &&
-        responseLogin?.payload?.data?.status
-      ) {
+      if (responseLogin.type.endsWith("fulfilled") && responseLogin?.payload?.data?.status) {
         const username = responseLogin?.payload?.data?.data?.user?.username;
         ShowToast("success", "Welcome back " + username);
         navigation.navigate(ScreensName.home);
@@ -100,7 +79,6 @@ function Signin({ navigation }) {
     setLoading(false);
   };
 
-  // Render các nút đăng nhập bên thứ 3
   const renderLoginMethod = () => {
     return loginMethod.map((item, index) => (
       <RippleButton
@@ -123,21 +101,12 @@ function Signin({ navigation }) {
     ));
   };
 
-  // return(
-  //   <NonBottomTabWrapper headerHidden={true}>
-  // )
-
-  // Render giao diện chính
   return (
     <NonBottomTabWrapper headerHidden={true} style={styles.container}>
-      {/* Sử dụng KeyboardAvoidingView để tránh bàn phím che phủ form */}
-      {/* Phần header với ảnh nền */}
       <Image source={loginHeaderIcon} style={styles.backgroundImage} />
       <Text style={styles.title}>Sign in with email</Text>
 
-      {/* Container chứa form đăng nhập */}
       <View style={styles.formContainer}>
-        {/* Input trường email */}
         <SigninInputField
           state={email}
           setState={setEmail}
@@ -147,7 +116,7 @@ function Signin({ navigation }) {
           inputType="email-address"
           keyboardType="email-address"
         />
-        {/* Input trường mật khẩu */}
+
         <SigninInputField
           state={password}
           setState={setPassword}
@@ -156,7 +125,7 @@ function Signin({ navigation }) {
           placeholder="Password"
           secureTextEntry
         />
-        {/* Link quên mật khẩu */}
+
         <TouchableOpacity
           onPress={() => {
             navigation.navigate(ScreensName.verifyEmail);
@@ -164,7 +133,7 @@ function Signin({ navigation }) {
         >
           <Text style={styles.forgotPassword}>Forgot Password?</Text>
         </TouchableOpacity>
-        {/* Nút đăng nhập chính */}
+
         <RippleButton
           onPress={handlePress}
           buttonText="Sign in"
@@ -174,14 +143,13 @@ function Signin({ navigation }) {
         />
       </View>
 
-      {/* Container chứa các nút đăng nhập bên thứ 3 */}
       <View style={styles.loginMethodContainer}>{renderLoginMethod()}</View>
       <Text style={styles.alreadyText}>
         Don't have account?{" "}
         <Text
           style={{
-            textDecorationLine: "underline", // Gạch chân text
-            fontSize: 16, // Kích thước chữ
+            textDecorationLine: "underline",
+            fontSize: 16,
           }}
           onPress={() => navigation.navigate(ScreensName.signup)}
         >
@@ -192,73 +160,69 @@ function Signin({ navigation }) {
   );
 }
 
-// Định nghĩa styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
   },
   backgroundImage: {
-    // width: "60%", // Chiếm 60% chiều rộng màn hình
-    height: "30%", // Chiếm 35% chiều cao màn hình
-    resizeMode: "contain", // Chế độ resize ảnh
-    // marginHorizontal: "20%", // Căn lề 2 bên 20%
-    // marginBottom: -HEIGHT * 0.005, // Margin bottom 30px
+    height: "30%",
+    resizeMode: "contain",
   },
   title: {
-    fontSize: 30, // Cỡ chữ
-    textAlign: "center", // Căn giữa text
-    marginBottom: 20, // Margin bottom 40px
-    color: "#191C32", // Màu nền
+    fontSize: 30,
+    textAlign: "center",
+    marginBottom: 20,
+    color: "#191C32",
     fontFamily: "Aleo_700Bold",
   },
   formContainer: {
-    width: WIDTH, // Chiều rộng bằng màn hình
-    justifyContent: "space-around", // Căn đều các phần tử
-    alignItems: "center", // Căn giữa theo chiều ngang
-    gap: 20, // Khoảng cách giữa các phần tử
+    width: WIDTH,
+    justifyContent: "space-around",
+    alignItems: "center",
+    gap: 20,
   },
   forgotPassword: {
-    width: WIDTH * 0.85, // Chiều rộng 85% màn hình
-    textAlign: "right", // Căn phải text
-    fontWeight: "600", // Độ đậm chữ
-    transform: [{ translateY: -10 }], // Dịch lên trên 10px
+    width: WIDTH * 0.85,
+    textAlign: "right",
+    fontWeight: "600",
+    transform: [{ translateY: -10 }],
   },
   signinButton: {
-    width: WIDTH * 0.85, // Chiều rộng 85% màn hình
-    backgroundColor: "#191C32", // Màu nền
-    padding: 18, // Padding 18px
-    borderRadius: 50, // Bo tròn góc
-    overflow: "hidden", // Ẩn phần tràn
+    width: WIDTH * 0.85,
+    backgroundColor: "#191C32",
+    padding: 18,
+    borderRadius: 50,
+    overflow: "hidden",
   },
   signinButtonText: {
-    textAlign: "center", // Căn giữa text
-    color: "#fff", // Màu chữ trắng
-    fontSize: 18, // Cỡ chữ
-    // fontWeight: "bold", // Độ đậm chữ
+    textAlign: "center",
+    color: "#fff",
+    fontSize: 18,
+
     fontFamily: "Aleo_700Bold",
   },
   loginMethodContainer: {
-    flexDirection: "row", // Sắp xếp theo hàng ngang
-    gap: 20, // Khoảng cách giữa các nút
-    justifyContent: "center", // Căn giữa theo chiều ngang
-    alignItems: "center", // Căn giữa theo chiều dọc
-    marginTop: 20, // Margin top 20px
+    flexDirection: "row",
+    gap: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 20,
   },
   loginMethod: {
-    backgroundColor: "white", // Màu nền trắng
-    borderRadius: 50, // Bo tròn góc
-    padding: 20, // Padding 20px
-    width: 80, // Chiều rộng 80px
-    height: 80, // Chiều cao 80px
-    justifyContent: "center", // Căn giữa theo chiều dọc
-    alignItems: "center", // Căn giữa theo chiều ngang
+    backgroundColor: "white",
+    borderRadius: 50,
+    padding: 20,
+    width: 80,
+    height: 80,
+    justifyContent: "center",
+    alignItems: "center",
   },
   alreadyText: {
-    marginHorizontal: 8, // Margin ngang
-    marginVertical: 24, // Margin dọc
-    fontSize: 16, // Kích thước chữ
-    fontFamily: "Aleo_400Regular", // Font chữ
+    marginHorizontal: 8,
+    marginVertical: 24,
+    fontSize: 16,
+    fontFamily: "Aleo_400Regular",
     zIndex: 10,
   },
 });

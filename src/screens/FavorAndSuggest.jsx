@@ -71,11 +71,24 @@ function FavorAndSuggest({ route }) {
         setLoading(true);
         const detailsObj = [];
 
-        // Create an array of promises for all ingredient fetches
         const promises = recipe.ingredients.map(async (ingredient) => {
+          console.log("Ingredient:", ingredient); // Debug log
+          console.log("Ingredient ID:", ingredient?.ingredientId); // Debug log
+
           if (!ingredient?.ingredientId) return;
 
-          const response = await getIngredient(ingredient.ingredientId);
+          // Ensure ingredientId is a string
+          const ingredientId =
+            typeof ingredient.ingredientId === "object" && ingredient.ingredientId?._id
+              ? ingredient.ingredientId._id
+              : ingredient.ingredientId;
+
+          if (!ingredientId || typeof ingredientId !== "string") {
+            console.warn("Invalid ingredientId:", ingredientId);
+            return;
+          }
+
+          const response = await getIngredient(ingredientId);
           if (response?.data?.data) {
             detailsObj.push({
               ...response.data.data,
@@ -85,9 +98,7 @@ function FavorAndSuggest({ route }) {
           }
         });
 
-        // Wait for all promises to resolve
         await Promise.all(promises);
-
         setIngredientDetails(detailsObj);
       } catch (error) {
         console.error("Error fetching ingredient details:", error);
@@ -103,10 +114,7 @@ function FavorAndSuggest({ route }) {
     setLoading(true);
 
     try {
-      const response = await HomeService.getRecipeByRecipeId(
-        dish._id,
-        dish.recipeId
-      );
+      const response = await HomeService.getRecipeByRecipeId(dish._id, dish.recipeId);
       if (response.success) {
         setRecipe(response.data);
       } else {
@@ -120,31 +128,9 @@ function FavorAndSuggest({ route }) {
     }
   };
 
-  // const fetchIngredientDetails = async () => {
-  //   try {
-  //     setLoading(true);
-  //     const details = recipe.ingredients.map((ingredient) => {
-  //       if (!ingredient?.ingredientId) {
-  //         console.warn("Invalid ingredientId:", ingredient);
-  //         return null;
-  //       }
-  //       return {
-  //         ...ingredient.ingredientId,
-  //         quantity: ingredient?.quantity,
-  //         unit: ingredient?.unit,
-  //       };
-  //     });
-  //     console.log("Final Ingredient Details:", details);
-  //     setIngredientDetails(details);
-  //   } catch (error) {
-  //     console.error("Error processing ingredient details:", error);
-  //     Alert.alert("Error", "Failed to load ingredient details.");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-  const isFavorite = (id) => favorite.favoriteList?.includes(id) || false;
+  const isFavorite = (id) => {
+    return favorite.favoriteList?.includes(id);
+  };
 
   const handleOnSavePress = async (dish) => {
     if (!user?.userId) {
@@ -190,9 +176,7 @@ function FavorAndSuggest({ route }) {
           <SpinnerLoading />
         ) : (
           <>
-            <Text
-              style={{ ...styles.sectionTitle, color: theme.greyTextColor }}
-            >
+            <Text style={{ ...styles.sectionTitle, color: theme.greyTextColor }}>
               {ingredientDetails.length} Ingredients
             </Text>
             {ingredientDetails.length > 0 ? (
@@ -204,10 +188,7 @@ function FavorAndSuggest({ route }) {
                   }
                   return (
                     <View key={idx} style={styles.ingredientRow}>
-                      <Image
-                        source={{ uri: ingredient.imageUrl }}
-                        style={styles.ingredientImage}
-                      />
+                      <Image source={{ uri: ingredient.imageUrl }} style={styles.ingredientImage} />
                       <View style={styles.ingredientInfo}>
                         <Text
                           style={{
@@ -251,10 +232,8 @@ function FavorAndSuggest({ route }) {
                 })
                 .filter(Boolean)
             ) : (
-              <Text
-                style={{ ...styles.noDataText, color: theme.greyTextColor }}
-              >
-                No ingredients available.
+              <Text style={{ ...styles.noDataText, color: theme.greyTextColor }}>
+                Failed to load ingredients. Please try again later.
               </Text>
             )}
           </>
@@ -277,9 +256,7 @@ function FavorAndSuggest({ route }) {
                 height={200}
                 play={false}
                 videoId={videoId}
-                onError={(error) =>
-                  console.error("YouTube Player Error:", error)
-                }
+                onError={(error) => console.error("YouTube Player Error:", error)}
               />
             </View>
           ) : dish?.videoUrl ? (
@@ -373,21 +350,17 @@ function FavorAndSuggest({ route }) {
     return (
       <View style={styles.recipeCard}>
         <Image source={{ uri: dish?.imageUrl }} style={styles.recipeImage} />
-        <TouchableOpacity
-          style={styles.heartIcon}
-          onPress={() => handleOnSavePress(dish)}
-        >
+        <TouchableOpacity style={styles.heartIcon} onPress={() => handleOnSavePress(dish)}>
           {favorite.isLoading ? (
             <ActivityIndicator size={24} color="#FC8019" />
           ) : isFavorite(dish._id) ? (
-            <MaterialCommunityIcons
-              name="heart-multiple"
-              size={24}
-              color="#FF8A65"
-            />
+            <MaterialCommunityIcons name="heart-multiple" size={24} color="#FF8A65" />
           ) : (
             <Ionicons name="heart-outline" size={24} color="#FF8A65" />
           )}
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.playIcon} onPress={() => handleOnPlayPress(dish)}>
+          <MaterialCommunityIcons name="play-circle-outline" size={24} color="#FF8A65" />
         </TouchableOpacity>
         <View
           style={{
@@ -396,47 +369,31 @@ function FavorAndSuggest({ route }) {
           }}
         >
           <View style={styles.recipeHeader}>
-            <Text style={{ ...styles.recipeName, color: theme.greyTextColor }}>
-              {dish.name}
-            </Text>
+            <Text style={{ ...styles.recipeName, color: theme.greyTextColor }}>{dish.name}</Text>
             <View style={styles.recipeRate}>
-              <Rating
-                rate={recipe?.rate ?? 0}
-                starClick={handleRate}
-                size={WIDTH * 0.06}
-              />
+              <Rating rate={recipe?.rate ?? 0} starClick={handleRate} size={WIDTH * 0.06} />
             </View>
           </View>
-          <Text
-            style={{ ...styles.recipeDescription, color: theme.greyTextColor }}
-          >
+          <Text style={{ ...styles.recipeDescription, color: theme.greyTextColor }}>
             {dish.description}
           </Text>
 
           <View style={styles.nutritionInfo}>
             <View style={styles.nutritionItem}>
               <Ionicons name="restaurant-outline" size={16} color="#78909C" />
-              <Text style={styles.nutritionText}>
-                {recipe?.totalCarbs ?? 0} carbs
-              </Text>
+              <Text style={styles.nutritionText}>{recipe?.totalCarbs ?? 0} carbs</Text>
             </View>
             <View style={styles.nutritionItem}>
               <Ionicons name="fitness-outline" size={16} color="#78909C" />
-              <Text style={styles.nutritionText}>
-                {recipe?.totalProtein ?? 0} proteins
-              </Text>
+              <Text style={styles.nutritionText}>{recipe?.totalProtein ?? 0} proteins</Text>
             </View>
             <View style={styles.nutritionItem}>
               <Ionicons name="flame-outline" size={16} color="#78909C" />
-              <Text style={styles.nutritionText}>
-                {recipe?.totalCalories ?? 0} Kcal
-              </Text>
+              <Text style={styles.nutritionText}>{recipe?.totalCalories ?? 0} Kcal</Text>
             </View>
             <View style={styles.nutritionItem}>
               <Ionicons name="water-outline" size={16} color="#78909C" />
-              <Text style={styles.nutritionText}>
-                {recipe?.totalFat ?? 0} fats
-              </Text>
+              <Text style={styles.nutritionText}>{recipe?.totalFat ?? 0} fats</Text>
             </View>
           </View>
 
@@ -458,10 +415,7 @@ function FavorAndSuggest({ route }) {
   return (
     <MainLayoutWrapper>
       <View style={styles.container}>
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          nestedScrollEnabled={true}
-        >
+        <ScrollView showsVerticalScrollIndicator={false} nestedScrollEnabled={true}>
           {renderRecipeCard()}
         </ScrollView>
       </View>
@@ -573,7 +527,7 @@ const styles = StyleSheet.create({
     height: "100%",
     width: "30%",
     marginRight: 10,
-    borderRadius: 12
+    borderRadius: 12,
   },
   ingredientInfo: {
     flex: 1,

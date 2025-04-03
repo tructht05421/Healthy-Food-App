@@ -36,6 +36,8 @@ function Home({ navigation }) {
 
   const favor = useSelector(favorSelector);
   const user = useSelector(userSelector);
+  console.log("USEREDUC", user);
+
   const dispatch = useDispatch();
   const season = useCurrentSeason() || "spring";
 
@@ -73,7 +75,6 @@ function Home({ navigation }) {
         const newDishes = response.data.items.filter(
           (dish) => dish.season && typeof dish.season === "string"
         );
-        console.log(response?.data);
 
         setSeasonalDishes((prev) => (isRefresh ? newDishes : [...prev, ...newDishes]));
 
