@@ -151,7 +151,6 @@ export const ScreensMap = [
       tabBarButton: () => null,
       requireAuthen: true,
     },
-    hiddenBottomTab: true,
   },
   {
     name: ScreensName.setting,

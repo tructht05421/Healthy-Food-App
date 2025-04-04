@@ -274,6 +274,7 @@ function Message({ navigation }) {
         }}
         horizontal
         nestedScrollEnabled={true}
+        showsHorizontalScrollIndicator={false}
       >
         {introduceText.map((item, key) => {
           return (
@@ -301,7 +302,7 @@ function Message({ navigation }) {
 
   return (
     <MainLayoutWrapper headerHidden={true}>
-      <Image
+      {/* <Image
         source={
           themeMode === "light"
             ? require("../../assets/image/ChatBG.png")
@@ -309,14 +310,14 @@ function Message({ navigation }) {
         }
         style={styles.backgroundImage}
         resizeMode="cover"
-      />
+      /> */}
       {screenState === "onboarding" ? (
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
           style={{
             ...styles.messagesList,
-            marginTop: HEIGHT * 0.6,
+            // marginTop: HEIGHT * 0.6,
             paddingTop: HEIGHT * 0.05,
             alignItems: "center",
           }}
@@ -532,7 +533,7 @@ const styles = StyleSheet.create({
   },
   messagesList: {
     flex: 1,
-    marginTop: HEIGHT * 0.06,
+    // marginTop: HEIGHT * 0.06,
     borderTopRightRadius: 24,
     borderTopLeftRadius: 24,
   },
