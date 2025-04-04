@@ -82,10 +82,16 @@ function Message({ navigation }) {
   const loadConversation = async () => {
     const response = await getUserConversations(user?._id);
     if (response.status === 200) {
-      setConversation(response.data?.data[0]);
-      if (response.data?.data[0]?._id) {
-        loadMessgageHistory(response.data?.data[0]._id);
+      if (response.data?.data[0]) {
+        setConversation(response.data?.data[0]);
+        if (response.data?.data[0]?._id) {
+          loadMessgageHistory(response.data?.data[0]._id);
+        }
+      } else {
+        handleCreateConversation("defaultTopic");
       }
+    } else {
+      handleCreateConversation("defaultTopic");
     }
   };
 
@@ -180,7 +186,6 @@ function Message({ navigation }) {
     try {
       // Upload ảnh trước khi gửi tin nhắn
       const uploadedImages = await handleUploadImages();
-      console.log(uploadedImages.map((item) => item.url));
 
       // Gửi tin nhắn với cả text và ảnh
       messageSocket.emit("send_message", {
