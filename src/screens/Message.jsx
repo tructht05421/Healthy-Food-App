@@ -54,6 +54,8 @@ function Message({ navigation }) {
     loadConversation();
 
     const handleReceiveMessage = (message) => {
+      console.log("Receive Message : ", message);
+
       const messageToReceived = {
         id: message._id,
         text: message.text,
@@ -185,6 +187,14 @@ function Message({ navigation }) {
     try {
       // Upload ảnh trước khi gửi tin nhắn
       const uploadedImages = await handleUploadImages();
+      console.log("Receive Message : ", {
+        conversationId: conversation._id,
+        senderId: user?._id,
+        receiverId: "",
+        text: inputText,
+        imageUrl: arrayToString(uploadedImages.map((item) => item.url)),
+        createdAt: new Date(),
+      });
 
       // Gửi tin nhắn với cả text và ảnh
       messageSocket.emit("send_message", {
@@ -213,6 +223,7 @@ function Message({ navigation }) {
           styles.messageBubble,
           isMyMessage ? styles.myMessage : styles.otherMessage,
         ]}
+        key={index}
       >
         <Text style={[styles.messageSender, isMyMessage && styles.mySender]}>
           {item.text}

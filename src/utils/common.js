@@ -109,5 +109,5 @@ export function arrayToString(arr) {
 }
 
 export function stringToArray(str) {
-  return str ? str?.split(",") : [];
+  return typeof str === 'string' ? str?.split(",") : [];
 }
