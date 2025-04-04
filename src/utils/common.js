@@ -105,9 +105,9 @@ export const clearSearchHistory = async () => {
 };
 
 export function arrayToString(arr) {
-  return arr.join(",");
+  return Array.isArray(arr) ? arr?.join(",") : "";
 }
 
 export function stringToArray(str) {
-  return str.split(",");
+  return str ? str?.split(",") : [];
 }
