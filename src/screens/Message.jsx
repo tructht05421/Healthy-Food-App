@@ -248,6 +248,42 @@ function Message({ navigation }) {
     );
   };
 
+  const renderIntroduce = () => {
+    const introduceText = [ "Hello", "I need some help", "Healthy food", "Dishes for today"];
+
+    return (
+      <ScrollView
+        style={{
+          ...styles.introduceTextContainer,
+          backgroundColor: theme.editModalbackgroundColor,
+        }}
+        horizontal
+        nestedScrollEnabled={true}
+      >
+        {introduceText.map((item, key) => {
+          return (
+            <TouchableOpacity
+              style={{ margin: 6 }}
+              onPress={() => {
+                setInputText(item);
+              }}
+              key={key}
+            >
+              <Text
+                style={{
+                  ...styles.introduceText,
+                  // backgroundColor: theme.editModalbackgroundColor,
+                }}
+              >
+                {item}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
+    );
+  };
+
   return (
     <MainLayoutWrapper headerHidden={true}>
       <Image
@@ -340,36 +376,46 @@ function Message({ navigation }) {
           <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : "height"}
             keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
-            style={{
-              ...styles.inputContainer,
-              backgroundColor: theme.editModalbackgroundColor,
-              borderTopWidth: themeMode === "light" ? 1 : 0,
-            }}
           >
-            <TouchableOpacity style={styles.attachButton} onPress={pickImages}>
-              <Ionicons name="image-outline" size={24} color="#999" />
-            </TouchableOpacity>
 
-            <TextInput
-              style={styles.input}
-              value={inputText}
-              onChangeText={setInputText}
-              placeholder="Type a message..."
-              multiline
-            />
-
-            <TouchableOpacity
-              style={[
-                styles.sendButton,
-                inputText.trim() === "" &&
-                  selectedImages.length === 0 &&
-                  styles.sendButtonDisabled,
-              ]}
-              onPress={onSend}
-              disabled={inputText.trim() === "" && selectedImages.length === 0}
+            {!messages[0] && renderIntroduce()}
+            <View
+              style={{
+                ...styles.inputContainer,
+                backgroundColor: theme.editModalbackgroundColor,
+                borderTopWidth: themeMode === "light" ? 1 : 0,
+              }}
             >
-              <Text style={styles.sendButtonText}>Send</Text>
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.attachButton}
+                onPress={pickImages}
+              >
+                <Ionicons name="image-outline" size={24} color="#999" />
+              </TouchableOpacity>
+
+              <TextInput
+                style={styles.input}
+                value={inputText}
+                onChangeText={setInputText}
+                placeholder="Type a message..."
+                multiline
+              />
+
+              <TouchableOpacity
+                style={[
+                  styles.sendButton,
+                  inputText.trim() === "" &&
+                    selectedImages.length === 0 &&
+                    styles.sendButtonDisabled,
+                ]}
+                onPress={onSend}
+                disabled={
+                  inputText.trim() === "" && selectedImages.length === 0
+                }
+              >
+                <Text style={styles.sendButtonText}>Send</Text>
+              </TouchableOpacity>
+            </View>
           </KeyboardAvoidingView>
         </>
       )}
@@ -541,6 +587,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   inputContainer: {
+    position: "relative",
     flexDirection: "row",
     backgroundColor: "white",
     padding: 10,
@@ -615,6 +662,20 @@ const styles = StyleSheet.create({
     right: 20,
     zIndex: 10,
     padding: 10,
+  },
+  introduceTextContainer: {
+    paddingHorizontal: 8,
+    flexDirection: "row",
+    gap: 12,
+  },
+  introduceText: {
+    width: "100%",
+    padding: 12,
+    paddingVertical: 6,
+    borderRadius: 50,
+    backgroundColor: "#f8f8f8",
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.2)",
   },
 });
 
