@@ -59,7 +59,7 @@ function Message({ navigation }) {
         text: message.text,
         sender: message.senderId === user?._id ? "me" : "other", // Check senderId to determine if it's the user's message
         timestamp: message.updatedAt,
-        images: message.images || [],
+        imageUrl: message.imageUrl || [],
       };
 
       setMessages((previousMessages) => {

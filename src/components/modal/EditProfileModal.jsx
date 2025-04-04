@@ -23,10 +23,7 @@ import { Picker } from "@react-native-picker/picker";
 import RNPickerSelect from "react-native-picker-select";
 import { useTheme } from "../../contexts/ThemeContext";
 import * as ImagePicker from "expo-image-picker";
-import {
-  testNetworkCall,
-  uploadToCloudinary,
-} from "../../services/authService";
+import { uploadToCloudinary } from "../../services/cloundaryService";
 
 const HEIGHT = Dimensions.get("window").height;
 const WIDTH = Dimensions.get("window").width;
@@ -46,6 +43,7 @@ export const EditProfileModal = ({ visible, onClose, onSave }) => {
 
   const handleSave = async () => {
     const response = await uploadToCloudinary(profile?.avatarUrl);
+    
     onSave({ ...profile, avatarUrl: response });
   };
 
@@ -75,7 +73,7 @@ export const EditProfileModal = ({ visible, onClose, onSave }) => {
     });
 
     if (!result.canceled) {
-      setProfile((pre) => ({ ...pre, avatarUrl: response }));
+      setProfile((pre) => ({ ...pre, avatarUrl: result.assets[0].uri }));
 
       // uploadToCloudinary(result.assets[0].uri);
     }
