@@ -54,7 +54,6 @@ function Message({ navigation }) {
     loadConversation();
 
     const handleReceiveMessage = (message) => {
-      console.log("New message received:", message);
       const messageToReceived = {
         id: message._id,
         text: message.text,
@@ -249,7 +248,12 @@ function Message({ navigation }) {
   };
 
   const renderIntroduce = () => {
-    const introduceText = [ "Hello", "I need some help", "Healthy food", "Dishes for today"];
+    const introduceText = [
+      "Hello",
+      "I need some help",
+      "Healthy food",
+      "Dishes for today",
+    ];
 
     return (
       <ScrollView
@@ -377,7 +381,6 @@ function Message({ navigation }) {
             behavior={Platform.OS === "ios" ? "padding" : "height"}
             keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
           >
-
             {!messages[0] && renderIntroduce()}
             <View
               style={{
