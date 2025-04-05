@@ -194,7 +194,6 @@ export const ScreensMap = [
     options: {
       tabBarButton: () => null,
     },
-    hiddenBottomTab: true,
   },
   {
     name: "PhoneNumber",
@@ -202,7 +201,6 @@ export const ScreensMap = [
     options: {
       tabBarButton: () => null,
     },
-    hiddenBottomTab: true,
   },
   {
     name: "Email",
@@ -210,7 +208,6 @@ export const ScreensMap = [
     options: {
       tabBarButton: () => null,
     },
-    hiddenBottomTab: true,
   },
   {
     name: "Weight",
@@ -218,7 +215,6 @@ export const ScreensMap = [
     options: {
       tabBarButton: () => null,
     },
-    hiddenBottomTab: true,
   },
   {
     name: "Height",
@@ -226,7 +222,6 @@ export const ScreensMap = [
     options: {
       tabBarButton: () => null,
     },
-    hiddenBottomTab: true,
   },
   {
     name: "WeightGoal",
@@ -234,7 +229,6 @@ export const ScreensMap = [
     options: {
       tabBarButton: () => null,
     },
-    hiddenBottomTab: true,
   },
   {
     name: "Gender",
@@ -242,7 +236,6 @@ export const ScreensMap = [
     options: {
       tabBarButton: () => null,
     },
-    hiddenBottomTab: true,
   },
   {
     name: "Age",
@@ -250,7 +243,6 @@ export const ScreensMap = [
     options: {
       tabBarButton: () => null,
     },
-    hiddenBottomTab: true,
   },
   {
     name: "Goal",
@@ -258,7 +250,6 @@ export const ScreensMap = [
     options: {
       tabBarButton: () => null,
     },
-    hiddenBottomTab: true,
   },
   {
     name: "SleepTime",
@@ -266,7 +257,6 @@ export const ScreensMap = [
     options: {
       tabBarButton: () => null,
     },
-    hiddenBottomTab: true,
   },
   {
     name: "ActivityLevel",
@@ -274,7 +264,6 @@ export const ScreensMap = [
     options: {
       tabBarButton: () => null,
     },
-    hiddenBottomTab: true,
   },
   {
     name: "WaterDrink",
@@ -282,7 +271,6 @@ export const ScreensMap = [
     options: {
       tabBarButton: () => null,
     },
-    hiddenBottomTab: true,
   },
   {
     name: "Diet",
@@ -290,7 +278,6 @@ export const ScreensMap = [
     options: {
       tabBarButton: () => null,
     },
-    hiddenBottomTab: true,
   },
   {
     name: "MealNumber",
@@ -298,7 +285,6 @@ export const ScreensMap = [
     options: {
       tabBarButton: () => null,
     },
-    hiddenBottomTab: true,
   },
   {
     name: "LongOfPlan",
@@ -306,7 +292,6 @@ export const ScreensMap = [
     options: {
       tabBarButton: () => null,
     },
-    hiddenBottomTab: true,
   },
   {
     name: "EatHabit",
@@ -314,7 +299,6 @@ export const ScreensMap = [
     options: {
       tabBarButton: () => null,
     },
-    hiddenBottomTab: true,
   },
   {
     name: "UnderDisease",
@@ -322,7 +306,6 @@ export const ScreensMap = [
     options: {
       tabBarButton: () => null,
     },
-    hiddenBottomTab: true,
   },
   {
     name: "Favorite",
@@ -330,7 +313,6 @@ export const ScreensMap = [
     options: {
       tabBarButton: () => null,
     },
-    hiddenBottomTab: true,
   },
   {
     name: "Hate",
@@ -338,7 +320,6 @@ export const ScreensMap = [
     options: {
       tabBarButton: () => null,
     },
-    hiddenBottomTab: true,
   },
   {
     name: ScreensName.forYou,
@@ -346,6 +327,5 @@ export const ScreensMap = [
     options: {
       tabBarButton: () => null,
     },
-    hiddenBottomTab: true,
   },
 ];

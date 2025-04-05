@@ -80,7 +80,7 @@ export const EditHealthModal = ({
         field: "waterDrink",
         value: healthData.waterDrink ?? "",
         keyboardType: "default",
-        editable: true,
+        editable: false,
       },
     ],
     [
@@ -89,14 +89,14 @@ export const EditHealthModal = ({
         field: "age",
         value: healthData.age ?? "",
         keyboardType: "default",
-        editable: true,
+        editable: false,
       },
       {
         label: "SleepTime",
         field: "sleepTime",
         value: healthData.sleepTime,
         keyboardType: "default",
-        editable: true,
+        editable: false,
       },
     ],
     [
@@ -105,14 +105,14 @@ export const EditHealthModal = ({
         field: "goal", // Keep field as is, but label is Goal
         value: healthData.goal ?? "",
         keyboardType: "default",
-        editable: true,
+        editable: false,
       },
       {
         label: "LongOfPlan",
         field: "longOfPlan", // Keep field as is, but label is LongOfPlan
         value: healthData.longOfPlan ?? "",
         keyboardType: "default",
-        editable: true,
+        editable: false,
       },
     ],
     [
@@ -121,25 +121,49 @@ export const EditHealthModal = ({
         field: "diet", // Keep field as is, but label is Diet
         value: healthData.diet ?? "",
         keyboardType: "default", // Changed to default for age ranges
-        editable: true,
+        editable: false,
       },
       {
         label: "MealNumber",
         field: "mealNumber", // Keep field as is, but label is MealNumber
         value: healthData.mealNumber ?? "",
         keyboardType: "default",
-        editable: true,
+        editable: false,
       },
     ],
     [
       {
         label: "UnderDisease",
-        field: "UnderDisease", // Keep field as is, but label is UnderDisease
+        field: "underDisease", // Keep field as is, but label is UnderDisease
         value: "",
         keyboardType: "default",
         editable: false,
       },
     ],
+  ];
+
+  const viewForm = [
+    {
+      label: "EatHabit",
+      field: "eatHabit",
+      value: healthData.eatHabit || [], // Make sure this is an array
+      keyboardType: "default",
+      editable: false,
+    },
+    {
+      label: "RecommendedFoods",
+      field: "recommendedFoods",
+      value: healthData.recommendedFoods || [], // Make sure this is an array
+      keyboardType: "default",
+      editable: false,
+    },
+    {
+      label: "Hate",
+      field: "hate",
+      value: healthData.hate || [], // Make sure this is an array
+      keyboardType: "default",
+      editable: false,
+    },
   ];
 
   // Render input field based on field config
@@ -156,10 +180,34 @@ export const EditHealthModal = ({
           <TextInput
             style={styles.input}
             value={String(value)}
-            onChangeText={(text) => handleInputChange(field, text)}
+            onChangeText={(text) => handleInputChange(field, String(value))}
             keyboardType={keyboardType}
             editable={editable}
           />
+        </View>
+      </View>
+    );
+  };
+
+  const renderViewField = (fieldConfig) => {
+    if (!fieldConfig) return <View style={styles.formItem} />;
+
+    const { label, field, value, keyboardType, editable } = fieldConfig;
+
+    // Assuming value is an array of strings
+    const items = Array.isArray(value) ? value : [];
+
+    return (
+      <View style={styles.formItemFull}>
+        <Text style={{ ...styles.label, color: theme.greyTextColor }}>
+          {label}
+        </Text>
+        <View style={styles.tagsContainer}>
+          {items.map((item, index) => (
+            <View key={`${field}-${index}`} style={styles.tagItem}>
+              <Text style={styles.tagText}>{item}</Text>
+            </View>
+          ))}
         </View>
       </View>
     );
@@ -196,10 +244,17 @@ export const EditHealthModal = ({
               </View>
             ))}
           </View>
+          <View style={styles.formGrid}>
+            {viewForm.map((fieldConfig, index) => (
+              <View key={`view-field-${index}`}>
+                {renderViewField(fieldConfig)}
+              </View>
+            ))}
+          </View>
         </ScrollView>
 
         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-          <Text style={styles.saveButtonText}>Save</Text>
+          <Text style={styles.saveButtonText}>Reset</Text>
         </TouchableOpacity>
       </View>
     </Modal>
@@ -274,6 +329,30 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#e0e0e0",
     paddingHorizontal: 12,
+  },
+  formItemFull: {
+    width: "100%",
+    marginBottom: 16,
+  },
+  tagsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "flex-start",
+  },
+  tagItem: {
+    backgroundColor: "white",
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#e0e0e0",
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    margin: 4,
+    minWidth: "45%",
+  },
+  tagText: {
+    color: "#666",
+    fontSize: 14,
+    textAlign: "center",
   },
   saveButton: {
     backgroundColor: "#40B491",
