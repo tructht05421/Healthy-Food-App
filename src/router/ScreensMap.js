@@ -41,6 +41,8 @@ import Email from "../screens/Survey/Email";
 import PhoneNumber from "../screens/Survey/PhoneNumber";
 import Name from "../screens/Survey/Name";
 import SurveyScreen from "../screens/SurveyScreen";
+import { resetPassword } from "../services/authService";
+import ResetPassword from "../screens/ResetPassword";
 
 export const ScreensMap = [
   {
@@ -81,6 +83,14 @@ export const ScreensMap = [
   {
     name: ScreensName.changePassword,
     component: ChangePassword,
+    options: {
+      tabBarButton: () => null,
+    },
+    hiddenBottomTab: true,
+  },
+  {
+    name: ScreensName.resetPassword,
+    component: ResetPassword,
     options: {
       tabBarButton: () => null,
     },

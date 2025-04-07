@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -6,13 +6,11 @@ import {
   TouchableOpacity,
   StyleSheet,
   Switch,
-  ScrollView,
   Dimensions,
+  ActivityIndicator,
 } from "react-native";
-import { favorSelector, userSelector } from "../redux/selectors/selector";
 import { useDispatch, useSelector } from "react-redux";
-import SafeAreaWrapper from "../components/layout/SafeAreaWrapper";
-import DecorationDot from "../components/common/DecorationDot";
+import { userSelector } from "../redux/selectors/selector";
 import NonBottomTabWrapper from "../components/layout/NonBottomTabWrapper";
 import { EditHealthModal } from "../components/modal/EditHealthModal";
 import { useTheme } from "../contexts/ThemeContext";
@@ -22,10 +20,7 @@ import { ScreensName } from "../constants/ScreensName";
 import ShowToast from "../components/common/CustomToast";
 import { deleteUser, updateUser } from "../services/authService";
 import { removeUser, updateUserAct } from "../redux/reducers/userReducer";
-import {
-  resetUserPreference,
-  updateUserPreference,
-} from "../services/userPreference";
+import { resetUserPreference } from "../services/userPreference";
 import { useFocusEffect } from "@react-navigation/native";
 import ConfirmDeleteAccountModal from "../components/modal/ConfirmDeleteAccountModal";
 import { toggleVisible } from "../redux/reducers/drawerReducer";
@@ -39,6 +34,8 @@ const HEIGHT = Dimensions.get("window").height;
 function Profile({ navigation }) {
   const dispatch = useDispatch();
   const { themeMode, toggleTheme, theme } = useTheme();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [modalVisible, setModalVisible] = useState({
     EditHealthModal: false,
     EditProfileModal: false,
@@ -62,14 +59,36 @@ function Profile({ navigation }) {
   }, []);
 
   const loadUserPreference = async () => {
-    const response = await quizService.getUserPreferenceByUserPreferenceId(
-      user?.userPreferenceId
-    );
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Add timeout handling
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error("Request timeout")), 15000)
+      );
+      
+      const responsePromise = quizService.getUserPreferenceByUserPreferenceId(
+        user?.userPreferenceId
+      );
+      
+      // Race between the API call and the timeout
+      const response = await Promise.race([responsePromise, timeoutPromise]);
 
-    if (response) {
-      setUserPreference(response?.data || {});
-    } else {
-      ShowToast("error", "Get user preference fail");
+      if (response && response.status === 200) {
+        setUserPreference(response?.data || {});
+      } else if (response && response.status === 401) {
+        // Handle expired token
+        ShowToast("error", "Session expired. Please login again");
+        handleLogout();
+      } else {
+        throw new Error("Failed to load user preferences");
+      }
+    } catch (err) {
+      setError(err.message || "Unable to load profile information. Please try again later.");
+      ShowToast("error", err.message || "Unable to load profile information. Please try again later.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -78,35 +97,54 @@ function Profile({ navigation }) {
   };
 
   const handleEditHealth = async (data) => {
-    const response = await resetUserPreference(user?.userPreferenceId);
+    setLoading(true);
+    try {
+      const response = await resetUserPreference(user?.userPreferenceId);
 
-    if (response.status === 200) {
-      ShowToast("success", "Reset edit health successfull");
-      await loadUserPreference();
-      navigation.navigate(ScreensName.survey);
-    } else {
-      ShowToast("error", "Reset edit health fail");
+      if (response.status === 200) {
+        ShowToast("success", "Health information reset successfully");
+        await loadUserPreference();
+        navigation.navigate(ScreensName.survey);
+      } else if (response.status === 401) {
+        ShowToast("error", "Session expired. Please login again");
+        handleLogout();
+      } else {
+        ShowToast("error", "Failed to reset health information");
+      }
+    } catch (err) {
+      ShowToast("error", "Unable to reset health information. Please try again later.");
+    } finally {
+      setLoading(false);
+      setModalVisible({
+        ...modalVisible,
+        EditHealthModal: false,
+      });
     }
-
-    setModalVisible({
-      ...modalVisible,
-      EditHealthModal: false,
-    });
   };
 
   const handleEditProfile = async (data) => {
-    const response = await updateUser(data);
+    setLoading(true);
+    try {
+      const response = await updateUser(data);
 
-    if (response.status === 200) {
-      ShowToast("success", "Update user profile successfull");
-      dispatch(updateUserAct(response.data?.data?.user || {})); // Cập nhật thông tin user())
-    } else {
-      ShowToast("error", "Update user profile fail");
+      if (response.status === 200) {
+        ShowToast("success", "Profile updated successfully");
+        dispatch(updateUserAct(response.data?.data?.user || {}));
+      } else if (response.status === 401) {
+        ShowToast("error", "Session expired. Please login again");
+        handleLogout();
+      } else {
+        ShowToast("error", "Failed to update profile");
+      }
+    } catch (err) {
+      ShowToast("error", "Unable to update profile. Please try again later.");
+    } finally {
+      setLoading(false);
+      setModalVisible({
+        ...modalVisible,
+        EditProfileModal: false,
+      });
     }
-    setModalVisible({
-      ...modalVisible,
-      EditProfileModal: false,
-    });
   };
 
   const handleEditMealPlan = (data) => {
@@ -117,17 +155,28 @@ function Profile({ navigation }) {
   };
 
   const handleDeleteAccount = async () => {
-    const response = await deleteUser(user?._id);
-    if (response.status === 200) {
-      handleLogout();
+    setLoading(true);
+    try {
+      const response = await deleteUser(user?._id);
+      
+      if (response.status === 200) {
+        ShowToast("success", "Account deleted successfully");
+        handleLogout();
+      } else if (response.status === 401) {
+        ShowToast("error", "Session expired. Please login again");
+        handleLogout();
+      } else {
+        const message = response?.response?.data?.message || "Something went wrong";
+        ShowToast("error", message);
+      }
+    } catch (err) {
+      ShowToast("error", "Unable to delete account. Please try again later.");
+    } finally {
+      setLoading(false);
       setModalVisible({
         ...modalVisible,
         ConfirmDeleteModal: false,
       });
-    } else {
-      const message =
-        response?.response?.data?.message || "Something went wrong";
-      ShowToast("error", message);
     }
   };
 
@@ -136,12 +185,34 @@ function Profile({ navigation }) {
     navigation.navigate(ScreensName.signin);
   };
 
+  if (loading && !user) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <ActivityIndicator size="large" color="#3592E7" />
+        <Text style={{ marginTop: 10, color: theme.textColor }}>Loading profile...</Text>
+      </View>
+    );
+  }
+
+  if (error && !user) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <Text style={{ color: 'red', textAlign: 'center', marginBottom: 20 }}>{error}</Text>
+        <TouchableOpacity
+          style={styles.retryButton}
+          onPress={loadUserPreference}
+        >
+          <Text style={styles.retryButtonText}>Retry</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
     <NonBottomTabWrapper headerHidden={true}>
-      {/* Phần header với ảnh nền */}
+      {/* Header section */}
       <View style={styles.header}>
         <TouchableOpacity
-          // onPress={() => navigation.goBack()}
           onPress={() => {
             dispatch(toggleVisible());
           }}
@@ -199,7 +270,7 @@ function Profile({ navigation }) {
         >
           <Ionicons name="heart-outline" size={24} color={theme.textColor} />
           <Text style={{ ...styles.menuText, color: theme.textColor }}>
-            Favourites
+            Favorites
           </Text>
           <Ionicons name="chevron-forward" size={24} color="#999" />
         </TouchableOpacity>
@@ -227,7 +298,9 @@ function Profile({ navigation }) {
         <TouchableOpacity
           style={styles.menuItem}
           onPress={() => {
-            navigation.navigate(ScreensName.verifyEmail);
+            navigation.navigate(ScreensName.changePassword, {
+              type: "changePassword"
+            });
           }}
         >
           <FontAwesomeIcon name="edit" size={24} color={theme.textColor} />
@@ -266,7 +339,6 @@ function Profile({ navigation }) {
           <Text style={{ ...styles.menuText, color: theme.textColor }}>
             Delete Account
           </Text>
-          {/* <Ionicons name="chevron-forward" size={24} color="#999" /> */}
           <Text style={{ color: theme.textColor }}>YES</Text>
         </TouchableOpacity>
 
@@ -276,13 +348,21 @@ function Profile({ navigation }) {
             Logout
           </Text>
           <Text style={{ color: theme.textColor }}>YES</Text>
-          {/* <Ionicons name="chevron-forward" size={24} color="#999" /> */}
         </TouchableOpacity>
 
         <View
           style={{ ...styles.separator, backgroundColor: theme.textColor }}
         />
       </View>
+
+      {/* Loading indicator when an action is in progress */}
+      {loading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#3592E7" />
+        </View>
+      )}
+
+      {/* Modals */}
       <EditHealthModal
         visible={modalVisible.EditHealthModal}
         onClose={() => {
@@ -310,6 +390,7 @@ function Profile({ navigation }) {
         onSave={(data) => {
           handleEditProfile(data);
         }}
+        readOnly={true} // Add readOnly mode by default
       />
       <ConfirmDeleteAccountModal
         visible={modalVisible.ConfirmDeleteModal}
@@ -327,6 +408,11 @@ const styles = StyleSheet.create({
     flex: 1,
     minHeight: HEIGHT,
     backgroundColor: "#FFFFFF",
+  },
+  centerContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
   },
   header: {
     position: "relative",
@@ -368,12 +454,17 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontSize: 18,
   },
+  profileEmail: {
+    fontSize: 14,
+    color: "#666",
+    marginTop: 4,
+  },
   editButtonContainer: {
     marginTop: 12,
   },
   editButton: {
-    paddingHorizontal: 4,
-    paddingVertical: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
     borderRadius: 4,
     backgroundColor: "#3592E7",
   },
@@ -403,6 +494,26 @@ const styles = StyleSheet.create({
     backgroundColor: "#000000",
     marginVertical: 12,
     marginHorizontal: 20,
+  },
+  loadingOverlay: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+  },
+  retryButton: {
+    backgroundColor: '#3592E7',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 5,
+  },
+  retryButtonText: {
+    color: 'white',
+    fontWeight: '600',
   },
 });
 

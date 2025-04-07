@@ -111,3 +111,9 @@ export function arrayToString(arr) {
 export function stringToArray(str) {
   return typeof str === 'string' ? str?.split(",") : [];
 }
+
+export function secondsToMinutes(seconds) {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
+}
