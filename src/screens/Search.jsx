@@ -22,8 +22,9 @@ import { DishType } from "../constants/DishType";
 import { getDishes } from "../services/dishes";
 // import CustomToast from "../components/common/CustomToast";
 import ShowToast from "../components/common/CustomToast";
-import { getSearchHistory } from "../utils/common";
+import { getSearchHistory, successStatus } from "../utils/common";
 import { useTheme } from "../contexts/ThemeContext";
+import { ScreensName } from "../constants/ScreensName";
 
 const WIDTH = Dimensions.get("window").width;
 
@@ -48,7 +49,7 @@ const CategoryButton = ({ title, isActive = false, onclick }) => (
   </TouchableOpacity>
 );
 
-const SearchScreen = ({ route }) => {
+const SearchScreen = ({ route, navigation }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [searchMode, setSearchMode] = useState("initial"); // 'initial', 'results'
   const [searchQuery, setSearchQuery] = useState("");
@@ -91,8 +92,9 @@ const SearchScreen = ({ route }) => {
     //   setSearchMode("results");
     // }
     const response = await getDishes();
-    if (response.status === 200) {
-      const resultList = response.data?.data?.filter((item) =>
+
+    if (successStatus(response.status)) {
+      const resultList = response.data?.data?.items?.filter((item) =>
         item.name.toLowerCase().includes(searchString.toLowerCase())
       );
       if (resultList.length === 0) {
@@ -110,7 +112,7 @@ const SearchScreen = ({ route }) => {
 
     setSearchQuery(type.name);
     if (response.status === 200) {
-      const resultList = response.data?.data?.filter(
+      const resultList = response.data?.data?.items?.filter(
         (item) => item.type == type.name
       );
       if (resultList.length === 0) {
@@ -209,7 +211,15 @@ const SearchScreen = ({ route }) => {
       </View>
 
       {filterResult.length > 0 ? (
-        filterResult.map((item) => <DishedV2 key={item._id} item={item} />)
+        filterResult.map((item) => (
+          <DishedV2
+            key={item._id}
+            item={item}
+            onPress={() =>
+              navigation.navigate(ScreensName.favorAndSuggest, { dish: item })
+            }
+          />
+        ))
       ) : (
         <Text style={styles.noResultsText}>No results found</Text>
       )}

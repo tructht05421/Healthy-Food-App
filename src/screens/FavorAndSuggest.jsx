@@ -359,9 +359,9 @@ function FavorAndSuggest({ route }) {
             <Ionicons name="heart-outline" size={24} color="#FF8A65" />
           )}
         </TouchableOpacity>
-        <TouchableOpacity style={styles.playIcon} onPress={() => handleOnPlayPress(dish)}>
+        {/* <TouchableOpacity style={styles.playIcon} onPress={() => handleOnSavePress(dish)}>
           <MaterialCommunityIcons name="play-circle-outline" size={24} color="#FF8A65" />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <View
           style={{
             ...styles.cardContent,

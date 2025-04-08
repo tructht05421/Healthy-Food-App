@@ -117,3 +117,11 @@ export function secondsToMinutes(seconds) {
   const remainingSeconds = seconds % 60;
   return `${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
 }
+
+export function successStatus(status = 404) {
+  if (status > 0 && status < 400) {
+    return true
+  } else {
+    return false
+  }
+}
