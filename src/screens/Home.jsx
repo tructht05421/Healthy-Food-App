@@ -76,7 +76,9 @@ function Home({ navigation }) {
           (dish) => dish.season && typeof dish.season === "string"
         );
 
-        setSeasonalDishes((prev) => (isRefresh ? newDishes : [...prev, ...newDishes]));
+        setSeasonalDishes((prev) =>
+          isRefresh ? newDishes : [...prev, ...newDishes]
+        );
 
         setPage(pageNum);
         setHasMore(pageNum < response.data.totalPages);
@@ -115,7 +117,10 @@ function Home({ navigation }) {
     ({ nativeEvent }) => {
       const { layoutMeasurement, contentOffset, contentSize } = nativeEvent;
       const paddingToBottom = 20;
-      if (layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom) {
+      if (
+        layoutMeasurement.height + contentOffset.y >=
+        contentSize.height - paddingToBottom
+      ) {
         loadMoreDishes();
       }
     },
@@ -129,7 +134,9 @@ function Home({ navigation }) {
         showsVerticalScrollIndicator={false}
         onScroll={handleScroll}
         scrollEventThrottle={16}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       >
         <SearchBar
           placeholder="What do you need?"
@@ -146,14 +153,17 @@ function Home({ navigation }) {
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{
-              paddingRight: WIDTH * ((Object.values(DishType).length - 1) * 0.22),
+              paddingRight:
+                WIDTH * ((Object.values(DishType).length - 1) * 0.22),
             }}
           >
             {Object.values(DishType).map((category, key) => (
               <CategoryCard
                 key={key}
                 category={{ id: key, ...category }}
-                onPress={() => navigation.navigate(ScreensName.search, { category })}
+                onPress={() =>
+                  navigation.navigate(ScreensName.search, { category })
+                }
                 cardWidth={"20%"}
                 style={{ marginRight: "4%" }}
               />
@@ -171,14 +181,20 @@ function Home({ navigation }) {
 
           {loading.initial ? (
             <SpinnerLoading />
-          ) : seasonalDishes.length > 0 ? (
+          ) : seasonalDishes.filter((item) =>
+              item?.season?.toLowerCase()?.includes(season?.toLowerCase())
+            ).length > 0 ? (
             seasonalDishes
-              .filter((item) => item?.season?.toLowerCase()?.includes(season?.toLowerCase()))
+              .filter((item) =>
+                item?.season?.toLowerCase()?.includes(season?.toLowerCase())
+              )
               .map((dish) => (
                 <DishedV1
                   dish={dish}
                   key={dish._id}
-                  onPress={() => navigation.navigate(ScreensName.favorAndSuggest, { dish })}
+                  onPress={() =>
+                    navigation.navigate(ScreensName.favorAndSuggest, { dish })
+                  }
                 />
               ))
           ) : (
@@ -186,7 +202,11 @@ function Home({ navigation }) {
           )}
 
           {loading.more && (
-            <ActivityIndicator size="large" color="#38B2AC" style={styles.loadingMore} />
+            <ActivityIndicator
+              size="large"
+              color="#38B2AC"
+              style={styles.loadingMore}
+            />
           )}
         </View>
       </ScrollView>

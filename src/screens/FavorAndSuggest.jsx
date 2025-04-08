@@ -317,7 +317,7 @@ function FavorAndSuggest({ route }) {
         {...props}
         indicatorStyle={{
           backgroundColor: "#4CAF50",
-          height: "80%",
+          height: "100%",
           width: "45%",
           borderRadius: 8,
           marginHorizontal: "2.5%",
@@ -453,6 +453,7 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   cardContent: {
+    height: "90%",
     padding: 16,
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
@@ -498,6 +499,7 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
   tabViewContainer: {
+    height: "65%",
     paddingHorizontal: 16,
   },
   tabView: {
