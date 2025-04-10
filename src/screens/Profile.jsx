@@ -20,7 +20,10 @@ import { ScreensName } from "../constants/ScreensName";
 import ShowToast from "../components/common/CustomToast";
 import { deleteUser, updateUser } from "../services/authService";
 import { removeUser, updateUserAct } from "../redux/reducers/userReducer";
-import { resetUserPreference } from "../services/userPreference";
+import {
+  createUserPreference,
+  resetUserPreference,
+} from "../services/userPreference";
 import { useFocusEffect } from "@react-navigation/native";
 import ConfirmDeleteAccountModal from "../components/modal/ConfirmDeleteAccountModal";
 import { toggleVisible } from "../redux/reducers/drawerReducer";
@@ -61,17 +64,22 @@ function Profile({ navigation }) {
   const loadUserPreference = async () => {
     setLoading(true);
     setError(null);
-    
+
+    if (!user?.userPreferenceId) {
+      await handleCreateUserPreference();
+      ShowToast("error", "Please login again to load user preference");
+      return;
+    }
     try {
       // Add timeout handling
-      const timeoutPromise = new Promise((_, reject) => 
+      const timeoutPromise = new Promise((_, reject) =>
         setTimeout(() => reject(new Error("Request timeout")), 15000)
       );
-      
+
       const responsePromise = quizService.getUserPreferenceByUserPreferenceId(
         user?.userPreferenceId
       );
-      
+
       // Race between the API call and the timeout
       const response = await Promise.race([responsePromise, timeoutPromise]);
 
@@ -85,10 +93,50 @@ function Profile({ navigation }) {
         throw new Error("Failed to load user preferences");
       }
     } catch (err) {
-      setError(err.message || "Unable to load profile information. Please try again later.");
-      ShowToast("error", err.message || "Unable to load profile information. Please try again later.");
+      setError(
+        err.message ||
+          "Unable to load profile information. Please try again later."
+      );
+      ShowToast(
+        "error",
+        err.message ||
+          "Unable to load profile information. Please try again later."
+      );
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCreateUserPreference = async () => {
+    const emptyUserPreferenceData = {
+      userId: user._id, // This should be a valid ObjectId in actual use
+      age: "",
+      diet: "",
+      eatHabit: [],
+      email: user?.email, // Required field
+      favorite: [],
+      longOfPlan: "",
+      mealNumber: "",
+      name: user.username, // Required field
+      goal: "",
+      sleepTime: "",
+      waterDrink: "",
+      currentMealplanId: "",
+      previousMealplanId: "",
+      hate: [],
+      recommendedFoods: [],
+      weight: 0,
+      weightGoal: 0,
+      height: 0,
+      activityLevel: 0,
+      gender: "",
+      phoneNumber: "",
+      underDisease: [],
+      theme: false,
+      isDelete: false,
+    };
+    const response = await createUserPreference(emptyUserPreferenceData);
+    if (response.status === 201) {
     }
   };
 
@@ -112,7 +160,10 @@ function Profile({ navigation }) {
         ShowToast("error", "Failed to reset health information");
       }
     } catch (err) {
-      ShowToast("error", "Unable to reset health information. Please try again later.");
+      ShowToast(
+        "error",
+        "Unable to reset health information. Please try again later."
+      );
     } finally {
       setLoading(false);
       setModalVisible({
@@ -158,7 +209,7 @@ function Profile({ navigation }) {
     setLoading(true);
     try {
       const response = await deleteUser(user?._id);
-      
+
       if (response.status === 200) {
         ShowToast("success", "Account deleted successfully");
         handleLogout();
@@ -166,7 +217,8 @@ function Profile({ navigation }) {
         ShowToast("error", "Session expired. Please login again");
         handleLogout();
       } else {
-        const message = response?.response?.data?.message || "Something went wrong";
+        const message =
+          response?.response?.data?.message || "Something went wrong";
         ShowToast("error", message);
       }
     } catch (err) {
@@ -189,7 +241,9 @@ function Profile({ navigation }) {
     return (
       <View style={[styles.container, styles.centerContent]}>
         <ActivityIndicator size="large" color="#3592E7" />
-        <Text style={{ marginTop: 10, color: theme.textColor }}>Loading profile...</Text>
+        <Text style={{ marginTop: 10, color: theme.textColor }}>
+          Loading profile...
+        </Text>
       </View>
     );
   }
@@ -197,7 +251,9 @@ function Profile({ navigation }) {
   if (error && !user) {
     return (
       <View style={[styles.container, styles.centerContent]}>
-        <Text style={{ color: 'red', textAlign: 'center', marginBottom: 20 }}>{error}</Text>
+        <Text style={{ color: "red", textAlign: "center", marginBottom: 20 }}>
+          {error}
+        </Text>
         <TouchableOpacity
           style={styles.retryButton}
           onPress={loadUserPreference}
@@ -299,7 +355,7 @@ function Profile({ navigation }) {
           style={styles.menuItem}
           onPress={() => {
             navigation.navigate(ScreensName.changePassword, {
-              type: "changePassword"
+              type: "changePassword",
             });
           }}
         >
@@ -410,8 +466,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
   },
   centerContent: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
   },
   header: {
@@ -496,24 +552,24 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   loadingOverlay: {
-    position: 'absolute',
+    position: "absolute",
     left: 0,
     right: 0,
     top: 0,
     bottom: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
   },
   retryButton: {
-    backgroundColor: '#3592E7',
+    backgroundColor: "#3592E7",
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 5,
   },
   retryButtonText: {
-    color: 'white',
-    fontWeight: '600',
+    color: "white",
+    fontWeight: "600",
   },
 });
 

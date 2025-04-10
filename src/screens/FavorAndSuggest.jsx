@@ -72,8 +72,6 @@ function FavorAndSuggest({ route }) {
         const detailsObj = [];
 
         const promises = recipe.ingredients.map(async (ingredient) => {
-          console.log("Ingredient:", ingredient); // Debug log
-          console.log("Ingredient ID:", ingredient?.ingredientId); // Debug log
 
           if (!ingredient?.ingredientId) return;
 
@@ -133,13 +131,13 @@ function FavorAndSuggest({ route }) {
   };
 
   const handleOnSavePress = async (dish) => {
-    if (!user?.userId) {
+    if (!user?._id) {
       Alert.alert("Error", "Please log in to save favorites.");
       return;
     }
     try {
-      const isLiked = isFavorite(dish._id);
-      await HomeService.toggleFavoriteDish(user.userId, dish._id, isLiked);
+      // const isLiked = isFavorite(dish._id);
+      // await HomeService.toggleFavoriteDish(user.userId, dish._id, isLiked);
       dispatch(toggleFavorite({ id: dish._id }));
     } catch (error) {
       console.error("Error toggling favorite:", error);

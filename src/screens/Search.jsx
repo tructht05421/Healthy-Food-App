@@ -115,6 +115,7 @@ const SearchScreen = ({ route, navigation }) => {
       const resultList = response.data?.data?.items?.filter(
         (item) => item.type == type.name
       );
+
       if (resultList.length === 0) {
         ShowToast("error", "No results found");
       }
