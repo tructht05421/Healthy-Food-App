@@ -51,7 +51,7 @@ function NonBottomTabWrapper({ children, headerHidden, style }) {
         <DecorationDot
           size={HEIGHT * 0.25}
           top={HEIGHT - HEIGHT * 0.15}
-          left={WIDTH - WIDTH * 0.4}
+          left={WIDTH - WIDTH * 0.2}
           zIndex={1}
           backgroundColor={theme.greenDecorationDotColor}
         />

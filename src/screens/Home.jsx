@@ -8,6 +8,7 @@ import {
   Dimensions,
   RefreshControl,
   ActivityIndicator,
+  PixelRatio,
 } from "react-native";
 import MainLayoutWrapper from "../components/layout/MainLayoutWrapper";
 import SearchBar from "../components/common/SearchBar";
@@ -22,8 +23,14 @@ import { favorSelector, userSelector } from "../redux/selectors/selector";
 import SpinnerLoading from "../components/common/SpinnerLoading";
 import HomeService from "../services/HomeService";
 
-const WIDTH = Dimensions.get("window").width;
-const HEIGHT = Dimensions.get("window").height;
+const window = Dimensions.get("window");
+const scale = window.width / 375;
+
+// Function to normalize sizes for different screen dimensions
+const normalize = (size) => {
+  const newSize = size * scale;
+  return Math.round(PixelRatio.roundToNearestPixel(newSize));
+};
 
 function Home({ navigation }) {
   const [seasonalDishes, setSeasonalDishes] = useState([]);
@@ -115,7 +122,7 @@ function Home({ navigation }) {
   const handleScroll = useCallback(
     ({ nativeEvent }) => {
       const { layoutMeasurement, contentOffset, contentSize } = nativeEvent;
-      const paddingToBottom = 20;
+      const paddingToBottom = normalize(20);
       if (
         layoutMeasurement.height + contentOffset.y >=
         contentSize.height - paddingToBottom
@@ -155,8 +162,7 @@ function Home({ navigation }) {
                 onPress={() =>
                   navigation.navigate(ScreensName.search, { category })
                 }
-                cardWidth={"40%"}
-                // style={{ marginRight: "4%" }}
+                style={styles.categoryCard}
               />
             ))}
           </View>
@@ -208,41 +214,46 @@ function Home({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 16,
+    paddingHorizontal: normalize(16),
   },
   categoriesSection: {
-    marginTop: 16,
+    marginTop: normalize(16),
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: normalize(16),
     color: "#38B2AC",
     fontWeight: "500",
-    marginBottom: 16,
+    marginBottom: normalize(16),
   },
   categoriesGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "space-around",
+    justifyContent: "space-between",
+    marginTop: normalize(40), // Add space for category images that are positioned absolute
+  },
+  categoryCard: {
+    marginBottom: normalize(24),
   },
   seasonalSection: {
-    marginVertical: 16,
+    marginVertical: normalize(16),
   },
   sectionHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 16,
+    marginBottom: normalize(16),
   },
   viewAllText: {
     color: "#38B2AC",
-    fontSize: 14,
+    fontSize: normalize(14),
   },
   noResultsText: {
-    fontSize: 16,
+    fontSize: normalize(16),
     textAlign: "center",
+    padding: normalize(20),
   },
   loadingMore: {
-    marginVertical: 20,
+    marginVertical: normalize(20),
   },
 });
 
