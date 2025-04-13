@@ -36,7 +36,7 @@ const MealPlan = ({ navigation }) => {
   const fetchUserMealPlan = async () => {
     try {
       setLoading(true);
-      const response = await mealPlanService.getUserMealPlan(user._id);
+      const response = await mealPlanService.getUserMealPlan(user?._id);
       if (response.success && response.data) {
         setUserMealPlan(response.data);
         setShowCreateForm(false); // Hide form if MealPlan exists
@@ -348,8 +348,8 @@ const MealPlan = ({ navigation }) => {
                     Create New Meal Plan
                   </Text>
                   <CreateMealPlanForm
-                    userId={user._id}
-                    userRole={user.role}
+                    userId={user?._id}
+                    userRole={user?.role}
                     onSuccess={handleCreateSuccess}
                   />
                 </View>

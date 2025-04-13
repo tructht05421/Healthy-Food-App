@@ -56,9 +56,15 @@ const HomeService = {
     }
   },
 
-  getDishesBySeason: async (season) => {
+  getDishesBySeason: async (season, pageNum, limit) => {
     try {
-      const response = await axiosInstance.get(`/dishes/by-season?season=${season}`);
+      const response = await axiosInstance.get(`/dishes/by-season`, {
+        params: {
+          season,
+          pageNum,
+          limit,
+        },
+      });
       return response.data;
     } catch (error) {
       console.error(`Error fetching dishes for type ${season}:`, error);

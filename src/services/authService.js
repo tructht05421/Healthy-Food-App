@@ -1,5 +1,16 @@
 import axiosInstance from "./axiosInstance";
 
+const googleConfig = {
+  // Giữ lại các client ID hiện có
+  androidClientId:
+    "155145337295-8k2hph51rqh94qmi1lpp93ro72vg1kva.apps.googleusercontent.com",
+  iosClientId:
+    "155145337295-voo79g6h7n379738rce0ipoo4qoj1dom.apps.googleusercontent.com",
+  // Thêm web client ID nếu bạn có (nếu bạn muốn sử dụng proxy)
+  webClientId: "155145337295-at04bi7srnm2ic0l8bvunhd5l7so76b5.apps.googleusercontent.com",
+  scopes: ["openid", "profile", "email"],
+};
+
 export const login = async ({ email, password }) => {
   try {
     const data = {
@@ -7,6 +18,19 @@ export const login = async ({ email, password }) => {
       password: password,
     };
     const response = await axiosInstance.post(`/users/login`, data);
+    return response;
+  } catch (error) {
+    console.log("login in service/auth error : ", error);
+    return error;
+  }
+};
+
+export const loginGoogle = async ({ idToken }) => {
+  try {
+    const data = {
+      idToken: idToken,
+    };
+    const response = await axiosInstance.post(`/users/login-google`, data);
     return response;
   } catch (error) {
     console.log("login in service/auth error : ", error);

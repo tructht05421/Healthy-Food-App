@@ -62,7 +62,7 @@ function Signup({ navigation }) {
 
   const [isOpen, setIsOpen] = useState({ otpModal: false });
 
-  const { signIn, userInfo, error } = useGoogleAuth();
+  const { signInWithGoogle } = useGoogleAuth();
 
   const dispatch = useDispatch();
   const user = useSelector(userSelector);
@@ -81,7 +81,11 @@ function Signup({ navigation }) {
   };
 
   const onPressGoogleButton = async () => {
-    await signIn();
+    const userInfo = await signInWithGoogle();
+    if (userInfo) {
+      // handle user info here (e.g., send to backend, save to Redux, etc.)
+      console.log("Đăng nhập thành công", userInfo);
+    }
   };
 
   const onPressRegisterButton = async () => {
@@ -137,9 +141,11 @@ function Signup({ navigation }) {
           ShowToast("error", "Login failed after registration.");
         }
       } else {
+        console.log(response?.response?.data?.error);
+
         ShowToast(
           "error",
-          response?.response?.data?.error?.message || "Registration failed."
+          response?.response?.data?.message || "Registration failed."
         );
       }
     } catch (error) {

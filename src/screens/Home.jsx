@@ -37,7 +37,7 @@ function Home({ navigation }) {
   const user = useSelector(userSelector);
 
   const dispatch = useDispatch();
-  const season = useCurrentSeason() || "unknown";
+  const season = useCurrentSeason();
 
   useEffect(() => {
     const validSeasons = ["Spring", "Summer", "Fall", "Winter"];
@@ -71,17 +71,22 @@ function Home({ navigation }) {
 
   const loadDishes = async (pageNum, isRefresh = false) => {
     try {
-      const response = await HomeService.getDishesBySeason(season);
+      if (!season) return;
+
+      const response = await HomeService.getDishesBySeason(
+        season,
+        pageNum,
+        limit
+      );
       if (response?.status === "success") {
         const newDishes = response.data.items;
 
-        // setSeasonalDishes((prev) =>
-        //   isRefresh ? newDishes : [...prev, ...newDishes]
-        // );=
+        setSeasonalDishes((prev) =>
+          isRefresh ? newDishes : [...prev, ...newDishes]
+        );
 
-        // setPage(pageNum);
-        // setHasMore(pageNum < response.data.totalPages);
-        setSeasonalDishes(newDishes);
+        setPage(pageNum);
+        setHasMore(pageNum < response.data.totalPages);
       } else {
         console.error("Failed to load dishes:", response);
         setHasMore(false);
@@ -132,7 +137,7 @@ function Home({ navigation }) {
       <ScrollView
         style={styles.container}
         showsVerticalScrollIndicator={false}
-        // onScroll={handleScroll}
+        onScroll={handleScroll}
         scrollEventThrottle={16}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -179,10 +184,10 @@ function Home({ navigation }) {
               .filter((item) =>
                 item?.season?.toLowerCase()?.includes(season?.toLowerCase())
               )
-              .map((dish) => (
+              .map((dish, index) => (
                 <DishedV1
                   dish={dish}
-                  key={dish._id}
+                  key={dish._id + index}
                   onPress={() =>
                     navigation.navigate(ScreensName.favorAndSuggest, { dish })
                   }
