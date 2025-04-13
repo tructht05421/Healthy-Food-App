@@ -25,6 +25,7 @@ import { loginThunk } from "../redux/actions/userThunk";
 import { useDispatch } from "react-redux";
 import { useGoogleAuth } from "../hooks/useGoogleAuth";
 import NonBottomTabWrapper from "../components/layout/NonBottomTabWrapper";
+import { normalize } from "../utils/common";
 
 const { width: WIDTH, height: HEIGHT } = Dimensions.get("window");
 
@@ -278,8 +279,8 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   methodIcon: {
-    width: "50%",
-    height: "50%",
+    width: normalize(32),
+    height: normalize(32),
     resizeMode: "contain",
   },
   registerContainer: {

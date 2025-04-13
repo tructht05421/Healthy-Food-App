@@ -22,15 +22,7 @@ import { loadFavorites } from "../redux/actions/favoriteThunk";
 import { favorSelector, userSelector } from "../redux/selectors/selector";
 import SpinnerLoading from "../components/common/SpinnerLoading";
 import HomeService from "../services/HomeService";
-
-const window = Dimensions.get("window");
-const scale = window.width / 375;
-
-// Function to normalize sizes for different screen dimensions
-const normalize = (size) => {
-  const newSize = size * scale;
-  return Math.round(PixelRatio.roundToNearestPixel(newSize));
-};
+import { normalize } from "../utils/common";
 
 function Home({ navigation }) {
   const [seasonalDishes, setSeasonalDishes] = useState([]);
@@ -45,11 +37,14 @@ function Home({ navigation }) {
   const user = useSelector(userSelector);
 
   const dispatch = useDispatch();
-  const season = useCurrentSeason() || "spring";
+  const season = useCurrentSeason() || "unknown";
 
   useEffect(() => {
-    loadInitialDishes();
-  }, []);
+    const validSeasons = ["Spring", "Summer", "Fall", "Winter"];
+    if (validSeasons.includes(season)) {
+      loadInitialDishes();
+    }
+  }, [season]);
 
   useEffect(() => {
     loadFavoritesData();
@@ -76,20 +71,19 @@ function Home({ navigation }) {
 
   const loadDishes = async (pageNum, isRefresh = false) => {
     try {
-      const response = await HomeService.getAllDishes(pageNum, limit);
-      if (response?.success) {
-        const newDishes = response.data.items.filter(
-          (dish) => dish.season && typeof dish.season === "string"
-        );
+      const response = await HomeService.getDishesBySeason(season);
+      if (response?.status === "success") {
+        const newDishes = response.data.items;
 
-        setSeasonalDishes((prev) =>
-          isRefresh ? newDishes : [...prev, ...newDishes]
-        );
+        // setSeasonalDishes((prev) =>
+        //   isRefresh ? newDishes : [...prev, ...newDishes]
+        // );=
 
-        setPage(pageNum);
-        setHasMore(pageNum < response.data.totalPages);
+        // setPage(pageNum);
+        // setHasMore(pageNum < response.data.totalPages);
+        setSeasonalDishes(newDishes);
       } else {
-        console.error("Failed to load dishes:", response?.message);
+        console.error("Failed to load dishes:", response);
         setHasMore(false);
       }
     } catch (error) {
@@ -138,7 +132,7 @@ function Home({ navigation }) {
       <ScrollView
         style={styles.container}
         showsVerticalScrollIndicator={false}
-        onScroll={handleScroll}
+        // onScroll={handleScroll}
         scrollEventThrottle={16}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -240,7 +234,6 @@ const styles = StyleSheet.create({
   sectionHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
     marginBottom: normalize(16),
   },
   viewAllText: {

@@ -105,7 +105,7 @@ const DishedV1 = ({
         <Text
           style={{
             color: getSeasonColor(dish.season),
-            fontSize: normalize(10),
+            fontSize: normalize(6),
           }}
         >
           {dish?.season}

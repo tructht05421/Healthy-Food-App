@@ -21,15 +21,7 @@ import { changePassword } from "../services/authService";
 import { ScreensName } from "../constants/ScreensName";
 import { useTheme } from "../contexts/ThemeContext";
 import { Feather } from "@expo/vector-icons";
-
-const window = Dimensions.get("window");
-const scale = window.width / 375; // Base width for scaling
-
-// Function to normalize sizes for different screen dimensions
-const normalize = (size) => {
-  const newSize = size * scale;
-  return Math.round(PixelRatio.roundToNearestPixel(newSize));
-};
+import { normalize } from "../utils/common";
 
 function ChangePassword({ navigation, route }) {
   const email = route.params?.email;
@@ -41,6 +33,14 @@ function ChangePassword({ navigation, route }) {
   const [showPresentPassword, setShowPresentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Track whether fields have been touched/modified
+  const [touched, setTouched] = useState({
+    presentPassword: false,
+    newPassword: false,
+    confirmPassword: false,
+  });
+
   const [errors, setErrors] = useState({
     presentPassword: "",
     newPassword: "",
@@ -119,7 +119,22 @@ function ChangePassword({ navigation, route }) {
     return isValid;
   };
 
+  // Handle field touch state
+  const handleFieldTouch = (field) => {
+    setTouched((prev) => ({
+      ...prev,
+      [field]: true,
+    }));
+  };
+
   const handleResetPassword = async () => {
+    // Mark all fields as touched when attempting to submit
+    setTouched({
+      presentPassword: true,
+      newPassword: true,
+      confirmPassword: true,
+    });
+
     if (!validateForm()) {
       ShowToast("error", "Complete form to change password");
       return;
@@ -136,7 +151,11 @@ function ChangePassword({ navigation, route }) {
       console.log("Password reset:", newPassword);
       navigation.navigate(ScreensName.signin);
     } else {
-      ShowToast("error", response.message || "Failed to change password");
+
+      ShowToast(
+        "error",
+        response?.response?.data?.message || "Failed to change password"
+      );
     }
   };
 
@@ -169,7 +188,9 @@ function ChangePassword({ navigation, route }) {
               <View
                 style={[
                   styles.inputWrapper,
-                  errors.presentPassword ? styles.inputError : null,
+                  touched.presentPassword && errors.presentPassword
+                    ? styles.inputError
+                    : null,
                 ]}
               >
                 <TextInput
@@ -177,8 +198,14 @@ function ChangePassword({ navigation, route }) {
                   placeholder="••••••••••••"
                   placeholderTextColor="#666"
                   value={presentPassword}
-                  onChangeText={setPresentPassword}
+                  onChangeText={(text) => {
+                    setPresentPassword(text);
+                    if (!touched.presentPassword) {
+                      handleFieldTouch("presentPassword");
+                    }
+                  }}
                   secureTextEntry={!showPresentPassword}
+                  onBlur={() => handleFieldTouch("presentPassword")}
                 />
                 <TouchableOpacity
                   style={styles.eyeIcon}
@@ -191,7 +218,7 @@ function ChangePassword({ navigation, route }) {
                   />
                 </TouchableOpacity>
               </View>
-              {errors.presentPassword ? (
+              {touched.presentPassword && errors.presentPassword ? (
                 <Text style={styles.errorText}>{errors.presentPassword}</Text>
               ) : null}
 
@@ -201,7 +228,9 @@ function ChangePassword({ navigation, route }) {
               <View
                 style={[
                   styles.inputWrapper,
-                  errors.newPassword ? styles.inputError : null,
+                  touched.newPassword && errors.newPassword
+                    ? styles.inputError
+                    : null,
                 ]}
               >
                 <TextInput
@@ -209,8 +238,14 @@ function ChangePassword({ navigation, route }) {
                   placeholder="••••••••••••"
                   placeholderTextColor="#666"
                   value={newPassword}
-                  onChangeText={setNewPassword}
+                  onChangeText={(text) => {
+                    setNewPassword(text);
+                    if (!touched.newPassword) {
+                      handleFieldTouch("newPassword");
+                    }
+                  }}
                   secureTextEntry={!showNewPassword}
+                  onBlur={() => handleFieldTouch("newPassword")}
                 />
                 <TouchableOpacity
                   style={styles.eyeIcon}
@@ -223,7 +258,7 @@ function ChangePassword({ navigation, route }) {
                   />
                 </TouchableOpacity>
               </View>
-              {errors.newPassword ? (
+              {touched.newPassword && errors.newPassword ? (
                 <Text style={styles.errorText}>{errors.newPassword}</Text>
               ) : null}
 
@@ -233,7 +268,9 @@ function ChangePassword({ navigation, route }) {
               <View
                 style={[
                   styles.inputWrapper,
-                  errors.confirmPassword ? styles.inputError : null,
+                  touched.confirmPassword && errors.confirmPassword
+                    ? styles.inputError
+                    : null,
                 ]}
               >
                 <TextInput
@@ -241,8 +278,14 @@ function ChangePassword({ navigation, route }) {
                   placeholder="••••••••••••"
                   placeholderTextColor="#666"
                   value={confirmPassword}
-                  onChangeText={setConfirmPassword}
+                  onChangeText={(text) => {
+                    setConfirmPassword(text);
+                    if (!touched.confirmPassword) {
+                      handleFieldTouch("confirmPassword");
+                    }
+                  }}
                   secureTextEntry={!showConfirmPassword}
+                  onBlur={() => handleFieldTouch("confirmPassword")}
                 />
                 <TouchableOpacity
                   style={styles.eyeIcon}
@@ -255,7 +298,7 @@ function ChangePassword({ navigation, route }) {
                   />
                 </TouchableOpacity>
               </View>
-              {errors.confirmPassword ? (
+              {touched.confirmPassword && errors.confirmPassword ? (
                 <Text style={styles.errorText}>{errors.confirmPassword}</Text>
               ) : null}
             </View>
@@ -270,10 +313,11 @@ function ChangePassword({ navigation, route }) {
             </View>
 
             <RippleButton
-              buttonStyle={[
-                styles.submitButton,
-                !isFormValid ? styles.disabledButton : null,
-              ]}
+              // buttonStyle={[
+              //   styles.submitButton,
+              //   !isFormValid ? styles.disabledButton : null,
+              // ]}
+              buttonStyle={{ ...styles.submitButton }}
               buttonText="Change Password"
               textStyle={styles.buttonText}
               onPress={handleResetPassword}
