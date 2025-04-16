@@ -62,7 +62,7 @@ function Signup({ navigation }) {
 
   const [isOpen, setIsOpen] = useState({ otpModal: false });
 
-  const { signInWithGoogle } = useGoogleAuth();
+  const { signIn, userInfo, error } = useGoogleAuth();
 
   const dispatch = useDispatch();
   const user = useSelector(userSelector);
@@ -81,38 +81,53 @@ function Signup({ navigation }) {
   };
 
   const onPressGoogleButton = async () => {
-    const userInfo = await signInWithGoogle();
-    if (userInfo) {
-      // handle user info here (e.g., send to backend, save to Redux, etc.)
-      console.log("Đăng nhập thành công", userInfo);
-    }
+    await signIn();
   };
 
   const onPressRegisterButton = async () => {
     const { email, fullName, password, phoneNumber, termAgree } = formData;
 
+    // Email validation
     const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
-    const isValidPassword = (password) =>
-      /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/.test(password);
-    // Ít nhất 6 ký tự, gồm chữ và số
-
-    // Check các trường bắt buộc
-    if (!email.trim()) return ShowToast("error", "Email is required.");
-    if (!fullName.trim()) return ShowToast("error", "Full name is required.");
-    if (!password.trim()) return ShowToast("error", "Password is required.");
-    if (!phoneNumber.trim())
-      return ShowToast("error", "Phone number is required.");
-
-    // Validate email format
+    if (!email.trim()) {
+      return ShowToast("error", "Email is required.");
+    }
     if (!isValidEmail(email.trim())) {
-      return ShowToast("error", "Invalid email format.");
+      return ShowToast("error", "Please enter a valid email address.");
     }
 
+    // Full name validation
+    if (!fullName.trim()) {
+      return ShowToast("error", "Full name is required.");
+    }
+
+    // Password validation - updated with stronger requirements
+    const isValidPassword = (password) =>
+      /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/.test(
+        password
+      );
+
+    if (!password.trim()) {
+      return ShowToast("error", "Password is required.");
+    }
+    if (!isValidPassword(password.trim())) {
+      return ShowToast(
+        "error",
+        "Password is too weak. Must be at least 8 characters with upper, lower, number & special char."
+      );
+    }
+
+    // Phone number validation
+    if (!phoneNumber.trim()) {
+      return ShowToast("error", "Phone number is required.");
+    }
+
+    // Terms agreement validation
     if (!termAgree) {
       setFormData((prev) => ({ ...prev, loginError: "termAgreeError" }));
       return ShowToast("error", "Agree with our term to regis.");
     }
+
     try {
       const response = await signup({
         username: fullName.trim(),
@@ -123,26 +138,22 @@ function Signup({ navigation }) {
       });
 
       if (response.status === 200) {
-        const credentials = {
-          email,
-          password,
-        };
-
-        const responseLogin = await dispatch(loginThunk(credentials));
-
-        if (responseLogin.type.endsWith("fulfilled")) {
-          setIsOpen({ ...isOpen, otpModal: true });
-
-          ShowToast(
-            "success",
-            "Register successfully! Please check your email to verify your account."
-          );
-        } else {
-          ShowToast("error", "Login failed after registration.");
-        }
+        navigation.navigate(ScreensName.signin);
+        // const credentials = {
+        //   email,
+        //   password,
+        // };
+        // const responseLogin = await dispatch(loginThunk(credentials));
+        // if (responseLogin.type.endsWith("fulfilled")) {
+        //   setIsOpen({ ...isOpen, otpModal: true });
+        //   ShowToast(
+        //     "success",
+        //     "Register successfully! Please check your email to verify your account."
+        //   );
+        // } else {
+        //   ShowToast("error", "Login failed after registration.");
+        // }
       } else {
-        console.log(response?.response?.data?.error);
-
         ShowToast(
           "error",
           response?.response?.data?.message || "Registration failed."

@@ -2,12 +2,12 @@ import React from "react";
 import { Text } from "react-native";
 import MainLayoutWrapper from "../components/layout/MainLayoutWrapper";
 
-function Setting() {
+function HeartBeat() {
   return (
-    <MainLayoutWrapper headerHidden={true}>
-      <Text>Setting</Text>
+    <MainLayoutWrapper>
+      <Text>HeartBeat</Text>
     </MainLayoutWrapper>
   );
 }
 
-export default Setting;
+export default HeartBeat;
