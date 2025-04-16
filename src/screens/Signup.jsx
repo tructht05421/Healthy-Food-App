@@ -138,22 +138,22 @@ function Signup({ navigation }) {
       }); // Gọi API đăng ký
 
       if (response.status === 200) {
-        navigation.navigate(ScreensName.signin); // Chuyển đến màn hình đăng nhập nếu đăng ký thành công
+        // navigation.navigate(ScreensName.signin); // Chuyển đến màn hình đăng nhập nếu đăng ký thành công
         // Đoạn code bị comment lại:
-        // const credentials = {
-        //   email,
-        //   password,
-        // };
-        // const responseLogin = await dispatch(loginThunk(credentials));
-        // if (responseLogin.type.endsWith("fulfilled")) {
-        //   setIsOpen({ ...isOpen, otpModal: true });
-        //   ShowToast(
-        //     "success",
-        //     "Register successfully! Please check your email to verify your account."
-        //   );
-        // } else {
-        //   ShowToast("error", "Login failed after registration.");
-        // }
+        const credentials = {
+          email,
+          password,
+        };
+        const responseLogin = await dispatch(loginThunk(credentials));
+        if (responseLogin.type.endsWith("fulfilled")) {
+          setIsOpen({ ...isOpen, otpModal: true });
+          ShowToast(
+            "success",
+            "Register successfully! Please check your email to verify your account."
+          );
+        } else {
+          ShowToast("error", "Login failed after registration.");
+        }
       } else {
         ShowToast(
           "error",
