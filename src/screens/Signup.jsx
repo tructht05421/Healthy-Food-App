@@ -376,6 +376,7 @@ function Signup({ navigation }) {
           onVerify={(code) => {
             handleVerifyAccount(code); // Xử lý khi xác thực OTP
           }}
+          isCancleRefreshCode={true}
         />
       </LinearGradient>
       <Toast /> {/* Component Toast để hiển thị thông báo */}
