@@ -1,57 +1,59 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react"; // Import React và các hooks
 import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  ScrollView,
-  TouchableOpacity,
-  Dimensions,
-  ActivityIndicator,
-  Linking,
-  Alert,
-  TextInput,
-  Modal,
-} from "react-native";
-import MainLayoutWrapper from "../components/layout/MainLayoutWrapper";
-import { TabView, SceneMap, TabBar, TabBarItem } from "react-native-tab-view";
-import Ionicons from "../components/common/VectorIcons/Ionicons";
-import { useDispatch, useSelector } from "react-redux";
-import { favorSelector, userSelector } from "../redux/selectors/selector";
-import { toggleFavorite } from "../redux/actions/favoriteThunk";
-import MaterialCommunityIcons from "../components/common/VectorIcons/MaterialCommunityIcons";
-import SpinnerLoading from "../components/common/SpinnerLoading";
-import Rating from "../components/common/Rating";
-import { useTheme } from "../contexts/ThemeContext";
-import YoutubePlayer from "react-native-youtube-iframe";
-import HomeService from "../services/HomeService";
-import { getIngredient } from "../services/ingredient";
-import commentService from "./../services/commentService";
-import { useNavigation } from "@react-navigation/native";
-import RatingModal from "../components/common/RatingModal";
-import styles from "./../css/FavorAndSuggestCss";
-import { Heart } from "lucide-react-native";
-const HEIGHT = Dimensions.get("window").height;
-const WIDTH = Dimensions.get("window").width;
+  View, // Component để tạo container
+  Text, // Component hiển thị văn bản
+  StyleSheet, // API để tạo styles
+  Image, // Component hiển thị hình ảnh
+  ScrollView, // Component cho phép cuộn
+  TouchableOpacity, // Component cho phép nhấn
+  Dimensions, // API lấy kích thước màn hình
+  ActivityIndicator, // Component hiển thị loading
+  Linking, // API để mở link
+  Alert, // API hiển thị thông báo
+  TextInput, // Component nhập liệu
+  Modal, // Component hiển thị modal
+} from "react-native"; // Import từ thư viện React Native
+import MainLayoutWrapper from "../components/layout/MainLayoutWrapper"; // Import component layout chính
+import { TabView, SceneMap, TabBar, TabBarItem } from "react-native-tab-view"; // Import component tab view
+import Ionicons from "../components/common/VectorIcons/Ionicons"; // Import icons
+import { useDispatch, useSelector } from "react-redux"; // Import hooks của Redux
+import { favorSelector, userSelector } from "../redux/selectors/selector"; // Import các selectors
+import { toggleFavorite } from "../redux/actions/favoriteThunk"; // Import action Redux
+import MaterialCommunityIcons from "../components/common/VectorIcons/MaterialCommunityIcons"; // Import icons
+import SpinnerLoading from "../components/common/SpinnerLoading"; // Import component loading
+import Rating from "../components/common/Rating"; // Import component đánh giá
+import { useTheme } from "../contexts/ThemeContext"; // Import hook theme
+import YoutubePlayer from "react-native-youtube-iframe"; // Import component player YouTube
+import HomeService from "../services/HomeService"; // Import service cho trang chủ
+import { getIngredient } from "../services/ingredient"; // Import service lấy dữ liệu nguyên liệu
+import commentService from "./../services/commentService"; // Import service bình luận
+import { useNavigation } from "@react-navigation/native"; // Import hook navigation
+import RatingModal from "../components/common/RatingModal"; // Import component modal đánh giá
+import styles from "./../css/FavorAndSuggestCss"; // Import styles
+import { Heart } from "lucide-react-native"; // Import icon trái tim
+const HEIGHT = Dimensions.get("window").height; // Lấy chiều cao màn hình
+const WIDTH = Dimensions.get("window").width; // Lấy chiều rộng màn hình
 
 function FavorAndSuggest({ route }) {
-  const [dish, setDish] = useState(null);
-  const [recipe, setRecipe] = useState(null);
-  const [ingredientDetails, setIngredientDetails] = useState([]);
-  const [personalRate, setPersonalRate] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [rating, setRating] = useState(0);
-  const [averageRating, setAverageRating] = useState(0);
-  const dispatch = useDispatch();
-  const favorite = useSelector(favorSelector);
-  const user = useSelector(userSelector);
-  const { theme } = useTheme();
-  const [ratingModalVisible, setRatingModalVisible] = useState(false);
-  const [loginModalVisible, setLoginModalVisible] = useState(false);
-  const navigation = useNavigation();
-  const [comment, setComment] = useState([]);
-  const [commentList, setCommentList] = useState([]);
+  // Component chính
+  const [dish, setDish] = useState(null); // State lưu trữ thông tin món ăn
+  const [recipe, setRecipe] = useState(null); // State lưu trữ công thức
+  const [ingredientDetails, setIngredientDetails] = useState([]); // State lưu trữ chi tiết nguyên liệu
+  const [personalRate, setPersonalRate] = useState({}); // State lưu trữ đánh giá cá nhân
+  const [loading, setLoading] = useState(true); // State kiểm tra trạng thái loading
+  const [rating, setRating] = useState(0); // State lưu trữ điểm đánh giá
+  const [averageRating, setAverageRating] = useState(0); // State lưu trữ điểm đánh giá trung bình
+  const dispatch = useDispatch(); // Hook dispatch của Redux
+  const favorite = useSelector(favorSelector); // Lấy trạng thái yêu thích từ Redux
+  const user = useSelector(userSelector); // Lấy thông tin người dùng từ Redux
+  const { theme } = useTheme(); // Lấy theme hiện tại
+  const [ratingModalVisible, setRatingModalVisible] = useState(false); // State hiển thị modal đánh giá
+  const [loginModalVisible, setLoginModalVisible] = useState(false); // State hiển thị modal đăng nhập
+  const navigation = useNavigation(); // Hook điều hướng
+  const [comment, setComment] = useState([]); // State lưu trữ bình luận hiện tại
+  const [commentList, setCommentList] = useState([]); // State lưu trữ danh sách bình luận
 
+  // Hook lấy dữ liệu món ăn từ tham số route
   useEffect(() => {
     if (route?.params?.dish) {
       setDish(route.params.dish);
@@ -61,14 +63,17 @@ function FavorAndSuggest({ route }) {
     }
   }, [route?.params?.dish]);
 
+  // Hàm gửi bình luận mới
   const submitComment = async (commentText) => {
     if (!user?._id) {
+      // Kiểm tra người dùng đã đăng nhập chưa
       setLoginModalVisible(true);
       return;
     }
 
     try {
       const res = await commentService.addComment(
+        // Gọi API thêm bình luận
         dish._id,
         commentText,
         user._id
@@ -78,8 +83,8 @@ function FavorAndSuggest({ route }) {
         return;
       }
       const newComment = res.data;
-      setCommentList((prev) => [newComment, ...prev]);
-      setComment("");
+      setCommentList((prev) => [newComment, ...prev]); // Cập nhật danh sách bình luận
+      setComment(""); // Xóa nội dung bình luận hiện tại
       Alert.alert("Success", "Your comment has been submitted!");
     } catch (error) {
       console.error("Submit comment error:", error);
@@ -87,19 +92,20 @@ function FavorAndSuggest({ route }) {
     }
   };
 
+  // Hook lấy danh sách bình luận khi món ăn thay đổi
   useEffect(() => {
     const fetchComments = async () => {
       if (!dish?._id) return;
 
       setLoading(true);
       try {
-        const res = await commentService.getCommentsByDishId(dish._id);
+        const res = await commentService.getCommentsByDishId(dish._id); // Gọi API lấy bình luận
         let cmtList = res?.data;
 
         if (Array.isArray(cmtList)) {
-          cmtList.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+          cmtList.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // Sắp xếp theo thời gian mới nhất
 
-          // ✅ Gán thêm isLiked cho mỗi comment
+          // Gán thêm isLiked cho mỗi comment
           const commentsWithIsLiked = cmtList.map((comment) => ({
             ...comment,
             isLiked: comment.likedBy?.includes(user?._id),
@@ -115,30 +121,32 @@ function FavorAndSuggest({ route }) {
     };
 
     fetchComments();
-  }, [dish, user?._id]); // nhớ thêm `user._id` để refetch đúng khi user thay đổi
+  }, [dish, user?._id]); // Chạy lại khi dish hoặc user thay đổi
 
+  // Hàm xử lý thích bình luận
   const handleLike = async (commentId) => {
     try {
       if (!user?._id || !user) {
+        // Kiểm tra người dùng đã đăng nhập chưa
         setLoginModalVisible(true);
         return;
       }
 
-      const res = await commentService.toggleLikeComment(commentId, user._id);
+      const res = await commentService.toggleLikeComment(commentId, user._id); // Gọi API toggle like
 
       if (res.success) {
         const updatedComments = commentList.map((item) =>
           item._id === commentId
             ? {
                 ...item,
-                isLiked: !item.isLiked,
+                isLiked: !item.isLiked, // Đảo trạng thái like
                 likeCount: item.isLiked
-                  ? item.likeCount - 1
-                  : item.likeCount + 1,
+                  ? item.likeCount - 1 // Giảm số lượng like
+                  : item.likeCount + 1, // Tăng số lượng like
               }
             : item
         );
-        setCommentList(updatedComments);
+        setCommentList(updatedComments); // Cập nhật danh sách bình luận
       } else {
         console.warn("Toggle like failed:", res.message);
       }
@@ -147,21 +155,23 @@ function FavorAndSuggest({ route }) {
     }
   };
 
+  // Hàm lấy đánh giá của công thức
   const fetchRating = async () => {
     if (!recipe?._id || !user?._id) return;
 
     try {
-      const response = await commentService.getRatingsByRecipe(recipe._id);
+      const response = await commentService.getRatingsByRecipe(recipe._id); // Gọi API lấy đánh giá
       const ratings = response?.data;
       if (ratings && Array.isArray(ratings)) {
         const myRating = ratings.find(
+          // Tìm đánh giá của người dùng hiện tại
           (rating) =>
             rating.userId._id === user._id && rating.recipeId === recipe._id
         );
-        const total = ratings.reduce((sum, r) => sum + r.star, 0);
-        const average = ratings.length > 0 ? total / ratings.length : 0;
+        const total = ratings.reduce((sum, r) => sum + r.star, 0); // Tính tổng điểm đánh giá
+        const average = ratings.length > 0 ? total / ratings.length : 0; // Tính điểm trung bình
         setRating(myRating ?? null);
-        setAverageRating(average.toFixed(1));
+        setAverageRating(average.toFixed(1)); // Làm tròn đến 1 chữ số thập phân
         console.log("⭐️ My rating:", myRating);
       } else {
         console.warn("Không nhận được dữ liệu từ getRatingsByRecipe");
@@ -171,10 +181,12 @@ function FavorAndSuggest({ route }) {
     }
   };
 
+  // Hàm xử lý đánh giá công thức
   const handleRate = async (ratePoint) => {
-    setRecipe((prev) => ({ ...prev, rate: ratePoint }));
+    setRecipe((prev) => ({ ...prev, rate: ratePoint })); // Cập nhật điểm đánh giá trong state
     try {
       const res = await commentService.rateRecipe(
+        // Gọi API đánh giá công thức
         dish.recipeId,
         user._id,
         ratePoint
@@ -182,18 +194,18 @@ function FavorAndSuggest({ route }) {
 
       console.log("⭐️ Đánh giá thành công:", res);
 
-      await fetchRating();
+      await fetchRating(); // Cập nhật lại đánh giá
     } catch (err) {
       console.error("Lỗi khi gọi rateRecipe:", err);
     }
   };
 
-  // Load rating
+  // Hook lấy đánh giá khi recipe hoặc user thay đổi
   useEffect(() => {
     fetchRating();
   }, [recipe, user]);
 
-  // Load recipe when dish changes
+  // Hook tải công thức khi món ăn thay đổi
   useEffect(() => {
     if (!dish?._id || !dish?.recipeId) {
       setLoading(false);
@@ -204,7 +216,7 @@ function FavorAndSuggest({ route }) {
     loadRate();
   }, [dish]);
 
-  // Fetch ingredient details when recipe changes
+  // Hook tải chi tiết nguyên liệu khi công thức thay đổi
   useEffect(() => {
     const fetchIngredientDetails = async () => {
       if (!recipe?.ingredients?.length) {
@@ -233,18 +245,18 @@ function FavorAndSuggest({ route }) {
             return;
           }
 
-          const response = await getIngredient(ingredientId);
+          const response = await getIngredient(ingredientId); // Gọi API lấy chi tiết nguyên liệu
           if (response?.data?.data) {
             detailsObj.push({
               ...response.data.data,
-              quantity: ingredient?.quantity,
-              unit: ingredient?.unit,
+              quantity: ingredient?.quantity, // Thêm số lượng
+              unit: ingredient?.unit, // Thêm đơn vị
             });
           }
         });
 
-        await Promise.all(promises);
-        setIngredientDetails(detailsObj);
+        await Promise.all(promises); // Đợi tất cả các promises hoàn thành
+        setIngredientDetails(detailsObj); // Cập nhật state chi tiết nguyên liệu
       } catch (error) {
         console.error("Error fetching ingredient details:", error);
       } finally {
@@ -255,30 +267,34 @@ function FavorAndSuggest({ route }) {
     fetchIngredientDetails();
   }, [recipe]);
 
+  // Hàm tải đánh giá
   const loadRate = async () => {
-    const response = await getRatingsByRecipeId(dish.recipeId);
+    const response = await getRatingsByRecipeId(dish.recipeId); // Gọi API lấy đánh giá
     if (response?.status === 200) {
       const findRate = response?.data?.data?.find(
+        // Tìm đánh giá của người dùng hiện tại
         (item) => item?.userId?._id === user?._id
       );
       if (findRate) {
-        setPersonalRate(findRate);
+        setPersonalRate(findRate); // Cập nhật đánh giá cá nhân
       }
     } else {
       console.log(response?.response?.data);
     }
   };
 
+  // Hàm tải công thức
   const loadRecipe = async () => {
     setLoading(true);
 
     try {
       const response = await HomeService.getRecipeByRecipeId(
+        // Gọi API lấy công thức
         dish._id,
         dish.recipeId
       );
       if (response.success) {
-        setRecipe(response.data);
+        setRecipe(response.data); // Cập nhật state công thức
       } else {
         Alert.alert("Error", response.message || "Failed to load recipe.");
       }
@@ -290,10 +306,12 @@ function FavorAndSuggest({ route }) {
     }
   };
 
+  // Kiểm tra món ăn có trong danh sách yêu thích không
   const isFavorite = (id) => {
     return favorite.favoriteList?.includes(id);
   };
 
+  // Hàm xử lý khi nhấn nút lưu yêu thích
   const handleOnSavePress = async (dish) => {
     if (!user?._id) {
       Alert.alert("Error", "Please log in to save favorites.");
@@ -302,13 +320,14 @@ function FavorAndSuggest({ route }) {
     try {
       // const isLiked = isFavorite(dish._id);
       // await HomeService.toggleFavoriteDish(user.userId, dish._id, isLiked);
-      dispatch(toggleFavorite({ id: dish._id }));
+      dispatch(toggleFavorite({ id: dish._id })); // Dispatch action Redux để toggle yêu thích
     } catch (error) {
       console.error("Error toggling favorite:", error);
       Alert.alert("Error", "Failed to toggle favorite.");
     }
   };
 
+  // Hàm trích xuất ID video YouTube từ URL
   const getYouTubeVideoId = (url) => {
     if (!url) return null;
     const regex =
@@ -317,14 +336,17 @@ function FavorAndSuggest({ route }) {
     return match ? match[1] : null;
   };
 
+  // Hàm render card công thức
   const renderRecipeCard = () => {
-    const [index, setIndex] = useState(0);
+    const [index, setIndex] = useState(0); // State lưu trữ tab hiện tại
     const [routes] = useState([
+      // Danh sách các tab
       { key: "ingredient", title: "Ingredient" },
       { key: "instructions", title: "Instructions" },
       { key: "comments", title: "Comments" },
     ]);
 
+    // Component hiển thị tab nguyên liệu
     const IngredientsRoute = () => (
       <ScrollView
         style={{ ...styles.tabContent }}
@@ -332,7 +354,7 @@ function FavorAndSuggest({ route }) {
         showsVerticalScrollIndicator={false}
       >
         {loading ? (
-          <SpinnerLoading />
+          <SpinnerLoading /> // Hiển thị loading
         ) : (
           <>
             <Text
@@ -394,7 +416,7 @@ function FavorAndSuggest({ route }) {
                     </View>
                   );
                 })
-                .filter(Boolean)
+                .filter(Boolean) // Lọc bỏ các phần tử null
             ) : (
               <Text
                 style={{ ...styles.noDataText, color: theme.greyTextColor }}
@@ -407,8 +429,9 @@ function FavorAndSuggest({ route }) {
       </ScrollView>
     );
 
+    // Component hiển thị tab hướng dẫn
     const InstructionsRoute = () => {
-      const videoId = getYouTubeVideoId(dish?.videoUrl);
+      const videoId = getYouTubeVideoId(dish?.videoUrl); // Lấy ID video YouTube
 
       return (
         <ScrollView
@@ -418,7 +441,7 @@ function FavorAndSuggest({ route }) {
         >
           {videoId ? (
             <View style={styles.videoContainer}>
-              <YoutubePlayer
+              <YoutubePlayer // Component player YouTube
                 height={200}
                 play={false}
                 videoId={videoId}
@@ -430,7 +453,7 @@ function FavorAndSuggest({ route }) {
           ) : dish?.videoUrl ? (
             <TouchableOpacity
               style={styles.videoLink}
-              onPress={() => Linking.openURL(dish.videoUrl)}
+              onPress={() => Linking.openURL(dish.videoUrl)} // Mở URL video
             >
               <Text style={styles.videoLinkText}>Watch Video Tutorial</Text>
             </TouchableOpacity>
@@ -475,6 +498,7 @@ function FavorAndSuggest({ route }) {
       );
     };
 
+    // Component hiển thị tab bình luận và đánh giá
     const CommentRatingRoute = () => (
       <ScrollView
         style={styles.tabContent}
@@ -524,12 +548,12 @@ function FavorAndSuggest({ route }) {
               <View style={styles.commentFooter}>
                 <TouchableOpacity
                   style={styles.likeButton}
-                  onPress={() => handleLike(comment._id)}
+                  onPress={() => handleLike(comment._id)} // Xử lý like bình luận
                 >
                   <Heart
                     size={20}
-                    color={comment.isLiked ? "red" : "gray"}
-                    fill={comment.isLiked ? "red" : "none"}
+                    color={comment.isLiked ? "red" : "gray"} // Thay đổi màu dựa trên trạng thái like
+                    fill={comment.isLiked ? "red" : "none"} // Thay đổi fill dựa trên trạng thái like
                   />
                   <Text style={styles.likeCount}>{comment.likeCount || 0}</Text>
                 </TouchableOpacity>
@@ -548,34 +572,36 @@ function FavorAndSuggest({ route }) {
       return <Text style={{ padding: 16 }}>Đang tải dữ liệu...</Text>;
     }
 
+    // Map các routes với components tương ứng
     const renderScene = SceneMap({
       ingredient: IngredientsRoute,
       instructions: InstructionsRoute,
       comments: CommentRatingRoute,
     });
 
+    // Tùy chỉnh thanh tab
     const renderTabBar = (props) => (
       <TabBar
         {...props}
         indicatorStyle={{
-          backgroundColor: "#4CAF50",
-          height: "80%",
-          width: "28%",
-          borderRadius: 8,
-          marginHorizontal: "2.5%",
-          marginVertical: "10%",
+          backgroundColor: "#4CAF50", // Màu nền của indicator
+          height: "80%", // Chiều cao
+          width: "28%", // Chiều rộng
+          borderRadius: 8, // Bo góc
+          marginHorizontal: "2.5%", // Margin ngang
+          marginVertical: "10%", // Margin dọc
         }}
-        style={{ backgroundColor: "#C4F9D7", borderRadius: 8, fontSize: 8 }}
+        style={{ backgroundColor: "#C4F9D7", borderRadius: 8, fontSize: 8 }} // Style của tabbar
         renderTabBarItem={({ key, ...props }) => (
           <TabBarItem
             key={key}
             {...props}
-            labelStyle={{ fontSize: 12 }} // Set your desired font size here
+            labelStyle={{ fontSize: 12 }} // Set kích thước font
           />
         )}
-        activeColor="#ffffff"
-        inactiveColor="#000000"
-        pressColor="rgba(76, 175, 80, 0.1)"
+        activeColor="#ffffff" // Màu chữ khi active
+        inactiveColor="#000000" // Màu chữ khi không active
+        pressColor="rgba(76, 175, 80, 0.1)" // Màu khi nhấn
       />
     );
 
@@ -600,18 +626,18 @@ function FavorAndSuggest({ route }) {
         <Image source={{ uri: dish?.imageUrl }} style={styles.recipeImage} />
         <TouchableOpacity
           style={styles.heartIcon}
-          onPress={() => handleOnSavePress(dish)}
+          onPress={() => handleOnSavePress(dish)} // Xử lý khi nhấn nút yêu thích
         >
           {favorite.isLoading ? (
-            <ActivityIndicator size={24} color="#FC8019" />
+            <ActivityIndicator size={24} color="#FC8019" /> // Hiển thị loading khi đang xử lý
           ) : isFavorite(dish._id) ? (
             <MaterialCommunityIcons
               name="heart-multiple"
               size={24}
               color="#FF8A65"
-            />
+            /> // Icon trái tim khi đã yêu thích
           ) : (
-            <Ionicons name="heart-outline" size={24} color="#FF8A65" />
+            <Ionicons name="heart-outline" size={24} color="#FF8A65" /> // Icon trái tim outline khi chưa yêu thích
           )}
         </TouchableOpacity>
         <View
@@ -631,15 +657,14 @@ function FavorAndSuggest({ route }) {
               >
                 Average Rating:
               </Text>
-
-              <Rating rate={averageRating ?? 0} size={WIDTH * 0.06} disabled />
-
+              <Rating rate={averageRating ?? 0} size={WIDTH * 0.06} disabled />{" "}
+              {/* Component hiển thị số sao */}
               <TouchableOpacity
                 onPress={() => {
                   if (!user?._id) {
-                    setLoginModalVisible(true);
+                    setLoginModalVisible(true); // Hiển thị modal đăng nhập nếu chưa đăng nhập
                   } else {
-                    setRatingModalVisible(true);
+                    setRatingModalVisible(true); // Hiển thị modal đánh giá nếu đã đăng nhập
                   }
                 }}
                 style={styles.openModal}
@@ -650,6 +675,7 @@ function FavorAndSuggest({ route }) {
               </TouchableOpacity>
             </View>
 
+            {/* Modal đăng nhập */}
             <Modal
               visible={loginModalVisible}
               animationType="fade"
@@ -680,7 +706,7 @@ function FavorAndSuggest({ route }) {
                   <TouchableOpacity
                     onPress={() => {
                       setLoginModalVisible(false);
-                      navigation.navigate("signin");
+                      navigation.navigate("signin"); // Chuyển đến màn hình đăng nhập
                     }}
                     style={styles.loginButton}
                   >
@@ -690,7 +716,7 @@ function FavorAndSuggest({ route }) {
                   </TouchableOpacity>
 
                   <TouchableOpacity
-                    onPress={() => setLoginModalVisible(false)}
+                    onPress={() => setLoginModalVisible(false)} // Đóng modal
                     style={{ marginTop: 10 }}
                   >
                     <Text style={{ color: "#888" }}>Close</Text>
@@ -699,6 +725,7 @@ function FavorAndSuggest({ route }) {
               </View>
             </Modal>
 
+            {/* Modal đánh giá */}
             <RatingModal
               visible={ratingModalVisible}
               onClose={() => setRatingModalVisible(false)}
@@ -716,41 +743,43 @@ function FavorAndSuggest({ route }) {
             {dish.description}
           </Text>
 
+          {/* Thông tin dinh dưỡng */}
           <View style={styles.nutritionInfo}>
             <View style={styles.nutritionItem}>
               <Ionicons name="restaurant-outline" size={16} color="#78909C" />
               <Text style={styles.nutritionText}>
-                {recipe?.totalCarbs ?? 0} carbs
+                {recipe?.totalCarbs ?? 0} carbs {/* Hiển thị carb */}
               </Text>
             </View>
             <View style={styles.nutritionItem}>
               <Ionicons name="fitness-outline" size={16} color="#78909C" />
               <Text style={styles.nutritionText}>
-                {recipe?.totalProtein ?? 0} proteins
+                {recipe?.totalProtein ?? 0} proteins {/* Hiển thị protein */}
               </Text>
             </View>
             <View style={styles.nutritionItem}>
               <Ionicons name="flame-outline" size={16} color="#78909C" />
               <Text style={styles.nutritionText}>
-                {recipe?.totalCalories ?? 0} Kcal
+                {recipe?.totalCalories ?? 0} Kcal {/* Hiển thị calories */}
               </Text>
             </View>
             <View style={styles.nutritionItem}>
               <Ionicons name="water-outline" size={16} color="#78909C" />
               <Text style={styles.nutritionText}>
-                {recipe?.totalFat ?? 0} fats
+                {recipe?.totalFat ?? 0} fats {/* Hiển thị chất béo */}
               </Text>
             </View>
           </View>
 
+          {/* Container cho TabView */}
           <View style={styles.tabViewContainer}>
             <TabView
               navigationState={{ index, routes }}
               renderScene={renderScene}
               onIndexChange={setIndex}
-              initialLayout={{ width: WIDTH - 16 }}
-              renderTabBar={renderTabBar}
-              style={styles.tabView}
+              initialLayout={{ width: WIDTH - 16 }} // Khởi tạo layout với chiều rộng
+              renderTabBar={renderTabBar} // Render thanh tab tùy chỉnh
+              style={styles.tabView} // Style cho TabView
             />
           </View>
         </View>
@@ -758,18 +787,23 @@ function FavorAndSuggest({ route }) {
     );
   };
 
+  // Return component chính
   return (
     <MainLayoutWrapper>
+      {" "}
+      {/* Sử dụng layout wrapper chung */}
       <View style={styles.container}>
+        {" "}
+        {/* Container chính */}
         <ScrollView
-          showsVerticalScrollIndicator={false}
-          nestedScrollEnabled={true}
+          showsVerticalScrollIndicator={false} // Ẩn thanh cuộn dọc
+          nestedScrollEnabled={true} // Cho phép cuộn lồng nhau
         >
-          {renderRecipeCard()}
+          {renderRecipeCard()} {/* Render card công thức */}
         </ScrollView>
       </View>
     </MainLayoutWrapper>
   );
 }
 
-export default FavorAndSuggest;
+export default FavorAndSuggest; // Export component để sử dụng ở nơi khác

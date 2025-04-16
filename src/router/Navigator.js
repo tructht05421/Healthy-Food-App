@@ -46,8 +46,6 @@ function HomeStack() {
     >
       {/* Lặp qua danh sách các màn hình và tạo các Stack.Screen */}
       {ScreensMap.map((item, index) => {
-        console.log(item.name);
-        
         return <Stack.Screen key={index} name={item.name} component={item.component} />
       })}
     </Stack.Navigator>

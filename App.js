@@ -6,6 +6,10 @@ import Navigator from "./src/router/Navigator";
 import React, { useEffect } from "react";
 import Toast from "react-native-toast-message";
 import "./global.css";
+import { LogBox } from 'react-native';
+
+// Ignore all log notifications
+LogBox.ignoreAllLogs();
 
 import {
   useFonts,
