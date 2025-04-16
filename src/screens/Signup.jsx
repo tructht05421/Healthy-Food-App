@@ -30,7 +30,7 @@ import { ScreensName } from "../constants/ScreensName"; // Import danh sách tê
 
 import { useGoogleAuth } from "../hooks/useGoogleAuth"; // Import hook xử lý đăng nhập bằng Google
 
-import { signup, verifyAccount } from "../services/authService"; // Import các service xử lý đăng ký và xác thực tài khoản
+import { signup } from "../services/authService"; // Import các service xử lý đăng ký và xác thực tài khoản
 
 import InputOtpModal from "../components/modal/InputOtpModal"; // Import modal nhập mã OTP
 
@@ -190,11 +190,11 @@ function Signup({ navigation }) {
   }, []);
 
   const handleVerifyAccount = async (code) => {
-    const response = await verifyAccount({ otp: code }); // Gọi API xác thực tài khoản với mã OTP
+    const response = await verifyOtp({ email: formData?.email, otp: code }); // Gọi API xác thực tài khoản với mã OTP
 
     if (response.status === 200) {
       ShowToast("success", "Verify account successfully."); // Hiển thị thông báo thành công
-
+      setIsOpen({ ...isOpen, otpModal: false });
       navigation.navigate(ScreensName.home); // Chuyển đến màn hình trang chủ
     } else {
       ShowToast("error", "Verify account fail. Please try again."); // Hiển thị thông báo lỗi
